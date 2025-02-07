@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Builder;
 
 
 
-
-
-
 class Program
 {
     static async Task Main()
@@ -18,11 +15,8 @@ class Program
         // DBConnectString="Host=localhost;Port=5432;Username=postgres;Password=pass123;Database=dbname;SearchPath=public"        
         DatabaseConnection database = new();
 
-        var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder();
         var app = builder.Build();
-
-
-
 
 
 
