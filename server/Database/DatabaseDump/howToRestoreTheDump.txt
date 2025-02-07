@@ -1,0 +1,30 @@
+För att återställa en databas med pg_restore i DataGrip, följer du dessa steg:
+
+Använd pg_restore i DataGrip
+Öppna DataGrip och anslut till din databas:
+
+Gå till View > Tool Windows > Database och anslut till din databasinstans.
+
+Hitta och Högerklicka på din databas i Database Explorer:
+
+Välj Restore with pg_restore.
+
+Välj Dumpfilen:
+
+I dialogrutan som öppnas, klicka på Browse och navigera till platsen där du sparade dumpfilen (till exempel dissatisfiedcustomer_dump.sql).
+
+Ange sökvägen till pg_restore:
+
+Se till att sökvägen till pg_restore-verktyget är korrekt angiven. (Standardmässigt finns det i PostgreSQL-mappen, till exempel C:\Program Files\PostgreSQL\16\bin\pg_restore.exe på Windows).
+
+Justera Återställningsinställningarna:
+
+Välj de återställningsalternativ som passar ditt behov. Du kan till exempel välja att återställa schema och data, index, osv.
+
+Kör Återställningen:
+
+Klicka på Run för att påbörja återställningen. DataGrip kommer att använda pg_restore för att återställa databasen från dumpfilen.
+
+Kontrollera Återställningen:
+
+Efter att återställningen är klar, navigera till Database Explorer och kontrollera att schemat och data har återställts korrekt.
