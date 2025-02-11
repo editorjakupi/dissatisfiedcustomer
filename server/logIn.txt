@@ -1,6 +1,0 @@
-DBConnectString=Host=localhost
-Port=5432
-Username=postgres
-Password=databas123
-Database=dissatisfiedcustommer
-SearchPath=public
