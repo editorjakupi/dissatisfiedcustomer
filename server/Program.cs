@@ -1,11 +1,11 @@
-using DotNetEnv;
+using Npgsql;
 using app.Database;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Builder;
+using server;
 
-
-
+using server;
 class Program
 {
     static async Task Main()
@@ -24,7 +24,7 @@ class Program
 
 
         app.MapGet("/", () => variableList["Password"]);
-
+        app.MapGet("api/login", LoginRoute.GetUser);
         app.Run();
 
 
