@@ -1,6 +1,6 @@
 DBConnectString=Host=localhost
 Port=5432
 Username=postgres
-Password=yourpassword
-Database=crm_system
+Password=thedAnne@3223
+Database=dissatisfiedcustomerdb
 SearchPath=public
