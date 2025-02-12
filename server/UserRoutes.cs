@@ -22,12 +22,14 @@ public static class UserRoutes
     }
 
 
-    public record PostUserDTO(string Name);
+    public record PostUserDTO(string Name, string Email, string Password);
     public static async Task<Results<Created, BadRequest<string>>>
     PostUser(PostUserDTO user, NpgsqlDataSource db)
     {
-        using var command = db.CreateCommand("insert into users(name) values($1)");
+        using var command = db.CreateCommand("insert into users(name, email, password) VALUES($1, $2, $3)");
         command.Parameters.AddWithValue(user.Name);
+        command.Parameters.AddWithValue(user.Email);
+        command.Parameters.AddWithValue(user.Password);
 
         try
         {
