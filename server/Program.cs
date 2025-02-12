@@ -1,32 +1,16 @@
 using Npgsql;
-using app.Database;
-using Microsoft.AspNetCore.Http;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Builder;
 using server;
 
-using server;
-class Program
-{
-    static async Task Main()
-    {
+var builder = WebApplication.CreateBuilder(args);
+// User & Password set by operationsystem environment variables PGUSER & PGPASSWORD
+NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisfiedcustomer");
+builder.Services.AddSingleton<NpgsqlDataSource>(db);
 
-        //Env.TraversePath().Load();//laddar in variabler från .env filen behöver en variabel exempel nedaför när vi har skapat vår db
-        // DBConnectString="Host=localhost;Port=5432;Username=postgres;Password=pass123;Database=dbname;SearchPath=public"        
+var app = builder.Build();
 
-        var variableList = FileReader.Load("logIn.txt");
+app.MapGet("/", () => "Hello World!");
+app.MapGet("api/login", LoginRoute.GetUser);
+app.MapGet("/api/users", UserRoutes.GetUsers);
+app.MapPost("/api/users", UserRoutes.PostUser);
 
-        //DatabaseConnection database = new();
-
-        var builder = WebApplication.CreateBuilder();
-        var app = builder.Build();
-
-
-
-        app.MapGet("/", () => variableList["Password"]);
-        app.MapGet("api/login", LoginRoute.GetUser);
-        app.Run();
-
-
-    }
-}
+app.Run();
