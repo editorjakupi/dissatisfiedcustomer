@@ -17,6 +17,10 @@ Ange sökvägen till pg_restore:
 
 Se till att sökvägen till pg_restore-verktyget är korrekt angiven. (Standardmässigt finns det i PostgreSQL-mappen, till exempel C:\Program Files\PostgreSQL\16\bin\pg_restore.exe på Windows).
 
+eller  
+
+C:\Program Files\PostgreSQL\16\bin\pg_psql.exe
+
 Justera Återställningsinställningarna:
 
 Välj de återställningsalternativ som passar ditt behov. Du kan till exempel välja att återställa schema och data, index, osv.
