@@ -1,10 +1,7 @@
-﻿public class Users
-{
-    public int id;
-    public string name;
-    public string email;
-    public string phone;
-    public string password;
-    public string phonenumber;
-    public int role_id;
-}
+﻿public record Users(
+    int id,
+    string name,
+    string email,
+    string password,
+    string phonenumber,
+    int role_id);
