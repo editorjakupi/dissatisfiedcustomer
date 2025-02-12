@@ -13,4 +13,8 @@ app.MapGet("/", () => "Hello World!");
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 
+
+// Meddelande-API:er
+app.MapPost("/api/messages", MessageRoutes.PostMessage);
+
 app.Run();
