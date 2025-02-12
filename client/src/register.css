@@ -1,0 +1,48 @@
+#input-div {
+  display: flex;
+  flex-direction: column;
+}
+
+#register-button-div {
+  margin-top: 5%;
+}
+
+#input-div text, p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+input {
+  background-color: #A8CCC9;
+  border-radius: 10px;
+  border: none;
+  height: 30px;
+  width: 200px;
+}
+main {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+#register-button-div {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  background-color: #75B9BE;
+  border-radius: 20px;
+  width: 100px;
+  height: 30px;
+  border: none;
+}
+p {
+  margin-bottom:0;
+}
