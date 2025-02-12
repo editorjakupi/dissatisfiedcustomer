@@ -10,7 +10,6 @@ createRoot(document.getElementById('root')).render(
       <Route path="login" element={<login/>} />
     </Routes>
     </BrowserRouter>
-
   </StrictMode>,
 )
 

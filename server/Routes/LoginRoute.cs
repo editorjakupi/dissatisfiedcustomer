@@ -7,7 +7,7 @@ public class LoginRoute
     public static async Task<List<Users>> GetUser(NpgsqlDataSource db)
     {
         var users = new List<Users>();
-        await using var cmd = db.CreateCommand("SELECT * FROM Users");
+        await using var cmd = db.CreateCommand("SELECT * FROM Users WHERE email = @email");
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
