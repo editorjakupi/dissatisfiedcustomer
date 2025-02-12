@@ -13,4 +13,8 @@ app.MapGet("api/login/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 
+
+// Meddelande-API:er
+app.MapPost("/api/messages", MessageRoutes.PostMessage);
+
 app.Run();
