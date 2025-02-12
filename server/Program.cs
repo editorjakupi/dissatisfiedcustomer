@@ -9,7 +9,7 @@ builder.Services.AddSingleton<NpgsqlDataSource>(db);
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
-app.MapGet("api/login", LoginRoute.GetUser);
+app.MapGet("api/login/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 
