@@ -62,4 +62,7 @@ app.MapPost("/api/login", async (HttpContext context, NpgsqlDataSource db) =>
 // Meddelande-API:er
 app.MapPost("/api/messages", MessageRoutes.PostMessage);
 
+// Category api:s
+app.MapGet("/api/categories", CategoryRoutes.GetCategories); 
+
 app.Run();
