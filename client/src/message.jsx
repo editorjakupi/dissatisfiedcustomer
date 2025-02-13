@@ -27,8 +27,5 @@ function submitMessage() {
     })
   })
   .then(response => response.json())  // Parsa JSON responsen från backenden
-  .then(data => console.log(data))     // Logga responsen
-  .catch(error => {
-    console.error("Error submitting the message:", error);
-  });
+  .then(data => console.log(data));     // Logga responsen
 }
