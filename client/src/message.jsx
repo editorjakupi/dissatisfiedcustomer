@@ -26,7 +26,6 @@ function submitMessage(){
           "Email" : document.getElementsByClassName("email").value,
           "Name" : document.getElementsByClassName("title").value,
           "Content" : document.getElementsByClassName("message").value
-      
     })
     }).then(response => {
       console.log(response);

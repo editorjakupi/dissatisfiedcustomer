@@ -23,10 +23,10 @@ public static class MessageRoutes
         try
         {
             // Hämta eller skapa användare
-            int userId = await GetOrCreateUserIdAsync(message.Email, message.Name, conn, transaction);
+            int userId = await GetOrCreateUserIdAsync(message.Email, "No Name", conn, transaction);
 
             // Skapa nytt ärende (ticket)
-            int ticketId = await CreateTicketAsync(userId, conn, transaction);
+            int ticketId = await CreateTicketAsync(userId, message.Name, conn, transaction);
 
             // Spara meddelandet
             using var cmd = conn.CreateCommand();
@@ -90,14 +90,14 @@ public static class MessageRoutes
     }
 
 
-    private static async Task<int> CreateTicketAsync(int userId, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    private static async Task<int> CreateTicketAsync(int userId, string title, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         // Skapa nytt ärende
         using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
         cmd.CommandText = "INSERT INTO tickets (user_id, title, date) VALUES ($1, $2, $3) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
-        cmd.Parameters.AddWithValue("New Ticket");
+        cmd.Parameters.AddWithValue(title);
         cmd.Parameters.AddWithValue(DateTime.UtcNow);
 
         return (int)await cmd.ExecuteScalarAsync();
