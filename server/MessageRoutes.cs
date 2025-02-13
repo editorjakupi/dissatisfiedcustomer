@@ -14,6 +14,7 @@ public static class MessageRoutes
     // Metod för att hantera POST /api/messages
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)
     {
+
         Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}");
 
         // Validera inkommande data
