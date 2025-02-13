@@ -10,9 +10,11 @@ public static class MessageRoutes
     // Dataöverföringsobjekt för inkommande meddelanden
     public record MessageDTO(string Email, string Name, string Content);
 
-    //Metod för att hantera POST /api/messages
+    // Metod för att hantera POST /api/messages
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)
     {
+        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}");
+
         // Validera inkommande data
         if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
         {
@@ -28,9 +30,10 @@ public static class MessageRoutes
         try
         {
             // Hämta eller skapa användaren i databasen
-            int userId = await GetOrCreateUserIdAsync(message.Email, message.Name, conn, transaction, out string generatedPassword);
+            int userId = await GetOrCreateUserIdAsync(message.Email, "No Name", conn, transaction, out string generatedPassword);
+
             // Skapa ett nytt ärende (ticket) kopplat till användaren
-            int ticketId = await CreateTicketAsync(userId, conn, transaction);
+            int ticketId = await CreateTicketAsync(userId, message.Name, conn, transaction);
 
             // Spara meddelandet i databasen
             using var cmd = conn.CreateCommand();
@@ -41,6 +44,8 @@ public static class MessageRoutes
             cmd.Parameters.AddWithValue(userId);
 
             await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Message inserted successfully!");
+
             // Bekräfta transaktionen
             await transaction.CommitAsync();
 
@@ -51,13 +56,11 @@ public static class MessageRoutes
         }
         catch (Exception ex)
         {
-            // Rulla tillbaka transaktionen vid fel
             await transaction.RollbackAsync();
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
         finally
         {
-            // Stäng databaskopplingen
             await conn.CloseAsync();
         }
     }
@@ -76,6 +79,7 @@ public static class MessageRoutes
         if (result != null)
         {
             generatedPassword = null; // Lösenord genereras endast för nya användare
+
             // Användaren finns redan
             return (int)result;
         }
@@ -99,39 +103,42 @@ public static class MessageRoutes
     // Metod för att generera ett slumpmässigt lösenord
     private static string GenerateRandomPassword()
     {
-        // Går att använda ännu säkrare metoder för generering av lösenord än detta
+        // En enkel lösenordsgenerator för demonstration (man kan använda säkrare)
         return Guid.NewGuid().ToString().Substring(0, 8);
     }
 
     // Metod för att skapa ett nytt ärende (ticket)
-    private static async Task<int> CreateTicketAsync(int userId, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    private static async Task<int> CreateTicketAsync(int userId, string title, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
+        // Skapa nytt ärende
         using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
         cmd.CommandText = "INSERT INTO tickets (user_id, title, date) VALUES ($1, $2, $3) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
-        cmd.Parameters.AddWithValue("New Ticket");
-        cmd.Parameters.AddWithValue(DateTime.UtcNow);
+        cmd.Parameters.AddWithValue(title);
+        cmd.Parameters.AddWithValue(DateTime.UtcNow); // Insertar datum och tid.
 
         return (int)await cmd.ExecuteScalarAsync();
     }
 
-    // Metod för att skicka bekräftelse via e-post med bifogat lösenord
+    // Task 1.15: Metod för att skicka bekräftelse via e-post med enbart MailKit
     private static async Task SendConfirmationEmailAsync(string email, string name, string content, string password)
     {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Your App Name", "no-reply@yourapp.com"));
-        message.To.Add(new MailboxAddress(name, email));
-        message.Subject = "Message Received Confirmation";
-        message.Body = new TextPart("plain")
-        {
-            Text = $"Dear {name},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team"
-        };
+        var message = $"Dear {name},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team";
 
         using var client = new SmtpClient();
         await client.ConnectAsync("smtp.your-email-provider.com", 587, SecureSocketOptions.StartTls);
         await client.AuthenticateAsync("your-email@yourapp.com", "your-email-password");
-        await client.SendAsync(message);
+        await client.SendAsync(new MimeMessage
+        {
+            Sender = new MailboxAddress("Your App Name", "no-reply@yourapp.com"),
+            Subject = "Message Received Confirmation",
+            Body = new TextPart("plain")
+            {
+                Text = message
+            },
+            To = { new MailboxAddress(name, email) }
+        });
         await client.DisconnectAsync(true);
     }
 }
