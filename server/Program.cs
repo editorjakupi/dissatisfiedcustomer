@@ -13,4 +13,47 @@ app.MapGet("api/login/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 
+app.MapPost("/api/login", async (HttpContext context, NpgsqlDataSource db) =>
+{
+    try
+    {
+        var request = await context.Request.ReadFromJsonAsync<LoginRequest>();
+        if (request == null) return Results.BadRequest("Invalid request");
+
+        await using var connection = await db.OpenConnectionAsync();
+        await using var command = new NpgsqlCommand("SELECT * FROM users WHERE email = @email", connection);
+        command.Parameters.AddWithValue("@email", request.email);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows) return Results.Unauthorized();
+
+        await reader.ReadAsync();
+        var user = new Users(
+            reader.GetInt32(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            reader.GetString(3),
+            reader.GetString(4),
+            reader.GetInt32(5)
+        );
+
+        if (user.password != request.password) // Plain text comparison
+            return Results.Unauthorized();
+
+        return Results.Ok(new
+        {
+            id = user.id,
+            name = user.name,
+            email = user.email,
+            phoneNumber = user.phonenumber,
+            roleId = user.role_id
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+        return Results.StatusCode(500);
+    }
+});
+
 app.Run();

@@ -1,26 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route} from "react-router"
-import React,{useState, useEffect} from 'react'
+import React, { useState } from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter>
-    <Routes>
-      <Route path="login" element={<login/>} />
-    </Routes>
-    </BrowserRouter>
-  </StrictMode>,
-)
+const App = () => {
+    const [user, setUser] = useState(null);
 
-function login(){
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Login setUser={setUser} />} />
+                <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
+            </Routes>
+        </Router>
+    );
+};
 
-  const [user, getUser] = useState([])
-
-  useEffect(() => {
-    fetch("/api/login")
-    .then((response) => response.json())
-    .then((data => getUser(data)))
-    .catch((error) => console.error("error fetching user:", error))
-  },[] )
-}
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+);
