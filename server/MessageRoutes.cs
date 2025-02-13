@@ -2,6 +2,7 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using System.Net.Mail;
 
 namespace server;
 
@@ -30,7 +31,7 @@ public static class MessageRoutes
         try
         {
             // Hämta eller skapa användaren i databasen
-            int userId = await GetOrCreateUserIdAsync(message.Email, "No Name", conn, transaction, out string generatedPassword);
+            (int userId, string generatedPassword) = await GetOrCreateUserIdAsync(message.Email, "No Name", conn, transaction);
 
             // Skapa ett nytt ärende (ticket) kopplat till användaren
             int ticketId = await CreateTicketAsync(userId, message.Name, conn, transaction);
@@ -66,7 +67,7 @@ public static class MessageRoutes
     }
 
     // Metod för att hämta eller skapa användare
-    private static async Task<int> GetOrCreateUserIdAsync(string email, string name, NpgsqlConnection conn, NpgsqlTransaction transaction, out string generatedPassword)
+    private static async Task<(int, string)> GetOrCreateUserIdAsync(string email, string name, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         // Kontrollera om användaren redan finns
         using var cmd = conn.CreateCommand();
@@ -78,15 +79,13 @@ public static class MessageRoutes
 
         if (result != null)
         {
-            generatedPassword = null; // Lösenord genereras endast för nya användare
-
             // Användaren finns redan
-            return (int)result;
+            return ((int)result, null);
         }
         else
         {
             // Generera ett standardlösenord eller ett slumpmässigt lösenord
-            generatedPassword = GenerateRandomPassword();
+            string generatedPassword = GenerateRandomPassword();
 
             // Skapa ny användare inklusive 'name' och 'password'
             cmd.CommandText = "INSERT INTO users (email, name, password, role_id) VALUES ($1, $2, $3, $4) RETURNING id";
@@ -96,7 +95,8 @@ public static class MessageRoutes
             cmd.Parameters.AddWithValue(generatedPassword);
             cmd.Parameters.AddWithValue(1); // Antar att 1 är 'Customer' role_id
 
-            return (int)await cmd.ExecuteScalarAsync();
+            var newUserId = (int)await cmd.ExecuteScalarAsync();
+            return (newUserId, generatedPassword);
         }
     }
 
@@ -121,24 +121,23 @@ public static class MessageRoutes
         return (int)await cmd.ExecuteScalarAsync();
     }
 
-    // Task 1.15: Metod för att skicka bekräftelse via e-post med enbart MailKit
+    // Task 1.15: Metod för att skicka bekräftelse via e-post med enbart System.Net.Mail
     private static async Task SendConfirmationEmailAsync(string email, string name, string content, string password)
     {
-        var message = $"Dear {name},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team";
+        string messageBody = $"Dear {name},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team";
 
-        using var client = new SmtpClient();
-        await client.ConnectAsync("smtp.your-email-provider.com", 587, SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync("your-email@yourapp.com", "your-email-password");
-        await client.SendAsync(new MimeMessage
+        var message = new System.Net.Mail.MailMessage();
+        message.From = new MailAddress("no-reply@yourapp.com", "Your App Name");
+        message.To.Add(new MailAddress(email, name));
+        message.Subject = "Message Received Confirmation";
+        message.Body = messageBody;
+
+        using var smtpClient = new System.Net.Mail.SmtpClient("smtp.your-email-provider.com", 587)
         {
-            Sender = new MailboxAddress("Your App Name", "no-reply@yourapp.com"),
-            Subject = "Message Received Confirmation",
-            Body = new TextPart("plain")
-            {
-                Text = message
-            },
-            To = { new MailboxAddress(name, email) }
-        });
-        await client.DisconnectAsync(true);
+            Credentials = new System.Net.NetworkCredential("your-email@yourapp.com", "your-email-password"),
+            EnableSsl = true
+        };
+
+        await smtpClient.SendMailAsync(message);
     }
 }
