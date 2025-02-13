@@ -14,4 +14,8 @@ app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 
+
+// Meddelande-API:er
+app.MapPost("/api/messages", MessageRoutes.PostMessage);
+
 app.Run();
