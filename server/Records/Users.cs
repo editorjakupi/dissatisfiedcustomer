@@ -5,3 +5,5 @@
     string password,
     string phonenumber,
     int role_id);
+
+public record LoginRequest(string email, string password);
