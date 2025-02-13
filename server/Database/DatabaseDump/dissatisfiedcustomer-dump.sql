@@ -3,12 +3,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.4
+-- Dumped from database version 17.2
+-- Dumped by pg_dump version 17.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -441,8 +442,6 @@ COPY public.employees (id, user_id, company_id) FROM stdin;
 --
 
 COPY public.messages (id, ticket_id, message, user_id) FROM stdin;
-1	1	Jag har problem med att starta produkten.	1
-2	1	Vi undersöker ditt problem.	2
 3	2	Hur uppdaterar jag produkten?	3
 4	2	Här är instruktioner för uppdatering.	4
 5	3	Jag förstår inte fakturan.	5
@@ -488,7 +487,6 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 --
 
 COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description) FROM stdin;
-1	1	1	2	1	1	2025-02-06 20:45:05.494515	Problem med Produkt A1	Detaljer om problemet med Produkt A1
 2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1
 3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan
 4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster
@@ -496,7 +494,6 @@ COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_
 6	6	10	14	6	6	2025-02-06 20:45:05.494515	Reklamation av Produkt F1	Detaljer om reklamationen
 7	7	11	2	7	7	2025-02-06 20:45:05.494515	Leveransstatus för Produkt G1	Fråga om leveransstatus
 8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer
-9	9	1	7	9	9	2025-02-06 20:45:05.494515	Garantiärende för Produkt I1	Fråga om garanti
 10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar
 11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation
 12	12	6	14	12	12	2025-02-06 20:45:05.494515	Avtalsfrågor	Detaljer om avtalet
@@ -523,7 +520,6 @@ COPY public.userroles (id, name) FROM stdin;
 --
 
 COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
-1	Anna Andersson	anna@exempel.se	pass123	070-1111111	1
 2	Bertil Berg	bertil@exempel.se	pass123	070-2222222	2
 3	Cecilia Carlsson	cecilia@exempel.se	pass123	070-3333333	1
 4	David Dahl	david@exempel.se	pass123	070-4444444	2
@@ -538,6 +534,9 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 13	Martin Mattsson	martin@exempel.se	pass123	070-4040404	2
 14	Nina Nilsson	nina@exempel.se	pass123	070-5050505	1
 15	Oskar Olsson	oskar@exempel.se	pass123	070-6060606	2
+18	John	John	123krikkkk123	\N	\N
+20	asdasd	asdasd	123krikkkk123	\N	\N
+21	asdasd	john@example.com	123krikkkk123	\N	\N
 \.
 
 
@@ -594,7 +593,7 @@ SELECT pg_catalog.setval('public.userroles_id_seq', 4, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 15, true);
+SELECT pg_catalog.setval('public.users_id_seq', 21, true);
 
 
 --
@@ -690,7 +689,7 @@ ALTER TABLE ONLY public.employees
 --
 
 ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES public.tickets(id);
+    ADD CONSTRAINT messages_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES public.tickets(id) ON DELETE CASCADE;
 
 
 --
@@ -698,7 +697,7 @@ ALTER TABLE ONLY public.messages
 --
 
 ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -742,11 +741,11 @@ ALTER TABLE ONLY public.tickets
 
 
 --
--- Name: tickets tickets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: tickets tickets_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.tickets
-    ADD CONSTRAINT tickets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT tickets_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --

@@ -12,6 +12,7 @@ app.MapGet("/", () => "Hello World!");
 app.MapGet("api/login/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
+app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 
 
 // Meddelande-API:er
