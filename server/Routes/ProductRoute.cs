@@ -25,5 +25,21 @@ public static class ProductRoute
             return TypedResults.BadRequest("Failed to create product");
         }
     }
+
+    public static async Task<Results<NoContent, NotFound>>
+        DeleteProduct(int id, NpgsqlDataSource db)
+    {
+        using var cmd = db.CreateCommand("DELETE FROM products WHERE id = $1");
+        cmd.Parameters.AddWithValue("$1", id);
+
+        int affectedRows = await cmd.ExecuteNonQueryAsync();
+        if(affectedRows > 0){
+            return TypedResults.NoContent();
+        }
+        else
+        {
+            return TypedResults.NotFound();
+        }
+    }
 }
 
