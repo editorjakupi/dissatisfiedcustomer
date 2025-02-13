@@ -4,6 +4,10 @@ export default function RegisterMain()
 {
   return <main>
     <div id="input-div"> 
+    <p>Full name:</p>
+      <label>
+        <input type='text' name='name-input' placeholder='Full name' />
+      </label>
       <p>Email-address:</p>
       <label>
         <input type='text' name='email-address-input' placeholder='example@mail.com' />
@@ -16,7 +20,7 @@ export default function RegisterMain()
       <label>
         <input type='Password' name='password-input' placeholder='Password' />
       </label>
-      <p>Confirm Password:</p>
+      <p>Confirm password:</p>
       <label>
         <input type='Password' name='confirm-password-input' placeholder='Confirm Password' />
       </label>
