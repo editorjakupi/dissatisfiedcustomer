@@ -9,6 +9,9 @@ public static class MessageRoutes
 
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)
     {
+
+        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}");
+
         // Validera inkommande data
         if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
         {
@@ -37,9 +40,9 @@ public static class MessageRoutes
             cmd.Parameters.AddWithValue(userId);
 
             await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Message inserted successfully!");
 
             await transaction.CommitAsync();
-
             return TypedResults.Created();
         }
         catch (Exception ex)
@@ -98,7 +101,7 @@ public static class MessageRoutes
         cmd.CommandText = "INSERT INTO tickets (user_id, title, date) VALUES ($1, $2, $3) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
         cmd.Parameters.AddWithValue(title);
-        cmd.Parameters.AddWithValue(DateTime.UtcNow);
+        cmd.Parameters.AddWithValue(DateTime.UtcNow); // Insertar datum och tid.
 
         return (int)await cmd.ExecuteScalarAsync();
     }

@@ -13,9 +13,7 @@ export function Message() {
   </main>
 }
 
-function submitMessage(){
-
-
+function submitMessage() {
   fetch("/api/messages", {
     headers: {
       'Accept': 'application/json',
@@ -23,11 +21,14 @@ function submitMessage(){
     },
     method: "POST",
     body: JSON.stringify({
-          "Email" : document.getElementsByClassName("email").value,
-          "Name" : document.getElementsByClassName("title").value,
-          "Content" : document.getElementsByClassName("message").value
+      "Email": document.querySelector(".email").value,
+      "Name": document.querySelector(".title").value,
+      "Content": document.querySelector(".message").value
     })
-    }).then(response => {
-      console.log(response);
+  })
+  .then(response => response.json())  // Parsa JSON responsen från backenden
+  .then(data => console.log(data))     // Logga responsen
+  .catch(error => {
+    console.error("Error submitting the message:", error);
   });
 }
