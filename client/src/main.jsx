@@ -1,19 +1,26 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router'
+import React, { useState } from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
 import AccountInformation from './account.jsx'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App/>
-  </StrictMode>,
-)
+const App = () => {
+    const [user, setUser] = useState(null);
 
-function App()
-{
-  return <BrowserRouter>
-  <Routes>
-    <Route path='account' element={ <AccountInformation/> } />
-  </Routes>
-  </BrowserRouter>
-}
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Login setUser={setUser} />} />
+                <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
+                <Route path='/account' element={ <AccountInformation/> } />
+            </Routes>
+        </Router>
+    );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+);
