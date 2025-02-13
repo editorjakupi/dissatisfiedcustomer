@@ -83,7 +83,7 @@ public static class MessageRoutes
             return (int)await cmd.ExecuteScalarAsync();
         }
     }
-    private static string GenerateRandomPassword()
+    public static string GenerateRandomPassword()
     {
         // En enkel lösenordsgenerator för demonstration (använd en säkrare metod i produktion)
         return Guid.NewGuid().ToString().Substring(0, 8);

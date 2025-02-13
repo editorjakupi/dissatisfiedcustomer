@@ -22,14 +22,15 @@ public static class UserRoutes
     }
 
 
-    public record PostUserDTO(string Name, string Email, string Password);
+    public record PostUserDTO(string Email, int Role_id);
     public static async Task<Results<Created, BadRequest<string>>>
     PostUser(PostUserDTO user, NpgsqlDataSource db)
     {
-        using var command = db.CreateCommand("insert into users(name, email, password) VALUES($1, $2, $3)");
-        command.Parameters.AddWithValue(user.Name);
+        string generatedPassword = MessageRoutes.GenerateRandomPassword();
+        using var command = db.CreateCommand("insert into users(email, password, role_id) VALUES($1, $2, $3)");
         command.Parameters.AddWithValue(user.Email);
-        command.Parameters.AddWithValue(user.Password);
+        command.Parameters.AddWithValue(generatedPassword);
+        command.Parameters.AddWithValue(1); //Sätter automatiskt roll på användaren
 
         try
         {
@@ -38,11 +39,11 @@ public static class UserRoutes
         }
         catch
         {
-            return TypedResults.BadRequest("Failed to create new user, might already exist?");
+            return TypedResults.BadRequest("Failed to create new user, might already exist?"); //Felhantering
         }
     }
 
-    public static async Task<Results<NoContent, NotFound>> DeleteUser(int id, NpgsqlDataSource db)
+    public static async Task<Results<NoContent, NotFound>> DeleteUser(int id, NpgsqlDataSource db) //Ta bort användare
     {
         using var command = db.CreateCommand("DELETE FROM users WHERE id = $1");
         command.Parameters.AddWithValue(id);
