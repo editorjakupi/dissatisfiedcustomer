@@ -22,12 +22,14 @@ public static class UserRoutes
     }
 
 
-    public record PostUserDTO(string Name);
+    public record PostUserDTO(string Name, string Email, string Password);
     public static async Task<Results<Created, BadRequest<string>>>
     PostUser(PostUserDTO user, NpgsqlDataSource db)
     {
-        using var command = db.CreateCommand("insert into users(name) values($1)");
+        using var command = db.CreateCommand("insert into users(name, email, password) VALUES($1, $2, $3)");
         command.Parameters.AddWithValue(user.Name);
+        command.Parameters.AddWithValue(user.Email);
+        command.Parameters.AddWithValue(user.Password);
 
         try
         {
@@ -40,4 +42,19 @@ public static class UserRoutes
         }
     }
 
+    public static async Task<Results<NoContent, NotFound>> DeleteUser(int id, NpgsqlDataSource db)
+    {
+        using var command = db.CreateCommand("DELETE FROM users WHERE id = $1");
+        command.Parameters.AddWithValue(id);
+        
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+        if (rowsAffected > 0)
+        {
+            return TypedResults.NoContent();
+        }
+        else
+        {
+            return TypedResults.NotFound();
+        }
+    }
 }
