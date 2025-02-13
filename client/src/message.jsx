@@ -23,11 +23,10 @@ function submitMessage(){
     },
     method: "POST",
     body: JSON.stringify({
-      data: {
-        Email : document.getElementsByClassName("email").value,
-        Name : document.getElementsByClassName("title").value,
-        Content : document.getElementsByClassName("message").value
-      }
+          "Email" : document.getElementsByClassName("email").value,
+          "Name" : document.getElementsByClassName("title").value,
+          "Content" : document.getElementsByClassName("message").value
+      
     })
     }).then(response => {
       console.log(response);
