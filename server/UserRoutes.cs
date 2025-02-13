@@ -42,4 +42,19 @@ public static class UserRoutes
         }
     }
 
+    public static async Task<Results<NoContent, NotFound>> DeleteUser(int id, NpgsqlDataSource db)
+    {
+        using var command = db.CreateCommand("DELETE FROM users WHERE id = $1");
+        command.Parameters.AddWithValue(id);
+        
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+        if (rowsAffected > 0)
+        {
+            return TypedResults.NoContent();
+        }
+        else
+        {
+            return TypedResults.NotFound();
+        }
+    }
 }

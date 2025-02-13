@@ -12,5 +12,6 @@ var app = builder.Build();
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
+app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 
 app.Run();
