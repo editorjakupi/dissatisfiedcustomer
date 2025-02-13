@@ -18,4 +18,7 @@ app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 // Meddelande-API:er
 app.MapPost("/api/messages", MessageRoutes.PostMessage);
 
+// Category api:s
+app.MapGet("/api/categories", CategoryRoutes.GetCategories); 
+
 app.Run();
