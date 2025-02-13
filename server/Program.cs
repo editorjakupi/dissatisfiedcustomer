@@ -2,6 +2,7 @@ using Npgsql;
 using server;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // User & Password set by operationsystem environment variables PGUSER & PGPASSWORD
 NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisfiedcustomer");
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
@@ -55,5 +56,9 @@ app.MapPost("/api/login", async (HttpContext context, NpgsqlDataSource db) =>
         return Results.StatusCode(500);
     }
 });
+
+
+// Meddelande-API:er
+app.MapPost("/api/messages", MessageRoutes.PostMessage);
 
 app.Run();
