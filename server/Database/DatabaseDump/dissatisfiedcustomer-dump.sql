@@ -210,7 +210,8 @@ CREATE TABLE public.tickets (
     category_id integer,
     date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     title character varying(255) NOT NULL,
-    description text
+    description text,
+    case_number character varying(255)
 );
 
 
@@ -484,20 +485,20 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 -- Data for Name: tickets; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description) FROM stdin;
-2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1
-3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan
-4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster
-5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur
-6	6	10	14	6	6	2025-02-06 20:45:05.494515	Reklamation av Produkt F1	Detaljer om reklamationen
-7	7	11	2	7	7	2025-02-06 20:45:05.494515	Leveransstatus för Produkt G1	Fråga om leveransstatus
-8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer
-10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar
-11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation
-12	12	6	14	12	12	2025-02-06 20:45:05.494515	Avtalsfrågor	Detaljer om avtalet
-13	13	8	2	13	13	2025-02-06 20:45:05.494515	Klagomål	Kundklagomål angående tjänst
-14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag
-15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund
+COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description, case_number) FROM stdin;
+2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	\N
+3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	\N
+4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	\N
+5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	\N
+6	6	10	14	6	6	2025-02-06 20:45:05.494515	Reklamation av Produkt F1	Detaljer om reklamationen	\N
+7	7	11	2	7	7	2025-02-06 20:45:05.494515	Leveransstatus för Produkt G1	Fråga om leveransstatus	\N
+8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	\N
+10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	\N
+11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	\N
+12	12	6	14	12	12	2025-02-06 20:45:05.494515	Avtalsfrågor	Detaljer om avtalet	\N
+13	13	8	2	13	13	2025-02-06 20:45:05.494515	Klagomål	Kundklagomål angående tjänst	\N
+14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	\N
+15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	\N
 \.
 
 
