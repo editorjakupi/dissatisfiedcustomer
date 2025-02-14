@@ -1,5 +1,7 @@
 ﻿using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using server.Records;
+using DataReaderExtensions = System.Data.DataReaderExtensions;
 
 namespace server;
 
@@ -40,6 +42,25 @@ public static class ProductRoute
         {
             return TypedResults.NotFound();
         }
+        
+    }
+
+    public static async Task<List<Products>>
+        GetProducts(NpgsqlDataSource db)
+    {
+        List<Products> result = new();
+        using var cmd = db.CreateCommand("SELECT * FROM products");
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+          result.Add(new Products(reader.GetInt32(0),
+              reader.GetString(1),
+              reader.GetString(2),
+              reader.GetInt32(3)));  
+        }
+
+        return result;
+        
     }
 }
 
