@@ -1,12 +1,5 @@
-﻿import { useNavigate } from "react-router-dom";
-
-const Dashboard = ({ user, setUser }) => {
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        setUser(null); // Clear user data
-        navigate("/login");
-    };
+﻿
+const Dashboard = ({ user }) => {
 
     return (
         <div className="dashboard-container">
