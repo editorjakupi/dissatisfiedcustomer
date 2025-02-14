@@ -9,13 +9,12 @@ public static class ProductRoute
 {
 
     public record PostProductDTO(string Name, string Description);
-
     public static async Task<Results<Created, BadRequest<string>>>
         PostProduct(PostProductDTO product, NpgsqlDataSource db)
     {
-        using var cmd = db.CreateCommand("INSERT INTO products (name, desctiption) VALUES ($1,$2)");
-        cmd.Parameters.AddWithValue("$1", product.Name);
-        cmd.Parameters.AddWithValue("$2", product.Description);
+        using var cmd = db.CreateCommand("INSERT INTO product (name, desctiption) VALUES($1, $2)");
+        cmd.Parameters.AddWithValue(product.Name);
+        cmd.Parameters.AddWithValue(product.Description);
 
         try
         {
@@ -24,15 +23,15 @@ public static class ProductRoute
         }
         catch
         {
-            return TypedResults.BadRequest("Failed to create product");
+            return TypedResults.BadRequest("Failed to create product " + product);
         }
     }
 
     public static async Task<Results<NoContent, NotFound>>
         DeleteProduct(int id, NpgsqlDataSource db)
     {
-        using var cmd = db.CreateCommand("DELETE FROM products WHERE id = $1");
-        cmd.Parameters.AddWithValue("$1", id);
+        using var cmd = db.CreateCommand("DELETE FROM product WHERE id = $1");
+        cmd.Parameters.AddWithValue(id);
 
         int affectedRows = await cmd.ExecuteNonQueryAsync();
         if(affectedRows > 0){
@@ -49,11 +48,11 @@ public static class ProductRoute
         GetProducts(NpgsqlDataSource db)
     {
         List<Products> result = new();
-        using var cmd = db.CreateCommand("SELECT * FROM products");
+        using var cmd = db.CreateCommand("SELECT id, name, description, company_id FROM product");
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-          result.Add(new Products(reader.GetInt32(0),
+          result.Add(new (reader.GetInt32(0),
               reader.GetString(1),
               reader.GetString(2),
               reader.GetInt32(3)));  
