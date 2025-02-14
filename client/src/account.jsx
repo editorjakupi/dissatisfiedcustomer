@@ -1,7 +1,10 @@
 import './account.css'
 
-export default function AccountInformation()
+const AccountInformation =({user}) =>
 {
+  
+  
+  
   return <main>
     <div id="input-div"> 
       <div className='input-type-div'>
@@ -9,21 +12,21 @@ export default function AccountInformation()
         <p>(Optional)</p>
       </div>
       <label>
-        <input type='text' name='name-input' placeholder='Full name' />
+        <input type='text' name='name-input' placeholder={user?.name} />
       </label>
       <div className='input-type-div'>
         <p>Email-address:</p>
         <p>(Optional)</p>
       </div>
       <label>
-        <input type='text' name='email-address-input' placeholder='example@mail.com' />
+        <input type='text' name='email-address-input' placeholder={user?.email} />
       </label>
       <div className='input-type-div'>
         <p>Phone-number:</p>
         <p>(Optional)</p>
       </div>
       <label>
-        <input type='text' name='phone-number-input' placeholder='076000000' />
+        <input type='text' name='phone-number-input' placeholder={user?.phoneNumber} />
         </label>
       <div className='input-type-div'>
         <p>Old Password:</p>
@@ -61,3 +64,5 @@ export default function AccountInformation()
     </div>
   </main>
 }
+
+export default AccountInformation;
