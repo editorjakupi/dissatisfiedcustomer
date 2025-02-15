@@ -1,4 +1,5 @@
 ﻿import { useNavigate } from "react-router-dom";
+import './dashboard.css';
 
 const Dashboard = ({ user, setUser }) => {
     const navigate = useNavigate();
@@ -9,14 +10,31 @@ const Dashboard = ({ user, setUser }) => {
     };
 
     return (
-        <div>
-            <h2>Welcome, {user?.name}!</h2>
-            <p>Email: {user?.email}</p>
-            <p>Phone: {user?.phoneNumber}</p>
-            <p>Role ID: {user?.roleId}</p>
-            <button onClick={handleLogout}>Logout</button>
-        </div>
+        <main id="dashboard-main">
+            {user.roleId === 1 && (
+                <p>customer</p>
+            )}
+            {user.roleId === 2 && (
+                <p>employee</p>
+            )}
+            {user.roleId === 3 && (
+                <div className="admin-dashboard-div">
+                    <div className="admin-dashboard-content-div">
+                        <form>
+                            <button>products</button>
+                        </form>
+                        <form>
+                            <button>employees</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {user.roleId === 4 && (
+                <p>superadmin</p>
+            )}
+        </main>
     );
 };
+
 
 export default Dashboard;

@@ -1,16 +1,16 @@
-import { useNavigate } from "react-router-dom";
-
 const AdminDashboard = ({ user, setUser }) => {
   const navigate = useNavigate();
 
-  return <main>
+  const dashboard = <div>
     <div id='admin-statistics'>
       <div className='product-information-div'>
       </div>
       <div className='employe-information-div'>
       </div>
     </div>
-  </main>
+  </div>
+
+  return <div>{dashboard}</div>
 };
 
 export default AdminDashboard;
