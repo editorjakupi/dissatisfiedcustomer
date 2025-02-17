@@ -13,6 +13,7 @@ const Dashboard = ({ user, setUser }) => {
         <main id="dashboard-main">
             {user.roleId === 1 && (
                 <p>customer</p>
+                // Link to customer page
             )}
             {user.roleId === 2 && (
                 <p>employee</p>
@@ -31,6 +32,7 @@ const Dashboard = ({ user, setUser }) => {
             )}
             {user.roleId === 4 && (
                 <p>superadmin</p>
+                // Super admin dashboard
             )}
         </main>
     );
