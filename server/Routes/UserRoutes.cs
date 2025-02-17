@@ -112,5 +112,7 @@ public static class UserRoutes
         await updateCmd.ExecuteNonQueryAsync();
 
         return Results.Ok(newUser);
-    }   
+    }
+
+
 }

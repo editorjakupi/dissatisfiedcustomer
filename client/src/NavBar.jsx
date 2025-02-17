@@ -5,14 +5,14 @@ import logo from "./assets/logo.png";
 
 const NavBar = ({ user, setUser }) => {
     const navigate = useNavigate();
-
+    
     const roleNames = {
         1: "Customer",
         2: "Employee",
         3: "Admin",
         4: "Super Admin"
     }
-
+    
     const handleLogout = () => {
         localStorage.removeItem("user"); // Clear session
         setUser(null);
