@@ -210,7 +210,7 @@ CREATE TABLE public.tickets (
     category_id integer,
     date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     title character varying(255) NOT NULL,
-    description text,
+    description text NOT NULL,
     case_number character varying(255)
 );
 
