@@ -19,6 +19,7 @@ app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 app.MapGet("/api/products/{company_id}",(int company_id) => ProductRoute.GetProducts(company_id, db));
 app.MapPost("/api/products", ProductRoute.PostProduct);
 app.MapDelete("/api/products/{id}", ProductRoute.DeleteProduct);
+app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 
 app.MapPost("/api/login", async (HttpContext context, NpgsqlDataSource db) =>
 {

@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql.Replication.PgOutput.Messages;
 using server.Records;
 using DataReaderExtensions = System.Data.DataReaderExtensions;
 
@@ -62,6 +63,50 @@ public static class ProductRoute
             return TypedResults.NotFound();
         }
         
+    }
+
+    public record PutProductDTO(string Name, string Description);
+    public static async Task<Results<Ok<string>, BadRequest<string>>>
+        UpdateProduct(int id, PutProductDTO product, NpgsqlDataSource db)
+    {
+        string nameQuery = "";
+        string descriptionQuery = "";
+        string sqlquery;
+        
+        //if name is updated
+        if(!string.IsNullOrWhiteSpace(product.Name))
+            nameQuery = "SET name = \"" + product.Name + "\"";
+            
+        //if discription is updated
+        if(!string.IsNullOrWhiteSpace(product.Description))
+            descriptionQuery = "SET description = \"" + product.Description + "\"";
+        
+        //create query
+        if(!nameQuery.Equals("")&&!descriptionQuery.Equals(""))
+            sqlquery = "UPDATE product " + nameQuery + " AND " + descriptionQuery;
+        else if(!nameQuery.Equals(""))
+            sqlquery = "UPDATE product " + nameQuery;
+        else if(!descriptionQuery.Equals(""))
+            sqlquery = "UPDATE product " + descriptionQuery;
+        else
+        {
+            return TypedResults.BadRequest("Update query failed");
+        }
+        sqlquery += " WHERE id = $1";
+
+        using var cmd = db.CreateCommand((sqlquery));
+        cmd.Parameters.AddWithValue(id);
+
+        try
+        {
+            await cmd.ExecuteReaderAsync();
+            return TypedResults.Ok("Product updated");
+
+        }
+        catch (Exception e)
+        {
+            return TypedResults.BadRequest("Product update failed");
+        }
     }
 }
 
