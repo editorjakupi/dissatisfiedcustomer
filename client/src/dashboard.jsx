@@ -1,8 +1,18 @@
 ﻿import { useNavigate } from "react-router-dom";
 import './dashboard.css';
+import { useEffect } from "react";
 
 const Dashboard = ({ user, setUser }) => {
     const navigate = useNavigate();
+
+    const [productsInfo, setProductsInfo] = useState("");
+    useEffect(()=>{
+        fetch(`/products/${company_id}`)
+        .then(response => response.json())
+        .then(data => {setProductsInfo(data)})
+    });
+    let productsAmount = productsInfo.Length;
+
 
     const handleLogout = () => {
         setUser(null); // Clear user data
@@ -22,10 +32,10 @@ const Dashboard = ({ user, setUser }) => {
                 <div className="admin-dashboard-div">
                     <div className="admin-dashboard-content-div">
                         <form>
-                            <button>products</button>
+                            <button className="product-amount">Product Amount: {productsAmount}</button>
                         </form>
                         <form>
-                            <button>employees</button>
+                            <button className="employees-amount">employees</button>
                         </form>
                     </div>
                 </div>
@@ -37,6 +47,7 @@ const Dashboard = ({ user, setUser }) => {
         </main>
     );
 };
+
 
 
 export default Dashboard;
