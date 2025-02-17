@@ -1,68 +1,80 @@
-import './account.css'
+import './account.css';
 
-const AccountInformation =({user}) =>
-{
-  
-  
-  
-  return <main>
-    <div id="input-div"> 
-      <div className='input-type-div'>
-        <p>Full name:</p>
-        <p>(Optional)</p>
-      </div>
-      <label>
-        <input type='text' name='name-input' placeholder={user?.name} />
-      </label>
-      <div className='input-type-div'>
-        <p>Email-address:</p>
-        <p>(Optional)</p>
-      </div>
-      <label>
-        <input type='text' name='email-address-input' placeholder={user?.email} />
-      </label>
-      <div className='input-type-div'>
-        <p>Phone-number:</p>
-        <p>(Optional)</p>
-      </div>
-      <label>
-        <input type='text' name='phone-number-input' placeholder={user?.phoneNumber} />
-        </label>
-      <div className='input-type-div'>
-        <p>Old Password:</p>
-        <p>(Optional)</p>
-      </div>
-        <label>
-          <input type='Password' name='old-password-input' placeholder='Password' />
-        </label>
-      <div className='input-type-div'>
-        <p>Old Password:</p>
-        <p>(Optional)</p>
-      </div>
-        <label>
-          <input type='Password' name='confirm-old-password-input' placeholder='Confirm Password' />
-        </label>
-      <div className='input-type-div'>
-        <p>Password:</p>
-        <p>(Optional)</p>
-      </div>
-        <label>
-          <input type='Password' name='password-input' placeholder='Password' />
-        </label>
-      <div className='input-type-div'>
-        <p>Confirm Password:</p>
-        <p>(Optional)</p>
-      </div>
-        <label>
-          <input type='Password' name='confirm-password-input' placeholder='Confirm Password' />
-        </label>
-      </div>
-    <div id='update-button-div'>
-      <form>
-        <button>Update</button>
-      </form>
-    </div>
-  </main>
-}
+
+const AccountInformation = ({ user, setUser }) => {
+
+  const handleUpdate = async (event) => {
+    event.preventDefault(); // Ensure form submission handling
+
+    const formData = new FormData(event.target);
+
+    const updatedUser = {
+      id: user.id,
+      name: formData.get("name-input") || user.name,
+      email: formData.get("email-address-input") || user.email,
+      phonenumber: formData.get("phone-number-input") || user.phonenumber,
+      password: formData.get("password-input") || "", // Empty means no change
+      role_id: user.role_id
+    };
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser),
+      });
+
+      if (!response.ok) throw new Error("Failed to update user");
+
+      const user2 = await response.json();
+      setUser(user2.role_id ? user2 : { ...user2, role_id: user.role_id });
+
+      localStorage.setItem("user", JSON.stringify(user2.role_id ? user2 : { ...user2, role_id: user.role_id }));
+
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
+
+  return (
+      <main>
+        <form onSubmit={handleUpdate}>
+          <div id="input-div">
+            <div className="input-type-div">
+              <label>
+                <p>Full name: (Optional)</p>
+                <input type='text' name='name-input' placeholder={user?.name}/>
+              </label>
+            </div>
+
+            <div className="input-type-div">
+              <label>
+                <p>Email address: (Optional)</p>
+                <input type='text' name='email-address-input' placeholder={user?.email}/>
+              </label>
+            </div>
+
+            <div className="input-type-div">
+              <label>
+                <p>Phone number: (Optional)</p>
+                <input type='text' name='phone-number-input' placeholder={user?.phonenumber}/>
+              </label>
+            </div>
+
+            <div className="input-type-div">
+              <label>
+                <p>New Password: (Optional)</p>
+                <input type='password' name='password-input' placeholder='New Password'/>
+              </label>
+            </div>
+            <div id="update-button-div">
+              <button type="submit">Update</button>
+            </div>
+          </div>
+        </form>
+      </main>
+  );
+
+};
 
 export default AccountInformation;
