@@ -9,13 +9,13 @@ namespace server;
 public static class MessageRoutes
 {
     // Dataöverföringsobjekt för inkommande meddelanden
-    public record MessageDTO(string Email, string Name, string Content);
+    public record MessageDTO(string Email, string Name, string Content, int CompanyID);
 
     // Metod för att hantera POST /api/messages
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)
     {
 
-        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}");
+        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}");
 
         // Validera inkommande data
         if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
@@ -35,7 +35,7 @@ public static class MessageRoutes
             (int userId, string generatedPassword) = await GetOrCreateUserIdAsync(message.Email, "No Name", conn, transaction);
 
             // Skapa ett nytt ärende (ticket) kopplat till användaren
-            int ticketId = await CreateTicketAsync(userId, message.Name, conn, transaction);
+            int ticketId = await CreateTicketAsync(userId, message.Name, message.CompanyID, conn, transaction);
 
             // Spara meddelandet i databasen
             using var cmd = conn.CreateCommand();
@@ -52,7 +52,7 @@ public static class MessageRoutes
             await transaction.CommitAsync();
 
             // Skicka bekräftelse via e-post med bifogat lösenord
-            await SendConfirmationEmailAsync(message.Email, message.Name, message.Content, generatedPassword);
+            //await SendConfirmationEmailAsync(message.Email, message.Name, message.Content, generatedPassword);
 
             return TypedResults.Created();
         }
@@ -109,14 +109,15 @@ public static class MessageRoutes
     }
 
     // Metod för att skapa ett nytt ärende (ticket)
-    private static async Task<int> CreateTicketAsync(int userId, string title, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    private static async Task<int> CreateTicketAsync(int userId, string title, int company_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         // Skapa nytt ärende
         using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
-        cmd.CommandText = "INSERT INTO tickets (user_id, title, date) VALUES ($1, $2, $3) RETURNING id";
+        cmd.CommandText = "INSERT INTO tickets (user_id, title, company_id, date) VALUES ($1, $2, $3, $4) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
         cmd.Parameters.AddWithValue(title);
+        cmd.Parameters.AddWithValue(company_id);
         cmd.Parameters.AddWithValue(DateTime.UtcNow); // Insertar datum och tid.
 
         return (int)await cmd.ExecuteScalarAsync();
