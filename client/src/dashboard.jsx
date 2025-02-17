@@ -19,3 +19,4 @@ const Dashboard = ({ user, setUser }) => {
 };
 
 export default Dashboard;
+    

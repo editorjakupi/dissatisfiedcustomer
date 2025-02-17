@@ -63,6 +63,8 @@ app.MapPost("/api/login", async (HttpContext context, NpgsqlDataSource db) =>
     }
 });
 
+app.MapPut("/api/users", UserRoutes.PutUsers);
+
 
 // Meddelande-API:er
 app.MapPost("/api/messages", MessageRoutes.PostMessage);

@@ -57,4 +57,62 @@ public static class UserRoutes
             return TypedResults.NotFound();
         }
     }
+
+    public static async Task<IResult> PutUsers(Users updatedUser, NpgsqlDataSource db)
+    {
+        if (updatedUser == null)
+            return Results.BadRequest("Invalid user data");
+
+        await using var connection = await db.OpenConnectionAsync();
+
+        // Fetch existing user
+        await using var selectCmd = new NpgsqlCommand(
+            "SELECT id, name, email, password, phonenumber, role_id FROM users WHERE id = @id",
+            connection);
+        selectCmd.Parameters.AddWithValue("@id", updatedUser.id);
+
+        await using var reader = await selectCmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync())
+            return Results.NotFound("User not found");
+
+        var existingUser = new Users(
+            reader.GetInt32(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            reader.GetString(3), // password
+            reader.GetString(4),
+            reader.GetInt32(5)
+        );
+
+        await reader.CloseAsync();
+
+        // Only update the password if a new one is provided
+        var newPassword = string.IsNullOrEmpty(updatedUser.password) ? existingUser.password : updatedUser.password;
+
+        var newUser = existingUser with
+        {
+            name = !string.IsNullOrEmpty(updatedUser.name) ? updatedUser.name : existingUser.name,
+            email = !string.IsNullOrEmpty(updatedUser.email) ? updatedUser.email : existingUser.email,
+            phonenumber = !string.IsNullOrEmpty(updatedUser.phonenumber)
+                ? updatedUser.phonenumber
+                : existingUser.phonenumber,
+            password = newPassword
+        };
+
+        // Update user in database
+        await using var updateCmd = new NpgsqlCommand(
+            "UPDATE users SET name = @name, email = @email, phonenumber = @phonenumber, password = @password WHERE id = @id",
+            connection);
+        updateCmd.Parameters.AddWithValue("@id", newUser.id);
+        updateCmd.Parameters.AddWithValue("@name", newUser.name);
+        updateCmd.Parameters.AddWithValue("@email", newUser.email);
+        updateCmd.Parameters.AddWithValue("@phonenumber", newUser.phonenumber);
+        updateCmd.Parameters.AddWithValue("@password", newUser.password);
+
+        await updateCmd.ExecuteNonQueryAsync();
+
+        return Results.Ok(newUser);
+    }
+
+
 }
