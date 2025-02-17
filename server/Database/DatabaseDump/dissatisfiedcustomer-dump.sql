@@ -2,12 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.4
+-- Dumped from database version 17.2
+-- Dumped by pg_dump version 17.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -210,8 +211,8 @@ CREATE TABLE public.tickets (
     category_id integer,
     date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     title character varying(255) NOT NULL,
-    description text,
-    case_number character varying(255)
+    description text NOT NULL,
+    status_id integer
 );
 
 
@@ -237,6 +238,32 @@ ALTER SEQUENCE public.tickets_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.tickets_id_seq OWNED BY public.tickets.id;
+
+
+--
+-- Name: ticketstatus; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ticketstatus (
+    id integer NOT NULL,
+    status_name character varying NOT NULL
+);
+
+
+ALTER TABLE public.ticketstatus OWNER TO postgres;
+
+--
+-- Name: ticketstatus_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.ticketstatus ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.ticketstatus_column_name_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
 
 
 --
@@ -283,7 +310,7 @@ CREATE TABLE public.users (
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     phonenumber character varying(50),
-    role_id integer
+    role_id integer NOT NULL
 );
 
 
@@ -485,20 +512,33 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 -- Data for Name: tickets; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description, case_number) FROM stdin;
-2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	\N
-3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	\N
-4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	\N
-5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	\N
-6	6	10	14	6	6	2025-02-06 20:45:05.494515	Reklamation av Produkt F1	Detaljer om reklamationen	\N
-7	7	11	2	7	7	2025-02-06 20:45:05.494515	Leveransstatus för Produkt G1	Fråga om leveransstatus	\N
-8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	\N
-10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	\N
-11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	\N
-12	12	6	14	12	12	2025-02-06 20:45:05.494515	Avtalsfrågor	Detaljer om avtalet	\N
-13	13	8	2	13	13	2025-02-06 20:45:05.494515	Klagomål	Kundklagomål angående tjänst	\N
-14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	\N
-15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	\N
+COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description, status_id) FROM stdin;
+11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4
+2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1
+5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5
+13	13	8	2	13	13	2025-02-06 20:45:05.494515	Klagomål	Kundklagomål angående tjänst	1
+3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2
+7	7	11	2	7	7	2025-02-06 20:45:05.494515	Leveransstatus för Produkt G1	Fråga om leveransstatus	2
+14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3
+8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3
+6	6	10	14	6	6	2025-02-06 20:45:05.494515	Reklamation av Produkt F1	Detaljer om reklamationen	4
+4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3
+10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2
+12	12	6	14	12	12	2025-02-06 20:45:05.494515	Avtalsfrågor	Detaljer om avtalet	3
+15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2
+\.
+
+
+--
+-- Data for Name: ticketstatus; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ticketstatus (id, status_name) FROM stdin;
+1	Unread
+2	In Progress
+3	Resolved
+4	Closed
+5	Pending
 \.
 
 
@@ -533,9 +573,13 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 13	Martin Mattsson	martin@exempel.se	pass123	070-4040404	2
 14	Nina Nilsson	nina@exempel.se	pass123	070-5050505	1
 15	Oskar Olsson	oskar@exempel.se	pass123	070-6060606	2
-18	John	John	123krikkkk123	\N	\N
-20	asdasd	asdasd	123krikkkk123	\N	\N
-21	asdasd	john@example.com	123krikkkk123	\N	\N
+22	SigmaMale	asdasdr444	8dda838f	\N	1
+20	asdasd	asdasd	123krikkkk123	\N	1
+21	asdasd	john@example.com	123krikkkk123	\N	1
+18	John	John	123krikkkk123	\N	1
+23	\N	SigmaMale3332424	87ce569c	\N	1
+24	No Name	natna34tn	4962fbf5	\N	1
+25	No Name	gna4nga4g	4ed095a0	\N	1
 \.
 
 
@@ -564,7 +608,7 @@ SELECT pg_catalog.setval('public.employees_id_seq', 15, true);
 -- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.messages_id_seq', 16, true);
+SELECT pg_catalog.setval('public.messages_id_seq', 22, true);
 
 
 --
@@ -578,7 +622,14 @@ SELECT pg_catalog.setval('public.product_id_seq', 15, true);
 -- Name: tickets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tickets_id_seq', 15, true);
+SELECT pg_catalog.setval('public.tickets_id_seq', 21, true);
+
+
+--
+-- Name: ticketstatus_column_name_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.ticketstatus_column_name_seq', 5, true);
 
 
 --
@@ -592,7 +643,7 @@ SELECT pg_catalog.setval('public.userroles_id_seq', 4, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 21, true);
+SELECT pg_catalog.setval('public.users_id_seq', 25, true);
 
 
 --
@@ -641,6 +692,14 @@ ALTER TABLE ONLY public.product
 
 ALTER TABLE ONLY public.tickets
     ADD CONSTRAINT tickets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ticketstatus ticketstatus_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticketstatus
+    ADD CONSTRAINT ticketstatus_pk PRIMARY KEY (id);
 
 
 --
@@ -705,6 +764,14 @@ ALTER TABLE ONLY public.messages
 
 ALTER TABLE ONLY public.product
     ADD CONSTRAINT product_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id);
+
+
+--
+-- Name: tickets tickets___fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tickets
+    ADD CONSTRAINT tickets___fk FOREIGN KEY (status_id) REFERENCES public.ticketstatus(id);
 
 
 --
