@@ -5,6 +5,7 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 import AccountInformation from './account.jsx'
 import NavBar from "./NavBar";
+import TicketView from "./TicketView";
 
 import "./NavBar.css";
 
@@ -23,6 +24,7 @@ const App = () => {
                         <Route path="/dashboard"
                                element={user ? <Dashboard user={user}/> : <Login setUser={setUser}/>}/>
                         <Route path='/user/account' element={user ? <AccountInformation user={user}/> : <Login setUser={setUser}/>}/>
+                        <Route path="/tickets" element={user ? <TicketView user={user}/> : <Login setUser={setUser}/>}/>
                     </Routes>
                 </div>
             </div>

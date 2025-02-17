@@ -42,7 +42,7 @@ const NavBar = ({ user, setUser }) => {
                 <div className="nav-section">
                     <h3>Employee Panel</h3>
                     <button onClick={() => navigate("/user/account")}>My Account</button>
-                    <button onClick={() => navigate("/TicketList")}>All Tickets</button>
+                    <button onClick={() => navigate("/tickets")}>All Tickets</button>
                     <button onClick={() => navigate("/OpenTickets")}>Open Tickets</button>
                     <button onClick={() => navigate("/PendingTickets")}>Pending Tickets</button>
                     <button onClick={() => navigate("/ClosedTickets")}>Closed Tickets</button>
