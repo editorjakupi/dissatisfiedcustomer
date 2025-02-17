@@ -15,7 +15,7 @@ const App = () => {
                 <Route path="/" element={<Login setUser={setUser} />} />
                 <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
                 <Route path='/account' element={ <AccountInformation/> } />
-                <Route path="/message" element={<Message/>}/>
+                <Route path="/message/:id" element={<Message/>}/>
             </Routes>
         </Router>
     );
