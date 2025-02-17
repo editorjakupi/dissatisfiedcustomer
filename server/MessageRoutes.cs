@@ -14,7 +14,6 @@ public static class MessageRoutes
     // Metod för att hantera POST /api/messages
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)
     {
-
         Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}");
 
         // Validera inkommande data
@@ -32,10 +31,10 @@ public static class MessageRoutes
         try
         {
             // Hämta eller skapa användaren i databasen
-            (int userId, string generatedPassword) = await GetOrCreateUserIdAsync(message.Email, "No Name", conn, transaction);
+            (int userId, string generatedPassword) = await GetOrCreateUserIdAsync(message.Email, message.Name, conn, transaction);
 
-            // Skapa ett nytt ärende (ticket) kopplat till användaren
-            int ticketId = await CreateTicketAsync(userId, message.Name, conn, transaction);
+            // Skapa ett nytt ärende (ticket) kopplat till användaren med ett unikt ärendenummer och beskrivning
+            int ticketId = await CreateTicketAsync(userId, message.Name, message.Content, conn, transaction);
 
             // Spara meddelandet i databasen
             using var cmd = conn.CreateCommand();
@@ -85,6 +84,9 @@ public static class MessageRoutes
         }
         else
         {
+            // Om namnet är null, använd en standardvärde
+            string userName = name ?? "Unknown User";
+
             // Generera ett standardlösenord eller ett slumpmässigt lösenord
             string generatedPassword = GenerateRandomPassword();
 
@@ -92,7 +94,7 @@ public static class MessageRoutes
             cmd.CommandText = "INSERT INTO users (email, name, password, role_id) VALUES ($1, $2, $3, $4) RETURNING id";
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue(email);
-            cmd.Parameters.AddWithValue(name);
+            cmd.Parameters.AddWithValue(userName);
             cmd.Parameters.AddWithValue(generatedPassword);
             cmd.Parameters.AddWithValue(1); // Antar att 1 är 'Customer' role_id
 
@@ -108,28 +110,38 @@ public static class MessageRoutes
         return Guid.NewGuid().ToString().Substring(0, 8);
     }
 
-    // Metod för att skapa ett nytt ärende (ticket)
-    private static async Task<int> CreateTicketAsync(int userId, string title, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    // Metod för att generera ett unikt ärendenummer
+    private static string GenerateUniqueCaseNumber()
     {
-        // Skapa nytt ärende
+        // Generera ett unikt ärendenummer (du kan anpassa detta efter behov)
+        return $"CASE-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+    }
+
+    // Metod för att skapa ett nytt ärende (ticket)
+    private static async Task<int> CreateTicketAsync(int userId, string title, string description, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    {
+        // Skapa nytt ärende med unikt ärendenummer och beskrivning
         using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
-        cmd.CommandText = "INSERT INTO tickets (user_id, title, date) VALUES ($1, $2, $3) RETURNING id";
+        string caseNumber = GenerateUniqueCaseNumber(); // Generera unikt ärendenummer
+        cmd.CommandText = "INSERT INTO tickets (user_id, title, description, case_number, date) VALUES ($1, $2, $3, $4, $5) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
-        cmd.Parameters.AddWithValue(title);
+        cmd.Parameters.AddWithValue(title); // Title kan inte vara null eftersom den har NOT NULL constraint
+        cmd.Parameters.AddWithValue(description); // Description kan inte vara null eftersom den har NOT NULL constraint
+        cmd.Parameters.AddWithValue(caseNumber); // Lägg till det unika ärendenumret
         cmd.Parameters.AddWithValue(DateTime.UtcNow); // Insertar datum och tid.
 
         return (int)await cmd.ExecuteScalarAsync();
     }
 
-    // Task 1.15: Metod för att skicka bekräftelse via e-post med enbart System.Net.Mail
+    // Metod för att skicka bekräftelse via e-post med enbart System.Net.Mail
     private static async Task SendConfirmationEmailAsync(string email, string name, string content, string password)
     {
-        string messageBody = $"Dear {name},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team";
+        string messageBody = $"Dear {name ?? "Customer"},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team";
 
         var message = new System.Net.Mail.MailMessage();
         message.From = new MailAddress("no-reply@yourapp.com", "Your App Name");
-        message.To.Add(new MailAddress(email, name));
+        message.To.Add(new MailAddress(email, name ?? "Customer"));
         message.Subject = "Message Received Confirmation";
         message.Body = messageBody;
 
