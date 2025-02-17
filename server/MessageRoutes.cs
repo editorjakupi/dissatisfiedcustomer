@@ -1,8 +1,9 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MailKit.Net.Smtp;
+using MimeKit;
 using MailKit.Security;
-using System.Net.Mail;
+using System;
 
 namespace server;
 
@@ -26,7 +27,7 @@ public static class MessageRoutes
         await conn.OpenAsync();
 
         // Starta en transaktion för att säkerställa dataintegritet
-        using var transaction = await conn.BeginTransactionAsync();
+        await using var transaction = await conn.BeginTransactionAsync();
 
         try
         {
@@ -37,7 +38,7 @@ public static class MessageRoutes
             int ticketId = await CreateTicketAsync(userId, message.Name, message.Content, conn, transaction);
 
             // Spara meddelandet i databasen
-            using var cmd = conn.CreateCommand();
+            await using var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = "INSERT INTO messages (ticket_id, message, user_id) VALUES ($1, $2, $3)";
             cmd.Parameters.AddWithValue(ticketId);
@@ -57,12 +58,28 @@ public static class MessageRoutes
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
+            Console.WriteLine($"Exception: {ex.Message}");
+            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+            if (transaction != null && transaction.Connection != null)
+            {
+                try
+                {
+                    await transaction.RollbackAsync();
+                }
+                catch (Exception rollbackEx)
+                {
+                    Console.WriteLine($"Rollback Exception: {rollbackEx.Message}");
+                    Console.WriteLine($"Rollback Stack Trace: {rollbackEx.StackTrace}");
+                }
+            }
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
         finally
         {
-            await conn.CloseAsync();
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                await conn.CloseAsync();
+            }
         }
     }
 
@@ -70,7 +87,7 @@ public static class MessageRoutes
     private static async Task<(int, string)> GetOrCreateUserIdAsync(string email, string name, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         // Kontrollera om användaren redan finns
-        using var cmd = conn.CreateCommand();
+        await using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
         cmd.CommandText = "SELECT id FROM users WHERE email = $1";
         cmd.Parameters.AddWithValue(email);
@@ -80,7 +97,7 @@ public static class MessageRoutes
         if (result != null)
         {
             // Användaren finns redan
-            return ((int)result, null);
+            return ((int)result, string.Empty); // Returnerar tom sträng om användaren redan finns
         }
         else
         {
@@ -98,7 +115,7 @@ public static class MessageRoutes
             cmd.Parameters.AddWithValue(generatedPassword);
             cmd.Parameters.AddWithValue(1); // Antar att 1 är 'Customer' role_id
 
-            var newUserId = (int)await cmd.ExecuteScalarAsync();
+            var newUserId = (int)(await cmd.ExecuteScalarAsync() ?? throw new InvalidOperationException("Failed to create user."));
             return (newUserId, generatedPassword);
         }
     }
@@ -121,36 +138,52 @@ public static class MessageRoutes
     private static async Task<int> CreateTicketAsync(int userId, string title, string description, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         // Skapa nytt ärende med unikt ärendenummer och beskrivning
-        using var cmd = conn.CreateCommand();
+        await using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
         string caseNumber = GenerateUniqueCaseNumber(); // Generera unikt ärendenummer
-        cmd.CommandText = "INSERT INTO tickets (user_id, title, description, case_number, date) VALUES ($1, $2, $3, $4, $5) RETURNING id";
+        cmd.CommandText = "INSERT INTO tickets (user_id, title, description, case_number, date, status_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
         cmd.Parameters.AddWithValue(title); // Title kan inte vara null eftersom den har NOT NULL constraint
         cmd.Parameters.AddWithValue(description); // Description kan inte vara null eftersom den har NOT NULL constraint
         cmd.Parameters.AddWithValue(caseNumber); // Lägg till det unika ärendenumret
         cmd.Parameters.AddWithValue(DateTime.UtcNow); // Insertar datum och tid.
+        cmd.Parameters.AddWithValue(1); // Sätter default status_id till 1 (Unread)
 
-        return (int)await cmd.ExecuteScalarAsync();
+        var ticketId = (int)(await cmd.ExecuteScalarAsync() ?? throw new InvalidOperationException("Failed to create ticket."));
+        Console.WriteLine($"Ticket created with case number: {caseNumber}");
+        return ticketId;
     }
 
-    // Metod för att skicka bekräftelse via e-post med enbart System.Net.Mail
+    // Task 1.15: Metod för att skicka bekräftelse via e-post med enbart MailKit
     private static async Task SendConfirmationEmailAsync(string email, string name, string content, string password)
     {
+        if (string.IsNullOrEmpty(password))
+        {
+            password = "N/A"; // Om lösenordet är tomt, sätt det till "N/A"
+        }
+
         string messageBody = $"Dear {name ?? "Customer"},\n\nWe have received your message:\n\n\"{content}\"\n\nYour account has been created with the following password: {password}\n\nThank you for reaching out to us.\n\nBest regards,\nYour App Team";
 
-        var message = new System.Net.Mail.MailMessage();
-        message.From = new MailAddress("no-reply@yourapp.com", "Your App Name");
-        message.To.Add(new MailAddress(email, name ?? "Customer"));
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Your App Name", "no-reply@yourapp.com"));
+        message.To.Add(new MailboxAddress(name ?? "Customer", email));
         message.Subject = "Message Received Confirmation";
-        message.Body = messageBody;
+        message.Body = new TextPart("plain") { Text = messageBody };
 
-        using var smtpClient = new System.Net.Mail.SmtpClient("smtp.your-email-provider.com", 587)
+        try
         {
-            Credentials = new System.Net.NetworkCredential("your-email@yourapp.com", "your-email-password"),
-            EnableSsl = true
-        };
-
-        await smtpClient.SendMailAsync(message);
+            using var smtpClient = new SmtpClient();
+            smtpClient.Connect("smtp.mailtrap.io", 2525, SecureSocketOptions.StartTls); // Använd dina SMTP-inställningar från Mailtrap
+            smtpClient.Authenticate("your-mailtrap-username", "your-mailtrap-password"); // Använd dina autentiseringsuppgifter från Mailtrap
+            await smtpClient.SendAsync(message);
+            await smtpClient.DisconnectAsync(true);
+            Console.WriteLine("Email sent successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Email sending failed: {ex.Message}");
+            Console.WriteLine($"Email sending Stack Trace: {ex.StackTrace}");
+            throw; // Kasta undantaget igen för att hantera det på högre nivå
+        }
     }
 }
