@@ -16,8 +16,6 @@ public static class ProductRoute
         cmd.Parameters.AddWithValue(companyId);
         
         using var reader = await cmd.ExecuteReaderAsync();
-        try
-        {
             while (await reader.ReadAsync())
             {
                 result.Add(new(
@@ -26,13 +24,6 @@ public static class ProductRoute
                     reader.GetString(2),
                     reader.GetInt32(3)));
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
         return result;
     }
 
