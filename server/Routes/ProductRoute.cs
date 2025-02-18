@@ -105,7 +105,7 @@ public static class ProductRoute
         }
         catch (Exception e)
         {
-            return TypedResults.BadRequest("Product update failed");
+            return TypedResults.BadRequest("Product update failed, " +  e);
         }
     }
 }
