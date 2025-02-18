@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router";
+import "./NavBar.css";
 
 const Login = ({ user, setUser }) => {
     const [email, setEmail] = useState("");
@@ -35,21 +36,34 @@ const Login = ({ user, setUser }) => {
 
 
     return (
-        <div>
-            <h2>Login</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+        <main>
+        <div id="input-login-div">
+            {error && <p style={{color: "red"}}>{error}</p>}
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+
+                <div id="input-div">
+                    <div id="login-input-button-div">
+                        <label>
+                            <p>Email-adress:</p>
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                        </label>
+                    </div>
+
+                    <div id="login-input-button-div">
+                        <label>
+                            <p>Password:</p>
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                                   required/>
+                        </label>
+                    </div>
+
+                    <div id="update-button-div">
+                        <button type="submit">Login</button>
+                    </div>
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
-                <button type="submit">Login</button>
             </form>
-        </div>
+            </div>
+        </main>
     );
 };
 
