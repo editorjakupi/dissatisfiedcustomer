@@ -1,7 +1,7 @@
 using Npgsql;
 using server;
 
-var builder = WebApplication.CriteateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 // User & Password set by operationsystem environment variables PGUSER & PGPASSWORD
 NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisfiedcustomer");
