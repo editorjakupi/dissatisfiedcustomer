@@ -7,9 +7,10 @@ const TicketView = () => {
     useEffect(() => {
         fetch("/api/tickets")
             .then((response) => response.json())
-            .then((data) => {console.log("Fetched Tickets:", data)
-            setTickets(data);
-        })
+            .then((data) => {
+                console.log("Fetched Tickets:", data)
+                setTickets(data);
+            })
             .catch((error) => console.error("Error fetching tickets:", error));
     }, []);
 
@@ -33,7 +34,7 @@ const TicketView = () => {
                             <td>{ticket.title}</td>
                             <td>{ticket.categoryname}</td>
                             <td>{ticket.email}</td>
-                            <td>{ticket.status_name}</td>
+                            <td>{ticket.status}</td>
                             <td>
                                 <button className="resolve-button">Resolve Ticket</button>
                             </td>

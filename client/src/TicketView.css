@@ -1,8 +1,20 @@
 .ticket-container {
-    padding: 20px;
-    position: absolute;
-    right: 20px;
+    position: fixed;
+    height: 70%;
     bottom: 20px;
+    right: 20px;
+    width: 79%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+
+    thead {
+        position: sticky;
+        top: 0;
+    }
 }
 
 table {
@@ -10,7 +22,8 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
