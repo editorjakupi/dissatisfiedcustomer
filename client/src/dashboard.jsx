@@ -1,4 +1,4 @@
-﻿
+
 const Dashboard = ({ user }) => {
 
     return (
@@ -12,4 +12,3 @@ const Dashboard = ({ user }) => {
 };
 
 export default Dashboard;
-    
