@@ -68,6 +68,6 @@ app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm);
 app.MapGet("/api/ticketform", (int ticketId) => TicketFormRoutes.GetTicketForm(ticketId, db));
 
 // Category api:s
-app.MapGet("/api/categories", CategoryRoutes.GetCategories); 
+app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 
 app.Run();
