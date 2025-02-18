@@ -13,10 +13,11 @@ app.MapGet("/", () => "Hello World!");
 app.MapGet("api/login/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
+app.MapGet("/api/opentickets", TicketRoutes.GetOpenTickets);
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 
-app.MapGet("/api/products/{company_id}",(int company_id) => ProductRoute.GetProducts(company_id, db));
+app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db));
 app.MapPost("/api/products", ProductRoute.PostProduct);
 app.MapDelete("/api/products/{id}", ProductRoute.DeleteProduct);
 
@@ -28,6 +29,6 @@ app.MapPut("/api/users", UserRoutes.PutUsers);
 app.MapPost("/api/messages", MessageRoutes.PostMessage);
 
 // Category api:s
-app.MapGet("/api/categories", CategoryRoutes.GetCategories); 
+app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 
 app.Run();
