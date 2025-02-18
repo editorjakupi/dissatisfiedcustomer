@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+﻿import { useNavigate, Navigate } from "react-router-dom";
 import './dashboard.css';
 import { useEffect, useState } from "react";
 
@@ -31,12 +31,12 @@ const Dashboard = ({ user, setUser }) => {
 
     return (
         <main id="dashboard-main">
-            {user.role_id === 1 && (
-                <p>customer</p>
-                // Link to customer page
+            {user?.role_id === 1 && (
+                <p>Customer</p>
+                // Navigate to dashboard equivelant for customers
             )}
-            {user.role_id === 2 && (
-                <p>employee</p>
+            {user?.role_id === 2 && (
+                <Navigate to="/tickets" />
             )}
             {user?.role_id === 3 && (
                 <div className="admin-dashboard-div">
@@ -50,8 +50,8 @@ const Dashboard = ({ user, setUser }) => {
                     </div>
                 </div>
             )}
-            {user.role_id === 4 && (
-                <p>superadmin</p>
+            {user?.role_id === 4 && (
+                <p>Superadmin</p>
                 // Super admin dashboard
             )}
         </main>
