@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./Login";
 import Dashboard from "./dashboard";
+import Dashboard from "./dashboard";
 import AccountInformation from './account.jsx'
 import NavBar from "./NavBar";
+import TicketView from "./TicketView";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
@@ -36,6 +39,7 @@ const App = () => {
                         <Route path="/" element={<Login setUser={setUser} />} />
                         <Route path="/dashboard"
                             element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
+                        <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/message/:id" element={<Message />} />
                     </Routes>
