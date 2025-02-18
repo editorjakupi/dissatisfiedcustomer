@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./Login";
 import Dashboard from "./dashboard";
 import AccountInformation from './account.jsx'
+import PasswordForget from './passwordforget.jsx'
 import NavBar from "./NavBar";
 import TicketView from "./TicketView";
 import { OpenTicketView } from "./TicketView";
@@ -11,6 +12,7 @@ import { ClosedTicketView } from "./TicketView";
 import { PendingTicketView } from "./TicketView";
 
 import "./NavBar.css";
+import { Message } from "./message.jsx";
 
 const App = () => {
     const [user, setUser] = useState(() => {
@@ -44,6 +46,8 @@ const App = () => {
                         <Route path="/PendingTickets" element={user ? <PendingTicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/ClosedTickets" element={user ? <ClosedTicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
+                        <Route path="/forgot-password" element={<PasswordForget />} />
+                        <Route path="/message/:id" element={<Message />} />
                     </Routes>
                 </div>
             </div>
