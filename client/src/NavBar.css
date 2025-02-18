@@ -1,0 +1,115 @@
+﻿body, html {
+    background-color: #fef7ff;
+    color: black;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 16.67vw;
+    height: 100vh;
+    background-color: white;
+    color: black;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    justify-content: space-between;
+}
+
+/* Sections */
+.nav-section {
+    margin-bottom: 420px;
+}
+
+/* Buttons */
+.sidebar button {
+    width: 100%;
+    padding: 20px;
+    margin: 10px 0;
+    background: #ABCCC8;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1em;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.sidebar button span {
+    position: relative;
+    top: -3px;
+}
+
+
+.sidebar button:hover {
+    background: #444;
+}
+
+/* User Info Box */
+.user-info {
+    background: #ABCCC8;
+    padding: 12px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.user-info p {
+    margin: 5px 0;
+    font-size: 1em;
+    color: black;
+}
+
+/* Logout Button */
+.logout-container {
+    margin-top: 10px;
+}
+
+.logout-button {
+    background: #ff4d4d;
+    color: white;
+    padding: 12px;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.logout-button:hover {
+    background: #ff1a1a;
+}
+
+.dashboard-container {
+    padding: 20px;
+    margin-left: 18vw;
+    width: calc(100vw - 16.67vw);
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+/* Reset styles for the logo button */
+.sidebar .logo-button {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Keep the image styling */
+.logo {
+    width: 300px;
+    height: auto;
+    transition: transform 0.2s ease-in-out;
+}
