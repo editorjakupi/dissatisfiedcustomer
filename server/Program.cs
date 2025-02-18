@@ -36,4 +36,7 @@ app.MapGet("/api/ticketform", (int ticketId) => TicketFormRoutes.GetTicketForm(t
 // Category api:s
 app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 
+// Lägg till den nya GET-endpointen för att visa ärendedetaljer och statusar
+app.MapGet("/user/{id}/cases/{caseId}", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseDetails(id, caseId, db));
+
 app.Run();
