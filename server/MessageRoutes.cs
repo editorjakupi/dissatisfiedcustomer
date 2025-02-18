@@ -10,12 +10,13 @@ namespace server;
 public static class MessageRoutes
 {
     // Dataöverföringsobjekt för inkommande meddelanden
-    public record MessageDTO(string Email, string Name, string Content);
+    public record MessageDTO(string Email, string Name, string Content, int CompanyID);
 
     // Metod för att hantera POST /api/messages
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)
     {
-        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}");
+
+        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}");
 
         // Validera inkommande data
         if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
@@ -35,7 +36,7 @@ public static class MessageRoutes
             (int userId, string generatedPassword) = await GetOrCreateUserIdAsync(message.Email, message.Name, conn, transaction);
 
             // Skapa ett nytt ärende (ticket) kopplat till användaren med ett unikt ärendenummer och beskrivning
-            int ticketId = await CreateTicketAsync(userId, message.Name, message.Content, conn, transaction);
+            int ticketId = await CreateTicketAsync(userId, message.Name, message.Content, message.CompanyID, conn, transaction);
 
             // Spara meddelandet i databasen
             await using var cmd = conn.CreateCommand();
@@ -52,7 +53,7 @@ public static class MessageRoutes
             await transaction.CommitAsync();
 
             // Skicka bekräftelse via e-post med bifogat lösenord
-            await SendConfirmationEmailAsync(message.Email, message.Name, message.Content, generatedPassword);
+            //await SendConfirmationEmailAsync(message.Email, message.Name, message.Content, generatedPassword);
 
             return TypedResults.Created();
         }
@@ -135,17 +136,18 @@ public static class MessageRoutes
     }
 
     // Metod för att skapa ett nytt ärende (ticket)
-    private static async Task<int> CreateTicketAsync(int userId, string title, string description, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    private static async Task<int> CreateTicketAsync(int userId, string title, string description, int company_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         // Skapa nytt ärende med unikt ärendenummer och beskrivning
         await using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
         string caseNumber = GenerateUniqueCaseNumber(); // Generera unikt ärendenummer
-        cmd.CommandText = "INSERT INTO tickets (user_id, title, description, case_number, date, status_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+        cmd.CommandText = "INSERT INTO tickets (user_id, title, description, case_number, company_id, date, status_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
         cmd.Parameters.AddWithValue(userId);
         cmd.Parameters.AddWithValue(title); // Title kan inte vara null eftersom den har NOT NULL constraint
         cmd.Parameters.AddWithValue(description); // Description kan inte vara null eftersom den har NOT NULL constraint
         cmd.Parameters.AddWithValue(caseNumber); // Lägg till det unika ärendenumret
+        cmd.Parameters.AddWithValue(company_id);
         cmd.Parameters.AddWithValue(DateTime.UtcNow); // Insertar datum och tid.
         cmd.Parameters.AddWithValue(1); // Sätter default status_id till 1 (Unread)
 
