@@ -28,6 +28,9 @@ app.MapPut("/api/users", UserRoutes.PutUsers);
 app.MapPost("/api/messages", MessageRoutes.PostMessage);
 
 // Category api:s
-app.MapGet("/api/categories", CategoryRoutes.GetCategories); 
+app.MapGet("/api/categories", CategoryRoutes.GetCategories);
+
+// Lägg till den nya GET-endpointen för att visa ärendedetaljer och statusar
+app.MapGet("/user/{id}/cases/{caseId}", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseDetails(id, caseId, db));
 
 app.Run();
