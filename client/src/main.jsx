@@ -8,6 +8,7 @@ import NavBar from "./NavBar";
 import TicketView from "./TicketView";
 
 import "./NavBar.css";
+import ProductView from "./ProductView.jsx";
 
 const App = () => {
     const [user, setUser] = useState(() => {
@@ -38,6 +39,7 @@ const App = () => {
                             element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
+                        <Route path="/products" element={ <ProductView />} />
                     </Routes>
                 </div>
             </div>
