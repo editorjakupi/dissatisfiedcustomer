@@ -7,19 +7,21 @@ const Dashboard = ({ user, setUser }) => {
 
     const [employeesInfo, setEmployeesInfo] = useState([]);
     useEffect(()=>{
-        fetch(`/api/employees/${user.id}`)
+        fetch(`/api/employees/${user?.role_id}`)
         .then(response => response.json())
         .then(data => {setEmployeesInfo(data)})
     });
 
+    /* 
     const [productsInfo, setProductsInfo] = useState([]);
 
-    //Will be changed when session is saved on server side instead of client
-    // useEffect(()=>{
-    //     fetch(`/api/products/11`) 
-    //     .then(response => response.json())
-    //     .then(data => {setProductsInfo(data)})
-    // });
+    // Will be changed when session is saved on server side instead of client
+    useEffect(()=>{
+        fetch(`/api/products/11`) 
+        .then(response => response.json())
+        .then(data => {setProductsInfo(data)})
+    }); 
+    */
 
 
     const handleLogout = () => {
@@ -29,26 +31,26 @@ const Dashboard = ({ user, setUser }) => {
 
     return (
         <main id="dashboard-main">
-            {user.roleId === 1 && (
+            {user.role_id === 1 && (
                 <p>customer</p>
                 // Link to customer page
             )}
-            {user.roleId === 2 && (
+            {user.role_id === 2 && (
                 <p>employee</p>
             )}
-            {user.roleId === 3 && (
+            {user?.role_id === 3 && (
                 <div className="admin-dashboard-div">
                     <div className="admin-dashboard-content-div">
                         <form>
-                            <button className="product-amount">Product Amount: {productsInfo.length}</button>
+                            <button className="product-stats" onClick={() => navigate("/products")}>Product Amount: {/*{productsInfo.length}*/}</button>
                         </form>
                         <form>
-                            <button className="employees-amount">Emploees Amount: {employeesInfo.length}</button>
+                            <button className="employees-stats" onClick={() => navigate("/employees")}>Emploees Amount: {employeesInfo.length}</button>
                         </form>
                     </div>
                 </div>
             )}
-            {user.roleId === 4 && (
+            {user.role_id === 4 && (
                 <p>superadmin</p>
                 // Super admin dashboard
             )}
