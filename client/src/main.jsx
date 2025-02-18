@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import AccountInformation from './account.jsx'
+import PasswordForget from './passwordforget.jsx'
 import NavBar from "./NavBar";
 
 import "./NavBar.css";
@@ -33,9 +34,9 @@ const App = () => {
 
                     <Routes>
                         <Route path="/" element={<Login setUser={setUser}/>}/>
-                        <Route path="/dashboard"
-                               element={user ? <Dashboard user={user}/> : <Login setUser={setUser}/>}/>
+                        <Route path="/dashboard" element={user ? <Dashboard user={user}/> : <Login setUser={setUser}/>}/>
                         <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser}/> : <Login setUser={setUser}/>}/>
+                        <Route path="/forgot-password" element={<PasswordForget/>}/>
                     </Routes>
                 </div>
             </div>

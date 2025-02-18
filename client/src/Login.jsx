@@ -1,5 +1,5 @@
-﻿import { useState } from "react";
-import { useNavigate } from "react-router";
+﻿import React, { useState } from "react";
+import { useNavigate, Link } from "react-router";
 import "./NavBar.css";
 
 const Login = ({ user, setUser }) => {
@@ -57,12 +57,17 @@ const Login = ({ user, setUser }) => {
                         </label>
                     </div>
 
+                    <div className="forgot-password-div">
+                        Forgot-password? &nbsp;
+                            <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
+                         </div>
+
                     <div id="update-button-div">
                         <button type="submit">Login</button>
                     </div>
                 </div>
             </form>
-            </div>
+        </div>
         </main>
     );
 };
