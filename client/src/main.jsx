@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./Login";
-import Dashboard from "./dashboard";
 import Dashboard from "./dashboard";
 import AccountInformation from './account.jsx'
 import NavBar from "./NavBar";
