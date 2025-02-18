@@ -20,6 +20,8 @@ app.MapGet("/api/products/{company_id}",(int company_id) => ProductRoute.GetProd
 app.MapPost("/api/products", ProductRoute.PostProduct);
 app.MapDelete("/api/products/{id}", ProductRoute.DeleteProduct);
 
+app.MapGet("/api/employees/{userId}",(int userId) => EmployeeRoute.GetEmployees(userId, db));
+
 app.MapPost("/api/login", async (HttpContext context, NpgsqlDataSource db) =>
 {
     try

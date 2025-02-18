@@ -1,17 +1,25 @@
 ﻿import { useNavigate } from "react-router-dom";
 import './dashboard.css';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Dashboard = ({ user, setUser }) => {
     const navigate = useNavigate();
 
-    const [productsInfo, setProductsInfo] = useState("");
+    const [employeesInfo, setEmployeesInfo] = useState([]);
     useEffect(()=>{
-        fetch(`/products/${company_id}`)
+        fetch(`/api/employees/${user.id}`)
         .then(response => response.json())
-        .then(data => {setProductsInfo(data)})
+        .then(data => {setEmployeesInfo(data)})
     });
-    let productsAmount = productsInfo.Length;
+
+    const [productsInfo, setProductsInfo] = useState([]);
+
+    //Will be changed when session is saved on server side instead of client
+    // useEffect(()=>{
+    //     fetch(`/api/products/11`) 
+    //     .then(response => response.json())
+    //     .then(data => {setProductsInfo(data)})
+    // });
 
 
     const handleLogout = () => {
@@ -32,10 +40,10 @@ const Dashboard = ({ user, setUser }) => {
                 <div className="admin-dashboard-div">
                     <div className="admin-dashboard-content-div">
                         <form>
-                            <button className="product-amount">Product Amount: {productsAmount}</button>
+                            <button className="product-amount">Product Amount: {productsInfo.length}</button>
                         </form>
                         <form>
-                            <button className="employees-amount">employees</button>
+                            <button className="employees-amount">Emploees Amount: {employeesInfo.length}</button>
                         </form>
                     </div>
                 </div>
