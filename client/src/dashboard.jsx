@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+﻿﻿import { useNavigate } from "react-router-dom";
 import './dashboard.css';
 import { useEffect, useState } from "react";
 
@@ -59,3 +59,4 @@ const Dashboard = ({ user, setUser }) => {
 
 
 export default Dashboard;
+    

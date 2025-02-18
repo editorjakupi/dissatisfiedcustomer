@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./Login";
@@ -9,7 +9,20 @@ import NavBar from "./NavBar";
 import "./NavBar.css";
 
 const App = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        // Load user from localStorage if it exists
+        const savedUser = localStorage.getItem("user");
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
+
+    useEffect(() => {
+        if (user && user.role_id !== undefined) {
+            localStorage.setItem("user", JSON.stringify(user)); // Save user, ensuring role_id is included
+        } else {
+            localStorage.removeItem("user"); // Clear storage if user is null
+        }
+    }, [user]);
+
 
     return (
         <Router>
@@ -22,7 +35,7 @@ const App = () => {
                         <Route path="/" element={<Login setUser={setUser}/>}/>
                         <Route path="/dashboard"
                                element={user ? <Dashboard user={user}/> : <Login setUser={setUser}/>}/>
-                        <Route path='/user/account' element={user ? <AccountInformation user={user}/> : <Login setUser={setUser}/>}/>
+                        <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser}/> : <Login setUser={setUser}/>}/>
                     </Routes>
                 </div>
             </div>
