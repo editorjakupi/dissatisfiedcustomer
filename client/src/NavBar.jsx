@@ -33,7 +33,7 @@ const NavBar = ({ user, setUser }) => {
                 <div className="nav-section">
                     <h3>Customer Panel</h3>
                     <button onClick={() => navigate("/user/Tickets")}>My Tickets</button>
-                    <button onClick={() => navigate("/user/account")}>My Account</button>
+                    <button onClick={() => navigate("/account")}>My Account</button>
                 </div>
             )}
 
@@ -67,7 +67,7 @@ const NavBar = ({ user, setUser }) => {
                     <button onClick={() => navigate("/user/account")}>My Account</button>
                     <button onClick={() => navigate("/companies")}>Companies</button>
                     <button onClick={() => navigate("/admins")}>Admins</button>
-                    <button onClick={() => navigate("/UsersList")}>Users</button>
+                    <button onClick={() => navigate("/users")}>Users</button>
                 </div>
             )}
 

@@ -40,10 +40,10 @@ const App = () => {
                         <Route path="/dashboard"
                             element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
-                        <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
+                        <Route path='/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
-                        <Route path="/UsersList" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
+                        <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
                     </Routes>
                 </div>
             </div>
