@@ -54,7 +54,7 @@ const NavBar = ({ user, setUser }) => {
                 <div className="nav-section">
                     <h3>Admin Panel</h3>
                     <button onClick={() => navigate("/user/account")}>My Acccount</button>
-                    <button onClick={() => navigate("/statistics")}>Overview</button>
+                    <button onClick={() => navigate("/dashboard")}>Overview</button>
                     <button onClick={() => navigate("/products")}>Products</button>
                     <button onClick={() => navigate("/employees")}>Employees</button>
                 </div>
