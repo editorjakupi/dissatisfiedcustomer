@@ -1,0 +1,104 @@
+﻿.users-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centering horizontally */
+    justify-content: center; /* Centering vertically */
+    height: 100vh; /* Full screen height */
+    padding: 1rem;
+}
+
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem; /* Space between search and list */
+}
+
+.search-input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.search-button,
+.show-all-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.search-button:hover {
+    background-color: #45a049;
+}
+
+.show-all-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.show-all-button:hover {
+    background-color: #0056b3;
+}
+
+/* Centering the user list and details */
+.content-wrapper {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: flex-start; /* Aligns content to the top */
+    gap: 1rem;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    min-width: 600px;
+}
+
+/* User List */
+.users-list {
+    width: 250px;
+    min-width: 250px;
+    border-right: 1px solid #ccc;
+    padding-right: 1rem;
+}
+
+.user-item {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-item:hover {
+    background: #e5e7eb;
+}
+
+/* User Details */
+.user-details {
+    flex-grow: 1;
+    min-width: 400px;
+    max-width: 600px;
+    padding: 1rem;
+}
+
+.user-card {
+    border: 1px solid #ccc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    background: #f3f4f6;
+    min-height: 200px;
+    width: 100%;
+}
+
+.user-placeholder {
+    color: gray;
+}
