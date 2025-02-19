@@ -8,23 +8,29 @@ public static class UserRoutes
         GetUsers(NpgsqlDataSource db)
     {
         List<Users> result = new();
-
-        using var query = db.CreateCommand("select * from users");
-        using var reader = await query.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        try
         {
-            result.Add(
-                new(
-                    reader.GetInt32(0),
-                    reader.GetString(1),
-                    reader.GetString(2),
-                    reader.GetString(3), // password
-                    reader.GetString(4),
-                    reader.GetInt32(5)
-                )
-            );
+            using var query = db.CreateCommand("select * from users");
+            using var reader = await query.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(
+                    new(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3), // password
+                        reader.GetString(4),
+                        reader.GetInt32(5)
+                    )
+                );
+            }
         }
-
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error Fetching users: {ex.Message}");
+        }
+        
         return result;
     }
 
