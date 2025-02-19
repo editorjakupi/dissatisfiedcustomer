@@ -52,6 +52,25 @@ const UsersList = () => {
             })
             .catch((err) => console.error("Error fetching users:", err));
     };
+
+    const handleDelete = () => {
+        if (!selectedUser) return;
+
+        fetch(`/api/users/${selectedUser.id}`, {
+            method: 'DELETE',
+        })
+            .then((res) => {
+                if (res.ok) {
+                    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== selectedUser.id));
+                    setSelectedUser(null); 
+                } else {
+                    console.error("Error deleting user.");
+                }
+            })
+            .catch((err) => {
+                console.error("Delete error:", err);
+            });
+    };
     
     console.log("Users state:", users); // Log the users state
     console.log("Selected User state:", selectedUser); // Log the selected user state
@@ -105,6 +124,9 @@ const UsersList = () => {
                             <p>
                                 <strong>Phone:</strong> {selectedUser.phonenumber}
                             </p>
+                            <button onClick={handleDelete} className="delete-button">
+                                Delete User
+                            </button>
                         </div>
                     ) : (
                         <p className="user-placeholder">Select a user to see details</p>
