@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, use} from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./Login";
@@ -10,6 +10,7 @@ import TicketView from "./TicketView";
 import { OpenTicketView } from "./TicketView";
 import { ClosedTicketView } from "./TicketView";
 import { PendingTicketView } from "./TicketView";
+import UsersList from "./UsersList";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
@@ -48,6 +49,7 @@ const App = () => {
                         <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
+                        <Route path="/UsersList" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
                     </Routes>
                 </div>
             </div>
