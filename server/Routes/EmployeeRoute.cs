@@ -5,7 +5,7 @@ namespace server;
 
 public static class EmployeeRoute
 {
-  public record Employees(int id, int userId, int company_id);
+  public record Employees(int id, int userId, int companyId);
   public static async Task<List<Employees>>
   GetEmployees(int userId, NpgsqlDataSource db)
   {
@@ -19,5 +19,23 @@ public static class EmployeeRoute
       result.Add(new(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2)));
     }
     return result;
+  }
+
+  public static async Task<Results<Created, BadRequest<string>>>
+  PostEmployee(Employees employee, NpgsqlDataSource db)
+  {
+    using var cmd = db.CreateCommand("INSERT INTO employees (user_id, company_id) VALUES($1, $2)");
+    cmd.Parameters.AddWithValue(employee.userId);
+    cmd.Parameters.AddWithValue(employee.companyId);
+
+    try
+    {
+      await cmd.ExecuteNonQueryAsync();
+      return TypedResults.Created();
+    }
+    catch
+    {
+      return TypedResults.BadRequest("Failed to add: " + employee + " to employees!");
+    }
   }
 }
