@@ -2,6 +2,8 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Cms;
 using Microsoft.Extensions.ObjectPool;
+using server.Records;
+using static server.CategoryRoutes;
 
 namespace server;
 
@@ -12,7 +14,7 @@ public class TicketFormRoutes
 
     public static async Task<Results<Created, BadRequest<string>>> PostTicketForm(TicketFormDTO ticketform, NpgsqlDataSource db)
     {
-        using var command = db.CreateCommand("UPDATE tickets SET product_id = @product_id, category_id = @category_id, description = @description WHERE id = @id");
+        await using var command = db.CreateCommand("UPDATE tickets SET product_id = @product_id, category_id = @category_id, description = @description WHERE id = @id");
         command.Parameters.AddWithValue("@product_id", ticketform.ProductId);
         command.Parameters.AddWithValue("@category_id", ticketform.CategoryId);
         command.Parameters.AddWithValue("@description", ticketform.Content);
@@ -37,9 +39,14 @@ public class TicketFormRoutes
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            result.Add(new TicketForm(reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2), reader.GetString(3)));
+            result.Add(new TicketForm(
+                reader.GetInt32(0), 
+                reader.GetInt32(1), 
+                reader.GetString(2), 
+                reader.GetString(3), 
+                ProductRoute.GetProducts(reader.GetInt32(1), db).Result, 
+                CategoryRoutes.GetCategories(db).Result));
         }
-
         return result[0];
     }
 
@@ -47,6 +54,10 @@ public class TicketFormRoutes
         int ticket_id,
         int company_id,
         string title,
-        string description
+        string description,
+        List<Products> company_products,
+        List<Category> categories
         );
+
+    
 }
