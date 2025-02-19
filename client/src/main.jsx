@@ -5,6 +5,7 @@ import Login from "./Login";
 import Dashboard from "./dashboard";
 import AccountInformation from './account.jsx'
 import PasswordForget from './passwordforget.jsx'
+import PasswordForget from './passwordforget.jsx'
 import NavBar from "./NavBar";
 import TicketView from "./TicketView";
 import { OpenTicketView } from "./TicketView";
@@ -12,7 +13,11 @@ import { ClosedTicketView } from "./TicketView";
 import { PendingTicketView } from "./TicketView";
 
 import "./NavBar.css";
+<<<<<<< HEAD
+import ProductView from "./ProductView.jsx";
+=======
 import { Message } from "./message.jsx";
+>>>>>>> main
 
 const App = () => {
     const [user, setUser] = useState(() => {
@@ -46,6 +51,21 @@ const App = () => {
                         <Route path="/PendingTickets" element={user ? <PendingTicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/ClosedTickets" element={user ? <ClosedTicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
+<<<<<<< HEAD
+                        <Route path="/products" element={ <ProductView />} />
+=======
+                        <Route path="/forgot-password" element={<PasswordForget />} />
+                        <Route path="/message/:id" element={<Message />} />
+>>>>>>> main
+import { OpenTicketView } from "./TicketView";
+import { ClosedTicketView } from "./TicketView";
+import { PendingTicketView } from "./TicketView";
+import ProductView from "./ProductView.jsx";
+import { Message } from "./message.jsx";
+                        <Route path="/OpenTickets" element={user ? <OpenTicketView user={user} /> : <Login setUser={setUser} />} />
+                        <Route path="/PendingTickets" element={user ? <PendingTicketView user={user} /> : <Login setUser={setUser} />} />
+                        <Route path="/ClosedTickets" element={user ? <ClosedTicketView user={user} /> : <Login setUser={setUser} />} />
+                        <Route path="/products" element={ <ProductView />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
                     </Routes>
