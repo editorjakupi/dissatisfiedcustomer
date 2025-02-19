@@ -5,7 +5,7 @@ const ProductView = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        fetch("/api/products/11")
+        fetch("/api/products/11") //hardcoded to see response
         .then((response) => response.json())
         .then((data) => {
             setProducts(data);
