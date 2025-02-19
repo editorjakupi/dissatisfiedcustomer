@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./TicketView.css"
 
+function BoxesContainer() {
+    return (
+        <div className="container">
+            <div className="column">
+                <div className="box">Active:</div>
+                <div className="box">Inactive:</div>
+                <div className="box">Resolved:</div>
+            </div>
+            <div className="box box4">Total Tickets:</div>
+        </div>
+    );
+}
+
+
 // Regular TicketView
 export default function TicketView() {
     const [tickets, setTickets] = useState([]);
@@ -25,27 +39,30 @@ export default function TicketView() {
         </tr>
     }
     return (
-        <div className="ticket-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>E-Mail</th>
-                        <th>Status</th>
-                        <th>Mark As Resolved</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tickets.map(TableItem)}
-                </tbody>
-            </table>
-        </div>
+        <>
+            <div>
+                <BoxesContainer />
+            </div>
+            <div className="ticket-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>E-Mail</th>
+                            <th>Status</th>
+                            <th>Mark As Resolved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tickets.map(TableItem)}
+                    </tbody>
+                </table>
+            </div>
+        </>
     );
 };
-
-
 
 // Open TicketView
 export function OpenTicketView() {
@@ -76,6 +93,7 @@ export function OpenTicketView() {
     }
     return (
         <div className="ticket-container">
+            <BoxesContainer />
             <table>
                 <thead>
                     <tr>
@@ -94,8 +112,6 @@ export function OpenTicketView() {
         </div>
     );
 };
-
-
 
 // Inactive/Closed TicketView
 export function ClosedTicketView() {
@@ -126,6 +142,7 @@ export function ClosedTicketView() {
     }
     return (
         <div className="ticket-container">
+            <BoxesContainer />
             <table>
                 <thead>
                     <tr>
@@ -144,7 +161,6 @@ export function ClosedTicketView() {
         </div>
     );
 };
-
 
 // Pending Ticketview
 export function PendingTicketView() {
@@ -174,6 +190,7 @@ export function PendingTicketView() {
     }
     return (
         <div className="ticket-container">
+            <BoxesContainer />
             <table>
                 <thead>
                     <tr>
