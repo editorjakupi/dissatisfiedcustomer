@@ -50,6 +50,7 @@ const App = () => {
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/UsersList" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
+                        <Route path="/tickets/handle/:ticketId" />
                     </Routes>
                 </div>
             </div>
