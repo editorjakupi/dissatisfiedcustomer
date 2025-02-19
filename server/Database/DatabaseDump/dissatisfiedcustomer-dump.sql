@@ -220,6 +220,70 @@ CREATE TABLE public.tickets (
 ALTER TABLE public.tickets OWNER TO postgres;
 
 --
+-- Name: ticketstatus; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ticketstatus (
+    id integer NOT NULL,
+    status_name character varying NOT NULL
+);
+
+
+ALTER TABLE public.ticketstatus OWNER TO postgres;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    name character varying(255),
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    phonenumber character varying(50),
+    role_id integer NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: tickets_all; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_all AS
+ SELECT t.id,
+    t.date,
+    t.title,
+    c.name,
+    u.email,
+    ts.status_name
+   FROM (((public.tickets t
+     JOIN public.category c ON ((t.category_id = c.id)))
+     JOIN public.users u ON ((t.user_id = u.id)))
+     JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
+
+
+ALTER VIEW public.tickets_all OWNER TO postgres;
+
+--
+-- Name: tickets_closed; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_closed AS
+ SELECT id,
+    date,
+    title,
+    name,
+    email,
+    status_name
+   FROM public.tickets_all
+  WHERE (((status_name)::text = 'Closed'::text) OR ((status_name)::text = 'Resolved'::text));
+
+
+ALTER VIEW public.tickets_closed OWNER TO postgres;
+
+--
 -- Name: tickets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -242,16 +306,38 @@ ALTER SEQUENCE public.tickets_id_seq OWNED BY public.tickets.id;
 
 
 --
--- Name: ticketstatus; Type: TABLE; Schema: public; Owner: postgres
+-- Name: tickets_open; Type: VIEW; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.ticketstatus (
-    id integer NOT NULL,
-    status_name character varying NOT NULL
-);
+CREATE VIEW public.tickets_open AS
+ SELECT id,
+    date,
+    title,
+    name,
+    email,
+    status_name
+   FROM public.tickets_all
+  WHERE (((status_name)::text = 'Unread'::text) OR ((status_name)::text = 'In Progress'::text));
 
 
-ALTER TABLE public.ticketstatus OWNER TO postgres;
+ALTER VIEW public.tickets_open OWNER TO postgres;
+
+--
+-- Name: tickets_pending; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_pending AS
+ SELECT id,
+    date,
+    title,
+    name,
+    email,
+    status_name
+   FROM public.tickets_all
+  WHERE ((status_name)::text = 'Pending'::text);
+
+
+ALTER VIEW public.tickets_pending OWNER TO postgres;
 
 --
 -- Name: ticketstatus_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -300,22 +386,6 @@ ALTER SEQUENCE public.userroles_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.userroles_id_seq OWNED BY public.userroles.id;
 
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.users (
-    id integer NOT NULL,
-    name character varying(255),
-    email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
-    phonenumber character varying(50),
-    role_id integer NOT NULL
-);
-
-
-ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
