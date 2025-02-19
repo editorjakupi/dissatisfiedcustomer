@@ -67,7 +67,7 @@ const NavBar = ({ user, setUser }) => {
                     <button onClick={() => navigate("/user/account")}>My Account</button>
                     <button onClick={() => navigate("/companies")}>Companies</button>
                     <button onClick={() => navigate("/admins")}>Admins</button>
-                    <button onClick={() => navigate("/users")}>Users</button>
+                    <button onClick={() => navigate("/UsersList")}>Users</button>
                 </div>
             )}
 
