@@ -4,23 +4,29 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace server;
 public static class UserRoutes
 {
-    public record User(int Id, string Name);
-
-    public static async Task<List<User>>
-    GetUsers(NpgsqlDataSource db)
+    public static async Task<List<Users>>
+        GetUsers(NpgsqlDataSource db)
     {
-        List<User> result = new();
+        List<Users> result = new();
 
-        using var query = db.CreateCommand("select id, name from users");
+        using var query = db.CreateCommand("select * from users");
         using var reader = await query.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            result.Add(new(reader.GetInt32(0), reader.GetString(1)));
+            result.Add(
+                new(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3), // password
+                    reader.GetString(4),
+                    reader.GetInt32(5)
+                )
+            );
         }
 
         return result;
     }
-
 
     public record PostUserDTO(string Name, string Email, string Password);
     public static async Task<Results<Created, BadRequest<string>>>
