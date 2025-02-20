@@ -45,3 +45,35 @@ th {
 .resolve-button:hover {
     background-color: #45a049;
 }
+
+.boxes-container {
+    padding-top: 20px;
+    display: flex;
+    height: 22.5vh;
+    width: 60vh;
+    gap: 10px;
+    margin-left: 40vh;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+}
+
+.box {
+    border-radius: 25px;
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+    background-color: #75B9BE;
+}
+
+.box4 {
+    flex: 1;
+}
+
+.box2 {
+    background-color: #DC0632;
+}
