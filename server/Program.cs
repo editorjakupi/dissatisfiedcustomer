@@ -34,7 +34,7 @@ app.MapGet("/api/products", (int company_id) => ProductRoutes.GetProducts(compan
 app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db));
 
 app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm);
-app.MapGet("/api/ticketform", (int ticketId) => TicketFormRoutes.GetTicketForm(ticketId, db));
+app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketForm(caseNumber, db));
 
 // Category api:s
 app.MapGet("/api/categories", CategoryRoutes.GetCategories);
