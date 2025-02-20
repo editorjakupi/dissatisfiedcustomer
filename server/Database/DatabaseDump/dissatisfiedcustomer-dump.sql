@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2
--- Dumped by pg_dump version 17.2
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -16,6 +15,22 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS '';
+
 
 SET default_tablespace = '';
 
@@ -220,6 +235,70 @@ CREATE TABLE public.tickets (
 ALTER TABLE public.tickets OWNER TO postgres;
 
 --
+-- Name: ticketstatus; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ticketstatus (
+    id integer NOT NULL,
+    status_name character varying NOT NULL
+);
+
+
+ALTER TABLE public.ticketstatus OWNER TO postgres;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    name character varying(255),
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    phonenumber character varying(50),
+    role_id integer NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: tickets_all; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_all AS
+ SELECT t.id,
+    t.date,
+    t.title,
+    c.name,
+    u.email,
+    ts.status_name
+   FROM (((public.tickets t
+     JOIN public.category c ON ((t.category_id = c.id)))
+     JOIN public.users u ON ((t.user_id = u.id)))
+     JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
+
+
+ALTER VIEW public.tickets_all OWNER TO postgres;
+
+--
+-- Name: tickets_closed; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_closed AS
+ SELECT id,
+    date,
+    title,
+    name,
+    email,
+    status_name
+   FROM public.tickets_all
+  WHERE (((status_name)::text = 'Closed'::text) OR ((status_name)::text = 'Resolved'::text));
+
+
+ALTER VIEW public.tickets_closed OWNER TO postgres;
+
+--
 -- Name: tickets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -242,16 +321,38 @@ ALTER SEQUENCE public.tickets_id_seq OWNED BY public.tickets.id;
 
 
 --
--- Name: ticketstatus; Type: TABLE; Schema: public; Owner: postgres
+-- Name: tickets_open; Type: VIEW; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.ticketstatus (
-    id integer NOT NULL,
-    status_name character varying NOT NULL
-);
+CREATE VIEW public.tickets_open AS
+ SELECT id,
+    date,
+    title,
+    name,
+    email,
+    status_name
+   FROM public.tickets_all
+  WHERE (((status_name)::text = 'Unread'::text) OR ((status_name)::text = 'In Progress'::text));
 
 
-ALTER TABLE public.ticketstatus OWNER TO postgres;
+ALTER VIEW public.tickets_open OWNER TO postgres;
+
+--
+-- Name: tickets_pending; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_pending AS
+ SELECT id,
+    date,
+    title,
+    name,
+    email,
+    status_name
+   FROM public.tickets_all
+  WHERE ((status_name)::text = 'Pending'::text);
+
+
+ALTER VIEW public.tickets_pending OWNER TO postgres;
 
 --
 -- Name: ticketstatus_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -300,22 +401,6 @@ ALTER SEQUENCE public.userroles_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.userroles_id_seq OWNED BY public.userroles.id;
 
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.users (
-    id integer NOT NULL,
-    name character varying(255),
-    email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
-    phonenumber character varying(50),
-    role_id integer NOT NULL
-);
-
-
-ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -447,19 +532,16 @@ COPY public.company (id, company_name, company_phone, company_email) FROM stdin;
 
 COPY public.employees (id, user_id, company_id) FROM stdin;
 1	2	1
-2	4	2
 3	7	3
 4	9	4
 5	12	5
 6	14	6
 7	2	7
-8	4	8
 9	7	9
 10	9	10
 11	12	11
 12	14	12
 13	2	13
-14	4	14
 15	7	15
 \.
 
@@ -470,19 +552,13 @@ COPY public.employees (id, user_id, company_id) FROM stdin;
 
 COPY public.messages (id, ticket_id, message, user_id) FROM stdin;
 3	2	Hur uppdaterar jag produkten?	3
-4	2	Här är instruktioner för uppdatering.	4
 5	3	Jag förstår inte fakturan.	5
 6	3	Låt oss gå igenom fakturan tillsammans.	7
 7	4	Vad erbjuder ni för tjänster?	6
 8	4	Här är en lista över våra tjänster.	9
 9	5	Kan jag returnera produkten?	8
 10	5	Självklart, här är returinstruktioner.	12
-11	6	Produkten fungerar inte som den ska.	10
-12	6	Vi beklagar besväret, vi ska hjälpa dig.	14
-13	7	När levereras min produkt?	11
-14	7	Den beräknas levereras imorgon.	2
 15	8	Kan jag få mer information om produkten?	13
-16	8	Absolut, här är detaljerade specifikationer.	4
 \.
 
 
@@ -517,15 +593,11 @@ COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_
 11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	\N
 2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	\N
 5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	\N
-13	13	8	2	13	13	2025-02-06 20:45:05.494515	Klagomål	Kundklagomål angående tjänst	1	\N
 3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	\N
-7	7	11	2	7	7	2025-02-06 20:45:05.494515	Leveransstatus för Produkt G1	Fråga om leveransstatus	2	\N
 14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	\N
 8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	\N
-6	6	10	14	6	6	2025-02-06 20:45:05.494515	Reklamation av Produkt F1	Detaljer om reklamationen	4	\N
 4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	\N
 10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	\N
-12	12	6	14	12	12	2025-02-06 20:45:05.494515	Avtalsfrågor	Detaljer om avtalet	3	\N
 15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	\N
 \.
 
@@ -562,7 +634,6 @@ COPY public.userroles (id, name) FROM stdin;
 COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 2	Bertil Berg	bertil@exempel.se	pass123	070-2222222	2
 3	Cecilia Carlsson	cecilia@exempel.se	pass123	070-3333333	1
-4	David Dahl	david@exempel.se	pass123	070-4444444	2
 5	Erik Eriksson	erik@exempel.se	pass123	070-5555555	3
 6	Frida Fransson	frida@exempel.se	pass123	070-6666666	1
 7	Gustav Gustavsson	gustav@exempel.se	pass123	070-7777777	2
@@ -570,7 +641,6 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 9	Ivan Isaksson	ivan@exempel.se	pass123	070-9999999	2
 10	Jenny Johansson	jenny@exempel.se	pass123	070-1010101	1
 11	Karl Karlsson	karl@exempel.se	pass123	070-2020202	3
-12	Linda Larsson	linda@exempel.se	pass123	070-3030303	1
 13	Martin Mattsson	martin@exempel.se	pass123	070-4040404	2
 14	Nina Nilsson	nina@exempel.se	pass123	070-5050505	1
 15	Oskar Olsson	oskar@exempel.se	pass123	070-6060606	2
@@ -581,6 +651,7 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 23	\N	SigmaMale3332424	87ce569c	\N	1
 24	No Name	natna34tn	4962fbf5	\N	1
 25	No Name	gna4nga4g	4ed095a0	\N	1
+12	Linda Larsson	linda@exempel.se	pass123	070-3030303	4
 \.
 
 
@@ -740,7 +811,7 @@ ALTER TABLE ONLY public.employees
 --
 
 ALTER TABLE ONLY public.employees
-    ADD CONSTRAINT employees_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT employees_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -796,7 +867,7 @@ ALTER TABLE ONLY public.tickets
 --
 
 ALTER TABLE ONLY public.tickets
-    ADD CONSTRAINT tickets_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.employees(id);
+    ADD CONSTRAINT tickets_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.employees(id) ON DELETE CASCADE;
 
 
 --
@@ -821,6 +892,13 @@ ALTER TABLE ONLY public.tickets
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.userroles(id);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 
 
 --

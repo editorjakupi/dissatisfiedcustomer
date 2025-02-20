@@ -45,7 +45,7 @@ const Dashboard = ({ user, setUser }) => {
                             <button className="product-stats" onClick={() => navigate("/products")}>Product Amount: {/*{productsInfo.length}*/}</button>
                         </form>
                         <form>
-                            <button className="employees-stats" onClick={() => navigate("/employees")}>Emploees Amount: {employeesInfo.length}</button>
+                            <button className="employees-stats" onClick={() => navigate("/employees")}>Employees Amount: {employeesInfo.length}</button>
                         </form>
                     </div>
                 </div>
