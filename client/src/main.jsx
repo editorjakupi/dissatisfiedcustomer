@@ -9,9 +9,11 @@ import NavBar from "./NavBar";
 import TicketView from "./TicketView";
 import UsersList from "./UsersList";
 import { TicketForm } from "./TicketForm.jsx";
+import NewEmployee from "./NewEmployee.jsx";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
+import NewProduct from "./NewProduct.jsx";
 
 const App = () => {
     const [user, setUser] = useState(() => {
@@ -46,6 +48,8 @@ const App = () => {
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
+                        <Route path="/employee" element={user ? <NewEmployee user={user}/> : <Login setUser={setUser}/>}/>
+                        <Route path="/products" element={user ? <NewProduct user={user}/> : <Login setUser={setUser}/>}/>
                     </Routes>
                 </div>
             </div>

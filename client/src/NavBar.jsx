@@ -41,7 +41,7 @@ const NavBar = ({ user, setUser }) => {
             {user.role_id === 2 && (
                 <div className="nav-section">
                     <h3>Employee Panel</h3>
-                    <button onClick={() => navigate("/user/account")}>My Account</button>
+                    <button onClick={() => navigate("/account")}>My Account</button>
                     <button onClick={() => navigate("/tickets?view=all")}>All Tickets</button>
                     <button onClick={() => navigate("/tickets?view=open")}>Open Tickets</button>
                     <button onClick={() => navigate("/tickets?view=pending")}>Pending Tickets</button>
@@ -53,10 +53,10 @@ const NavBar = ({ user, setUser }) => {
             {user.role_id === 3 && (
                 <div className="nav-section">
                     <h3>Admin Panel</h3>
-                    <button onClick={() => navigate("/user/account")}>My Acccount</button>
+                    <button onClick={() => navigate("/account")}>My Acccount</button>
                     <button onClick={() => navigate("/dashboard")}>Overview</button>
                     <button onClick={() => navigate("/products")}>Products</button>
-                    <button onClick={() => navigate("/employees")}>Employees</button>
+                    <button onClick={() => navigate("/employee")}>Employees</button>
                 </div>
             )}
 
@@ -64,7 +64,7 @@ const NavBar = ({ user, setUser }) => {
             {user.role_id === 4 && (
                 <div className="nav-section">
                     <h3>Super Admin Panel</h3>
-                    <button onClick={() => navigate("/user/account")}>My Account</button>
+                    <button onClick={() => navigate("/account")}>My Account</button>
                     <button onClick={() => navigate("/companies")}>Companies</button>
                     <button onClick={() => navigate("/admins")}>Admins</button>
                     <button onClick={() => navigate("/users")}>Users</button>
