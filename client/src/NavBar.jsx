@@ -32,7 +32,7 @@ const NavBar = ({ user, setUser }) => {
             {user.role_id === 1 && (
                 <div className="nav-section">
                     <h3>Customer Panel</h3>
-                    <button onClick={() => navigate("/user/Tickets")}>My Tickets</button>
+                    <button onClick={() => navigate(`/user/${user.id}/cases`)}>My Tickets</button>
                     <button onClick={() => navigate("/account")}>My Account</button>
                 </div>
             )}
