@@ -23,6 +23,12 @@ app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 app.MapGet("/api/employees/{userId}", (int userId) => EmployeeRoute.GetEmployees(userId, db));
 app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
 
+//Company Endpoints
+app.MapPost("/api/company", CompanyRoutes.PostCompany);
+app.MapDelete("/api/company/{id}", CompanyRoutes.DeleteCompany);
+app.MapGet("/api/company/{id}", CompanyRoutes.GetCompany);
+app.MapGet("/api/company/", CompanyRoutes.GetCompanies);
+
 app.MapPost("/api/login", LoginRoute.LoginUser);
 
 app.MapPut("/api/users", UserRoutes.PutUsers);
