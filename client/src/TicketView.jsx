@@ -1,19 +1,32 @@
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import "./TicketView.css"
 
-const TicketView = () => {
+// Regular TicketView
+export default function TicketView() {
     const [tickets, setTickets] = useState([]);
-
+    const [searchparams] = useSearchParams();
+    const view = searchparams.get("view");
     useEffect(() => {
-        fetch("/api/tickets")
+        fetch("/api/tickets?view=" + view)
             .then((response) => response.json())
             .then((data) => {
-                console.log("Fetched Tickets:", data)
                 setTickets(data);
             })
             .catch((error) => console.error("Error fetching tickets:", error));
-    }, []);
+    }, [view]);
 
+    // Rendering the table
+    function TableItem(ticket) {
+        return <tr key={"ticket-container-" + ticket.id}>
+            <td>{ticket.date}</td>
+            <td>{ticket.title}</td>
+            <td>{ticket.categoryname}</td>
+            <td>{ticket.email}</td>
+            <td>{ticket.status}</td>
+            <td><button className="resolve-button">Resolve Ticket</button></td>
+        </tr>
+    }
     return (
         <div className="ticket-container">
             <table>
@@ -28,22 +41,9 @@ const TicketView = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {tickets.map((ticket) => (
-                        <tr key={ticket.id}>
-                            <td>{ticket.date}</td> {/* Format YYYY-MM-DD */}
-                            <td>{ticket.title}</td>
-                            <td>{ticket.categoryname}</td>
-                            <td>{ticket.email}</td>
-                            <td>{ticket.status}</td>
-                            <td>
-                                <button className="resolve-button">Resolve Ticket</button>
-                            </td>
-                        </tr>
-                    ))}
+                    {tickets.map(TableItem)}
                 </tbody>
             </table>
         </div>
     );
 };
-
-export default TicketView;
