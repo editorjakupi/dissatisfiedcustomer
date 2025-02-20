@@ -46,12 +46,13 @@ th {
     background-color: #45a049;
 }
 
-.container {
+.boxes-container {
     padding-top: 20px;
     display: flex;
     height: 22.5vh;
     width: 60vh;
     gap: 10px;
+    margin-left: 40vh;
 }
 
 .column {
@@ -63,12 +64,16 @@ th {
 
 .box {
     border-radius: 25px;
-    border: 1px solid #000000;
     padding: 20px;
     text-align: center;
     flex: 1;
+    background-color: #75B9BE;
 }
 
 .box4 {
     flex: 1;
+}
+
+.box2 {
+    background-color: #DC0632;
 }
