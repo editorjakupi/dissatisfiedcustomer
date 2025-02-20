@@ -4,8 +4,14 @@ import "./TicketHandler.css"
 
 function TicketHandler()
 {
-  const {ticketId} = useParams();
+  const {caseId} = useParams();
   const [ticket, setTicket] = useState([]);
+
+  useEffect(() => {
+    fetch(`/api/tickets/${caseId}`)
+    .then(response => response.json)
+    .then(data => {setTicket(data)})
+  });
 
   
   

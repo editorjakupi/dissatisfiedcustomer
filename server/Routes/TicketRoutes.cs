@@ -47,4 +47,26 @@ public static class TicketRoutes
 
         return result;
     }
+
+    public static async Task<List<Ticket>>
+    GetTicket(int caseId, NpgsqlDataSource db)
+    {
+        List<Ticket> result = new();
+
+        await using var query = db.CreateCommand("SELECT * FROM tickets WHERE case_number = ($1)");
+        query.Parameters.AddWithValue(caseId);
+        await using var reader = await query.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            result.Add(new(
+                reader.GetInt32(0),
+                reader.GetDateTime(1).ToString("yyyy-MM-dd"),
+                reader.GetString(2),
+                reader.GetString(3),
+                reader.GetString(4),
+                reader.GetString(5)
+            ));
+        }
+        return result;
+    }
 }
