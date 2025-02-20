@@ -8,6 +8,7 @@ import PasswordForget from './passwordforget.jsx'
 import NavBar from "./NavBar";
 import TicketView from "./TicketView";
 import UsersList from "./UsersList";
+import { TicketForm } from "./TicketForm.jsx";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
@@ -43,6 +44,7 @@ const App = () => {
                         <Route path='/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
+                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
                     </Routes>
                 </div>
