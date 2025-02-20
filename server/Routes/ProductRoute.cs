@@ -32,14 +32,17 @@ public static class ProductRoute
     public static async Task<Results<Created, BadRequest<string>>>
         PostProduct(PostProductDTO product, NpgsqlDataSource db)
     {
-        using var cmd = db.CreateCommand("INSERT INTO product (name, desctiption, company_id) VALUES($1, $2, $3)");
+        
+        Console.WriteLine($"Received request: {product.Name}, {product.Description}, {product.companyId}");
+        
+        using var cmd = db.CreateCommand("INSERT INTO product (name, description, company_id) VALUES($1, $2, $3)");
         cmd.Parameters.AddWithValue(product.Name);
         cmd.Parameters.AddWithValue(product.Description);
         cmd.Parameters.AddWithValue(product.companyId);
 
         try
         {
-            await cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync();   
             return TypedResults.Created();
         }
         catch
@@ -107,6 +110,24 @@ public static class ProductRoute
         {
             return TypedResults.BadRequest("Product update failed, " +  e);
         }
+    }
+    
+    public static async Task<List<Products>>
+        GetProduct(int productId, NpgsqlDataSource db)
+    {
+        var result = new List<Products>();
+        using var cmd = db.CreateCommand("SELECT * FROM product WHERE id = $1");
+        cmd.Parameters.AddWithValue(productId);
+        
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            result.Add(new (
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                reader.GetInt32(3)));
+            
+        return result;
     }
 }
 

@@ -34,25 +34,39 @@ public static class UserRoutes
         return result;
     }
 
-    public record PostUserDTO(string Name, string Email, string Password);
-    public static async Task<Results<Created, BadRequest<string>>>
-    PostUser(PostUserDTO user, NpgsqlDataSource db)
+    public record PostUserDTO(string Name, string Email, string Password, string Phonenumber);
+
+    public static async Task<Results<Created<string>, BadRequest<string>>>
+        PostUser(PostUserDTO user, NpgsqlDataSource db)
     {
-        using var command = db.CreateCommand("insert into users(name, email, password) VALUES($1, $2, $3)");
-        command.Parameters.AddWithValue(user.Name);
-        command.Parameters.AddWithValue(user.Email);
-        command.Parameters.AddWithValue(user.Password);
+        Console.WriteLine($"Received request: {user.Name}, {user.Email}, {user.Password}, {user.Phonenumber}");
+        
+        using var command = db.CreateCommand(
+            "INSERT INTO users(name, email, password, phonenumber, role_id) VALUES($1, $2, $3, $4, $5) RETURNING id"
+        );
+        command.Parameters.AddWithValue(user.Name ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(user.Email ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(user.Password ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(user.Phonenumber ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(1);
 
         try
         {
-            await command.ExecuteNonQueryAsync();
-            return TypedResults.Created();
+            var userId = await command.ExecuteScalarAsync();
+            if (userId is int id)
+            {
+                Console.WriteLine($"User created with ID: {id}");
+                return TypedResults.Created($"/api/users/{id}", id.ToString());
+            }
+            return TypedResults.BadRequest("Failed to retrieve user ID.");
         }
-        catch
+        catch(Exception ex)
         {
+            Console.WriteLine($"Error creating user: {ex.Message}");
             return TypedResults.BadRequest("Failed to create new user, might already exist?");
         }
     }
+
 
     public static async Task<Results<NoContent, NotFound>> DeleteUser(int id, NpgsqlDataSource db)
     {

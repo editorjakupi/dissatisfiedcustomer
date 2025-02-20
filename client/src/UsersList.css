@@ -84,8 +84,8 @@
 /* User Details */
 .user-details {
     flex-grow: 1;
-    min-width: 400px;
-    max-width: 600px;
+    min-width: 200px;
+    max-width: 400px;
     padding: 1rem;
 }
 
