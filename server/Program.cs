@@ -27,7 +27,7 @@ app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 app.MapGet("/api/employees/{userId}", (int userId) => EmployeeRoute.GetEmployees(userId, db));
 app.MapGet("/api/employee/{user_id}", (int user_id) => EmployeeRoute.GetEmployee(user_id, db));
 app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
-app.MapPost("/api/employees/{id}", EmployeeRoute.DeleteEmployee);
+app.MapDelete("/api/employees/{userId}", (int userId) => EmployeeRoute.DeleteEmployee(userId, db));
 //app.MapPut ///api/employees/{id}
 
 app.MapPost("/api/login", LoginRoute.LoginUser);
