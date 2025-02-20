@@ -40,14 +40,36 @@ function BoxesContainer() {
 export default function TicketView() {
     const [tickets, setTickets] = useState([]);
     const [searchparams] = useSearchParams();
+    const [sortedTickets, setSortedTickets] = useState([]);
+    const [defaultOrder, setDefaultOrder] = useState([]);
+    const [sortOrder, setSortOrder] = useState("default");
     const view = searchparams.get("view");
     
     useEffect(() => {
         fetch("/api/tickets?view=" + view)
             .then((response) => response.json())
-            .then((data) => setTickets(data))
+            .then((data) => {
+                setTickets(data);
+                setSortedTickets(data);
+                setDefaultOrder(data);
+            })
             .catch((error) => console.error("Error fetching tickets:", error));
     }, [view]);
+
+    function SortByTitle() {
+        if (sortOrder === "default") {
+            const sorted = [...sortedTickets].sort((a, b) => a.title.localeCompare(b.title));
+            setSortedTickets(sorted);
+            setSortOrder("asc");        
+        } else if (sortOrder === "asc") {
+            const sorted = [...sortedTickets].sort((a, b) => b.title.localeCompare(a.title));
+            setSortedTickets(sorted);
+            setSortOrder("desc");
+        } else {
+            setSortedTickets(defaultOrder);
+            setSortOrder("default");
+        }
+    }
 
     // Rendering the table
     function TableItem(ticket) {
@@ -70,7 +92,8 @@ export default function TicketView() {
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Title</th>
+                        <th onClick={SortByTitle} style={{ cursor: "pointer" }}>
+                            Title {sortOrder === "asc" ? "▲" : sortOrder === "desc" ? "▼" : ""}</th>
                         <th>Category</th>
                         <th>E-Mail</th>
                         <th>Status</th>
@@ -78,7 +101,7 @@ export default function TicketView() {
                     </tr>
                 </thead>
                 <tbody>
-                    {tickets.map(TableItem)}
+                    {sortedTickets.map(ticket => <TableItem key={ticket.id} {...ticket} />)}
                 </tbody>
             </table>
         </div>
