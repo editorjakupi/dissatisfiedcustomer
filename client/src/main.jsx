@@ -8,6 +8,7 @@ import PasswordForget from './passwordforget.jsx'
 import NavBar from "./NavBar";
 import TicketView from "./TicketView";
 import UsersList from "./UsersList";
+import { TicketForm } from "./TicketForm.jsx";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
@@ -40,10 +41,11 @@ const App = () => {
                         <Route path="/dashboard"
                             element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
-                        <Route path='/user/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
+                        <Route path='/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
-                        <Route path="/UsersList" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
+                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
+                        <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
                         <Route path="/tickets/handle/:ticketId" />
                     </Routes>
                 </div>
