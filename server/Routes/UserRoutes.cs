@@ -40,13 +40,14 @@ public static class UserRoutes
         PostUser(PostUserDTO user, NpgsqlDataSource db)
     {
         Console.WriteLine($"Received request: {user.Name}, {user.Email}, {user.Password}, {user.Phonenumber}");
+        string generatedPassword = MessageRoutes.GenerateRandomPassword();
         
         using var command = db.CreateCommand(
             "INSERT INTO users(name, email, password, phonenumber, role_id) VALUES($1, $2, $3, $4, $5) RETURNING id"
         );
         command.Parameters.AddWithValue(user.Name ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(user.Email ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue(user.Password ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(generatedPassword ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(user.Phonenumber ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(1);
 

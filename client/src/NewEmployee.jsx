@@ -69,7 +69,7 @@ const NewEmployee = ({ user, setUser }) => {
                     setEmployees((prevemployees) => prevemployees.filter((product) => product.id !== selectedEmployees.id));
                     setSelectedEmployee(null);
                 } else {
-                    console.error("Error deleting product.");
+                    console.error("Error deleting Employee.");
                 }
             })
             .catch((err) => {
@@ -140,7 +140,7 @@ const NewEmployee = ({ user, setUser }) => {
 
             if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
 
-            setMessage("User and Employee created successfully!");
+            setMessage("User and Employee created successfully ID: " + userId);
         } catch (error) {
             console.error(error);
             setMessage(error.message);
@@ -198,6 +198,9 @@ const NewEmployee = ({ user, setUser }) => {
                                     <p>
                                         <strong>Phonenumber:</strong> {selectedEmployees.phonenumber}
                                     </p>
+                                    <p>
+                                        <strong>Password:</strong> {selectedEmployees.password}
+                                    </p>
                                     <button onClick={handleDelete} className="delete-button">
                                         Delete Employee
                                     </button>
@@ -213,8 +216,6 @@ const NewEmployee = ({ user, setUser }) => {
                             <input type="text" name="name" value={formData.name} placeholder="Name"
                                    onChange={handleChange} required/>
                             <input type="email" name="email" value={formData.email} placeholder="Email"
-                                   onChange={handleChange} required/>
-                            <input type="password" name="password" value={formData.password} placeholder="Password"
                                    onChange={handleChange} required/>
                             <input type="text" name="phonenumber" value={formData.phonenumber} placeholder="Phone Number"
                                    onChange={handleChange} required/>

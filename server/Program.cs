@@ -17,6 +17,7 @@ app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 
 //product APIs
+//app.MapGet("/api/products", (int company_id) => ProductRoutes.GetProducts(company_id, db));
 app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db));
 app.MapGet("/api/product/{product_id}", (int product_id) => ProductRoute.GetProduct(product_id, db));
 app.MapPost("/api/products", ProductRoute.PostProduct);
@@ -26,13 +27,18 @@ app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 app.MapGet("/api/employees/{userId}", (int userId) => EmployeeRoute.GetEmployees(userId, db));
 app.MapGet("/api/employee/{user_id}", (int user_id) => EmployeeRoute.GetEmployee(user_id, db));
 app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
-app.MapDelete("/api/employees/{userId}/{companyId}", (int userId, int companyId) => EmployeeRoute.DeleteEmployee(userId, companyId, db));
+app.MapDelete("/api/employees/{userId}", (int userId) => EmployeeRoute.DeleteEmployee(userId, db));
+//app.MapPut ///api/employees/{id}
 
 app.MapPost("/api/login", LoginRoute.LoginUser);
+
 app.MapPut("/api/users", UserRoutes.PutUsers);
 
 // Meddelande-API:er
 app.MapPost("/api/messages", MessageRoutes.PostMessage);
+
+
+
 app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm);
 app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketForm(caseNumber, db));
 

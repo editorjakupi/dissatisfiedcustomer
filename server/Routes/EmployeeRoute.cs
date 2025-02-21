@@ -127,19 +127,4 @@ public static class EmployeeRoute
       throw;
     }
   }
-
-  public static async Task<Results<NoContent, NotFound>>
-  DeleteEmployee(int userId, int companyId, NpgsqlDataSource db){
-    using var cmd = db.CreateCommand("DELETE FROM employees WHERE user_id = $1 AND company_id = $2");
-    cmd.Parameters.AddWithValue(userId);
-    cmd.Parameters.AddWithValue(companyId);
-
-    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-    if(rowsAffected > 0){
-      return TypedResults.NoContent();
-    }
-    else{
-      return TypedResults.NotFound();
-    }
-  }
 }
