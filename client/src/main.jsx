@@ -14,7 +14,6 @@ import NewEmployee from "./NewEmployee.jsx";
 import "./NavBar.css";
 import { Message } from "./message.jsx";
 import NewProduct from "./NewProduct.jsx";
-import CustomerCases from "./CustomerCases";
 
 const App = () => {
     const [user, setUser] = useState(() => {
@@ -30,6 +29,7 @@ const App = () => {
             localStorage.removeItem("user"); // Clear storage if user is null
         }
     }, [user]);
+
 
     return (
         <Router>
@@ -49,9 +49,7 @@ const App = () => {
                         <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
                         <Route path="/employee" element={user ? <NewEmployee user={user}/> : <Login setUser={setUser}/>}/>
-                        <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
-                        <Route path="/user/:userId/cases" element={<CustomerCases user={user} />} />
-                        <Route path="/user/:userId/cases/:caseId" element={<CustomerCases user={user} />} />
+                        <Route path="/products" element={user ? <NewProduct user={user}/> : <Login setUser={setUser}/>}/>
                     </Routes>
                 </div>
             </div>

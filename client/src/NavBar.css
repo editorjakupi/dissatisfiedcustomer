@@ -5,7 +5,7 @@
 
 /* Sidebar Styling */
 .sidebar {
-    width: 220px; /* Fast bredd på sidpanelen */
+    width: 16.67vw;
     height: 100vh;
     background-color: white;
     color: black;
@@ -17,10 +17,6 @@
     flex-direction: column;
     overflow-y: auto;
     justify-content: space-between;
-    padding: 20px;
-    box-sizing: border-box;
-    
-    
 }
 
 /* Sections */
