@@ -13,7 +13,7 @@ app.MapGet("/", () => "Hello World!");
 app.MapGet("api/users/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
-app.MapGet("/api/tickets/{caseId}", (int caseId) => TicketRoutes.GetTicket);
+app.MapGet("/api/tickets/{id}", (int id) => TicketRoutes.GetTicket(id, db));
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 
@@ -41,5 +41,8 @@ app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketF
 app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 // Lägg till den nya GET-endpointen för att visa ärendedetaljer och statusar
 app.MapGet("/user/{id}/cases/{caseId}", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseDetails(id, caseId, db));
+
+// Ticketstatus api:s
+app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus);
 
 app.Run();

@@ -6,7 +6,7 @@ namespace server;
 
 public static class TicketRoutes
 {
-    public record Ticket(int id, string date, string title, string categoryname, string email, string status);
+    public record Ticket(int id, string date, string title, string categoryname, string email, string status, string caseNumber, string description);
 
     public static async Task<List<Ticket>>
 
@@ -41,7 +41,9 @@ public static class TicketRoutes
             reader.GetString(2), // title
             reader.GetString(3), // category_name
             reader.GetString(4), // email
-            reader.GetString(5)  // status
+            reader.GetString(5),  // status
+            reader.GetString(6), // casenumber
+            reader.GetString(7) // description
         ));
         }
 
@@ -49,12 +51,12 @@ public static class TicketRoutes
     }
 
     public static async Task<List<Ticket>>
-    GetTicket(int caseId, NpgsqlDataSource db)
+    GetTicket(int id, NpgsqlDataSource db)
     {
         List<Ticket> result = new();
 
-        await using var query = db.CreateCommand("SELECT * FROM tickets WHERE case_number = ($1)");
-        query.Parameters.AddWithValue(caseId);
+        await using var query = db.CreateCommand("SELECT * FROM tickets_all WHERE id = ($1)");
+        query.Parameters.AddWithValue(id);
         await using var reader = await query.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -64,7 +66,9 @@ public static class TicketRoutes
                 reader.GetString(2),
                 reader.GetString(3),
                 reader.GetString(4),
-                reader.GetString(5)
+                reader.GetString(5),
+                reader.GetString(6),
+                reader.GetString(7)
             ));
         }
         return result;

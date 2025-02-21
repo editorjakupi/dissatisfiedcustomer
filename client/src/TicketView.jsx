@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import "./TicketView.css"
 
 // Regular TicketView
 export default function TicketView() {
     const [tickets, setTickets] = useState([]);
     const [searchparams] = useSearchParams();
+    const navigate = useNavigate();
     const view = searchparams.get("view");
     useEffect(() => {
         fetch("/api/tickets?view=" + view)
@@ -20,7 +21,7 @@ export default function TicketView() {
     function TableItem(ticket) {
         return <tr key={"ticket-container-" + ticket.id}>
             <td>{ticket.date}</td>
-            <td>{ticket.title}</td>
+            <td onClick={ () => navigate(`/tickets/handle/${ticket.id}`)}>{ticket.title}</td>
             <td>{ticket.categoryname}</td>
             <td>{ticket.email}</td>
             <td>{ticket.status}</td>

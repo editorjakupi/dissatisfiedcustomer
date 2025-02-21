@@ -12,6 +12,7 @@ import { TicketForm } from "./TicketForm.jsx";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
+import TicketHandler from "./TicketHandler.jsx";
 
 const App = () => {
     const [user, setUser] = useState(() => {
@@ -46,7 +47,7 @@ const App = () => {
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
-                        <Route path="/tickets/handle/:ticketId" />
+                        <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
                     </Routes>
                 </div>
             </div>
