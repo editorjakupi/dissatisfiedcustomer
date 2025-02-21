@@ -8,6 +8,9 @@ function TicketHandler()
   const {ticketId} = useParams();
   const [ticket, setTicket] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [ticketStatus, setTicketStatus] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
     fetch(`/api/tickets/${ticketId}`)
@@ -15,19 +18,75 @@ function TicketHandler()
     .then(data => {
       console.log("Fetched ticket data from api: ", data)
       setTicket(data);
+      console.log("Ticket data:", data);
+      setSelectedCategory(data.categoryname);
+      
+      setSelectedStatus(data.status);
     })
     .catch((error) => console.error("Error fetching ticket", error));
   }, [ticketId]);
 
   useEffect(() => {
     fetch(`/api/categories`)
-    .then(response => response.json())
-    .then(data => {
-      console.log("Fetched category data from api: ", data)
-      setCategories(data);
-    })
-    .catch((error) => console.error("Error fetching categories", error));
+        .then(response => response.json())
+        .then(data => {
+          console.log('Fetched Categories:', data);
+          setCategories(data);
+        })
+        .catch((error) => console.error("Error fetching categories", error));
   }, []);
+  
+  useEffect(() => {
+    fetch(`/api/ticketstatus`)
+        .then(response => response.json())
+        .then(data => {
+      console.log("Fetched status data from api: ", data)
+      setTicketStatus(data);
+    })
+        .catch((error) => console.error("Error fetched status", error));
+  }, []);
+
+  const handleTicketStatusChange = async (e) => {
+    const newStatusId = parseInt(e.target.value);
+    setSelectedStatus(newStatusId);
+
+    try {
+      const response = await fetch(`/api/ticketstatus?ticket_id=${ticket.id}&category_id=${newStatusId}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json",},
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update ticket Status");
+      }
+
+      alert("Ticket Status updated successfully!");
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+    }
+  };
+
+  const handleCategoryChange = async (e) => {
+    const newCategoryId  = parseInt(e.target.value);
+    setSelectedCategory(newCategoryId);
+
+    try {
+      const response = await fetch(`/api/ticketscategory?ticket_id=${ticket.id}&category_id=${newCategoryId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update ticket Category");
+      }
+
+      alert("Ticket Category updated successfully!");
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+    }
+  };
+
+  if (!ticket) return <p>Loading ticket...</p>;
 
   function handlerUI(ticket) {
     return <div key={"handler-div-" + ticket.id}>
@@ -49,24 +108,32 @@ function TicketHandler()
       <div className="ticket-status-product-div">
         <div className="ticket-status-div">
           <label>Ticket Status</label>
-          <select>
-            <option>Unresolved</option>
-            <option>Resolved</option>
-          </select>
-        </div>
-        <div className="ticket-product-category-div">
-        <div className="ticket-category-div">
-        <label>Category</label>
-          <form>
-            <select defaultValue={ticket.categoryname}>
-              {categories.map((categories) => (
-                <option key={categories.name} value={categories.name}>
-                  {categories.name}
-                </option>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <select
+                defaultValue={selectedStatus}
+                value={selectedStatus}
+                onChange={handleTicketStatusChange}>
+              {ticketStatus.map((ticketStatus) => (
+                  <option key={ticketStatus.id} value={ticketStatus.id}>
+                    {ticketStatus.name}
+                  </option>
               ))}
             </select>
           </form>
         </div>
+        <div className="ticket-product-category-div">
+          <div className="ticket-category-div">
+            <label>Category</label>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <select value={selectedCategory} onChange={handleCategoryChange}>
+                {categories.map((category) => (
+                    <option key={category.id} value={category.name}>  {/* Assuming 'category.name' is the name */}
+                      {category.name}
+                    </option>
+                ))}
+              </select>
+            </form>
+          </div>
           <div className="ticket-product-div">
             <label>Product</label>
             <form>
@@ -80,6 +147,7 @@ function TicketHandler()
     </div>
     <div className="ticket-chat-div">
       <div className="chat-div">
+        <label>Chat</label>
       </div>
       <div className="chat-response-div">
         <form>
