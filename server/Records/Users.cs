@@ -7,3 +7,5 @@
     int role_id);
 
 public record LoginRequest(string email, string password);
+
+public record Employees(int UserId, int CompanyId);
