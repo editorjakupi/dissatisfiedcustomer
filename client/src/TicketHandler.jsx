@@ -56,7 +56,7 @@ function TicketHandler()
     setSelectedStatus(newStatusId);
 
     try {
-      const response = await fetch(`/api/ticketstatus?ticket_id=${ticket.id}&category_id=${newStatusId}`, {
+      const response = await fetch(`/api/ticketstatus?ticket_id=${ticket.id}&status=${newStatusId}`, {
         method: "PUT",
         headers: {"Content-Type": "application/json",},
       });
@@ -115,12 +115,11 @@ function TicketHandler()
             <label>Ticket Status</label>
             <form onSubmit={(e) => e.preventDefault()}>
               <select
-                  defaultValue={selectedStatus}
                   value={selectedStatus}
                   onChange={handleTicketStatusChange}>
-                {ticketStatus.map((ticketStatus) => (
-                    <option key={ticketStatus.id} value={ticketStatus.name}>
-                      {ticketStatus.name}
+                {ticketStatus.map((ticketSt) => (
+                    <option key={ticketSt.id} value={ticketSt.statusName}>
+                      {ticketSt.statusName}
                     </option>
                 ))}
               </select>
