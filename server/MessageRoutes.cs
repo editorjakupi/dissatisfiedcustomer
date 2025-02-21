@@ -4,9 +4,11 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using MailKit.Security;
 using System;
+using System.Data.Common;
+
+
 
 namespace server;
-
 public static class MessageRoutes
 {
     // Dataöverföringsobjekt för inkommande meddelanden
