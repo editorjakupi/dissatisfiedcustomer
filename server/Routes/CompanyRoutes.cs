@@ -6,10 +6,10 @@ namespace server;
 
 public class CompanyRoutes{
 
-    public record PostCompanyDTO(string name, string phone, string email);
+    public record CompanyDTO(string name, string phone, string email);
 
     public static async Task<Results<Created, BadRequest<string>>>
-    PostCompany(PostCompanyDTO company, NpgsqlDataSource db){
+    PostCompany(CompanyDTO company, NpgsqlDataSource db){
         using var cmd = db.CreateCommand("INSERT INTO company (company_name, company_phone, company_email) VALUES($1, $2, $3)");
         cmd.Parameters.AddWithValue(company.name);
         cmd.Parameters.AddWithValue(company.phone);
@@ -75,6 +75,52 @@ public class CompanyRoutes{
         }
         return TypedResults.Ok(result);
         
+    }
+
+    public static async Task<Results<Ok<string>, BadRequest<string>>>
+    PutCompany(int id, CompanyDTO company, NpgsqlDataSource db){
+        string nameQuery = "";
+        string phoneQuery = "";
+        string emailQuery = "";
+        string query;
+
+        if(!string.IsNullOrWhiteSpace(company.name)){
+            nameQuery = "@company_name";
+        }else{
+            nameQuery = "company_name";
+        }
+
+        if(!string.IsNullOrWhiteSpace(company.phone)){
+            phoneQuery = "@company_phone";
+        }else{
+            phoneQuery = "company_phone";
+        }
+
+        if(!string.IsNullOrWhiteSpace(company.email)){
+            emailQuery = "@company_email";
+        }else{
+            emailQuery = "company_email";
+        }
+
+        query = "UPDATE company SET company_name = " + nameQuery + ", company_phone = " + phoneQuery + ", company_email = " + emailQuery + " WHERE id = @id";
+        using var cmd = db.CreateCommand((query));
+        cmd.Parameters.AddWithValue("@company_name", company.name);
+        cmd.Parameters.AddWithValue("@company_phone", company.phone);
+        cmd.Parameters.AddWithValue("@company_email", company.email);
+        cmd.Parameters.AddWithValue("@id", id);
+
+        try{
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if(rowsAffected > 0){
+                return TypedResults.Ok("Company Updated!");
+            }else{
+                return TypedResults.BadRequest("Company with id:" + id + " not found!");
+            }
+            
+            
+        }catch(Exception ex){
+            return TypedResults.BadRequest("Company failed to update, " + ex);
+        }
     }
 
     public record Company(
