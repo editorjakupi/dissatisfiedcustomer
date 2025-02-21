@@ -12,19 +12,23 @@ function TicketHandler()
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  useEffect(() => {
+  useEffect(() => { 
     fetch(`/api/tickets/${ticketId}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log("Fetched ticket data from api: ", data)
-      setTicket(data);
-      console.log("Ticket data:", data);
-      setSelectedCategory(data.categoryname);
-      
-      setSelectedStatus(data.status);
-    })
-    .catch((error) => console.error("Error fetching ticket", error));
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json(); // No need to use JSON.parse here
+        })
+        .then(data => {
+          console.log("Fetched ticket data:", data);
+          setTicket(data); // Set the ticket data directly
+          setSelectedCategory(data.categoryname); // Assuming categoryname is part of the response
+          setSelectedStatus(data.status); // Assuming status is part of the response
+        })
+        .catch((error) => console.error("Error fetching ticket", error));
   }, [ticketId]);
+
 
   useEffect(() => {
     fetch(`/api/categories`)
@@ -42,6 +46,7 @@ function TicketHandler()
         .then(data => {
       console.log("Fetched status data from api: ", data)
       setTicketStatus(data);
+      
     })
         .catch((error) => console.error("Error fetched status", error));
   }, []);
@@ -87,80 +92,76 @@ function TicketHandler()
   };
 
   if (!ticket) return <p>Loading ticket...</p>;
-
-  function handlerUI(ticket) {
-    return <div key={"handler-div-" + ticket.id}>
+  
+  return <main>
+    <div key={"handler-div-" + ticket.id}>
       <div className="ticket-handle-information-div">
-      <div className="ticket-title-information-div">
-        <label>Title</label>
-        <label>{ticket.title}</label>
-      </div>
-      <div className="ticket-description-information-div">
-        <label>Description</label>
-        <p>{ticket.description}</p>
-      </div>
-      <div className="ticket-notes">
-        <label>Internal notes</label>
-        <form>
-          <textarea></textarea>
-        </form>
-      </div>
-      <div className="ticket-status-product-div">
-        <div className="ticket-status-div">
-          <label>Ticket Status</label>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <select
-                defaultValue={selectedStatus}
-                value={selectedStatus}
-                onChange={handleTicketStatusChange}>
-              {ticketStatus.map((ticketStatus) => (
-                  <option key={ticketStatus.id} value={ticketStatus.id}>
-                    {ticketStatus.name}
-                  </option>
-              ))}
-            </select>
+        <div className="ticket-title-information-div">
+          <label>Title</label>
+          <label>{ticket.title}</label>
+        </div>
+        <div className="ticket-description-information-div">
+          <label>Description</label>
+          <p>{ticket.description}</p>
+        </div>
+        <div className="ticket-notes">
+          <label>Internal notes</label>
+          <form>
+            <textarea></textarea>
           </form>
         </div>
-        <div className="ticket-product-category-div">
-          <div className="ticket-category-div">
-            <label>Category</label>
+        <div className="ticket-status-product-div">
+          <div className="ticket-status-div">
+            <label>Ticket Status</label>
             <form onSubmit={(e) => e.preventDefault()}>
-              <select value={selectedCategory} onChange={handleCategoryChange}>
-                {categories.map((category) => (
-                    <option key={category.id} value={category.name}>  {/* Assuming 'category.name' is the name */}
-                      {category.name}
+              <select
+                  defaultValue={selectedStatus}
+                  value={selectedStatus}
+                  onChange={handleTicketStatusChange}>
+                {ticketStatus.map((ticketStatus) => (
+                    <option key={ticketStatus.id} value={ticketStatus.name}>
+                      {ticketStatus.name}
                     </option>
                 ))}
               </select>
             </form>
           </div>
-          <div className="ticket-product-div">
-            <label>Product</label>
-            <form>
-              <select>
-                <option>Select Product</option>
-              </select>
-            </form>
+          <div className="ticket-product-category-div">
+            <div className="ticket-category-div">
+              <label>Category</label>
+              <form onSubmit={(e) => e.preventDefault()}>
+                <select value={selectedCategory} onChange={handleCategoryChange}>
+                  {categories.map((category) => (
+                      <option key={category.id} value={category.name}>  {/* Assuming 'category.name' is the name */}
+                        {category.name}
+                      </option>
+                  ))}
+                </select>
+              </form>
+            </div>
+            <div className="ticket-product-div">
+              <label>Product</label>
+              <form>
+                <select>
+                  <option>Select Product</option>
+                </select>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div className="ticket-chat-div">
-      <div className="chat-div">
-        <label>Chat</label>
+      <div className="ticket-chat-div">
+        <div className="chat-div">
+          <label>Chat</label>
+        </div>
+        <div className="chat-response-div">
+          <form>
+            <textarea></textarea>
+          </form>
+        </div>
+        <button>Send</button>
       </div>
-      <div className="chat-response-div">
-        <form>
-          <textarea></textarea>
-        </form>
-      </div>
-      <button>Send</button>
     </div>
-    </div>
-  }
-
-  return <main>
-    {ticket.map(handlerUI)}
   </main>
 }
 

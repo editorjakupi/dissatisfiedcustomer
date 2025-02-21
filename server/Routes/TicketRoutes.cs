@@ -51,29 +51,32 @@ public static class TicketRoutes
         return result;
     }
 
-    public static async Task<List<Ticket>>
-    GetTicket(int id, NpgsqlDataSource db)
+    public static async Task<Ticket?> GetTicket(int ticketId, NpgsqlDataSource db)
     {
-        List<Ticket> result = new();
+        Ticket? result = null;
+    
+        var query = db.CreateCommand("SELECT * FROM tickets_all WHERE id = @ticketId");
+        query.Parameters.AddWithValue("ticketId", ticketId);
 
-        await using var query = db.CreateCommand("SELECT * FROM tickets_all WHERE id = ($1)");
-        query.Parameters.AddWithValue(id);
-        await using var reader = await query.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        using var reader = await query.ExecuteReaderAsync();
+        if (await reader.ReadAsync()) 
         {
-            result.Add(new(
-                reader.GetInt32(0), // id
-                reader.GetDateTime(1).ToString("yyyy-MM-dd"), // date
-                reader.GetString(2), // title
-                reader.GetString(3), // category name
-                reader.GetString(4), // email
-                reader.GetString(5), // status
-                reader.GetString(6), // casenumber
-                reader.GetString(7) // description
-            ));
+            result = new Ticket(
+                reader.GetInt32(reader.GetOrdinal("id")),               // id
+                reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"), // date
+                reader.GetString(reader.GetOrdinal("title")),           // title
+                reader.GetString(reader.GetOrdinal("name")),   // categoryname
+                reader.GetString(reader.GetOrdinal("email")),           // email
+                reader.GetString(reader.GetOrdinal("status_name")),          // status
+                reader.GetString(reader.GetOrdinal("status_name")),      // caseNumber
+                reader.GetString(reader.GetOrdinal("title"))     // description
+            );
         }
-        return result;
+
+        return result; // Return the single ticket or null if not found
     }
+
+
 
     public static async Task<IResult>
         PutTicketStatus(int status, int ticket_id, NpgsqlDataSource db)
