@@ -1,0 +1,95 @@
+﻿.users-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center everything horizontally */
+    justify-content: center; /* Center everything vertically */
+    height: 100vh;
+    padding: 1rem;
+    width: 100%;
+}
+
+/* Search bar stays on top, spreads input left and buttons right */
+.search-container {
+    display: flex;
+    justify-content: space-between; /* Push input left, buttons right */
+    align-items: center;
+    width: 50%;
+    max-width: 900px; /* Adjust width as needed */
+    margin-bottom: 1rem; /* Space between search and main-container */
+}
+
+/* Buttons stay together */
+.button-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Content + Form layout below search */
+.main-container {
+    display: flex;
+    gap: 2rem; /* Space between content and form */
+    align-items: flex-start;
+    width: 100%;
+    max-width: 900px; /* Adjust width as needed */
+}
+
+/* Content Wrapper: Holds user list and details */
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Takes up remaining space */
+    min-width: 600px;
+}
+
+/* Form container stays on the right */
+.form-container {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Search input styling */
+.search-input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+/* Button styling */
+.search-button,
+.show-all-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.search-button:hover {
+    background-color: #45a049;
+}
+
+.show-all-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.show-all-button:hover {
+    background-color: #0056b3;
+}
