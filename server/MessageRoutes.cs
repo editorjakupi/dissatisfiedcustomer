@@ -122,7 +122,7 @@ public static class MessageRoutes
     }
 
     // Metod för att generera ett slumpmässigt lösenord
-    private static string GenerateRandomPassword()
+    public static string GenerateRandomPassword()
     {
         // En enkel lösenordsgenerator för demonstration (man kan använda säkrare)
         return Guid.NewGuid().ToString().Substring(0, 8);
