@@ -68,7 +68,7 @@ public static class TicketRoutes
                 reader.GetString(reader.GetOrdinal("name")),   // categoryname
                 reader.GetString(reader.GetOrdinal("email")),           // email
                 reader.GetString(reader.GetOrdinal("status_name")),          // status
-                reader.GetString(reader.GetOrdinal("status_name")),      // caseNumber
+                reader.GetString(reader.GetOrdinal("case_number")),      // caseNumber
                 reader.GetString(reader.GetOrdinal("title"))     // description
             );
         }

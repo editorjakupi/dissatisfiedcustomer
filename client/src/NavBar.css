@@ -5,7 +5,7 @@
 
 /* Sidebar Styling */
 .sidebar {
-    width: 220px; /* Fast bredd på sidpanelen */
+    width: 20vw; /* Fast bredd på sidpanelen */
     height: 100vh;
     background-color: white;
     color: black;
@@ -25,7 +25,7 @@
 
 /* Sections */
 .nav-section {
-    margin-bottom: 420px;
+    margin-bottom: 15vh;
 }
 
 /* Buttons */
@@ -113,7 +113,7 @@
 
 /* Keep the image styling */
 .logo {
-    width: 300px;
+    width: auto;
     height: auto;
     transition: transform 0.2s ease-in-out;
 }

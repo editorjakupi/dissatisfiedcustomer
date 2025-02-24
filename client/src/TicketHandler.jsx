@@ -94,15 +94,15 @@ function TicketHandler()
   if (!ticket) return <p>Loading ticket...</p>;
   
   return <main>
-    <div key={"handler-div-" + ticket.id}>
+    <div key={"handler-div-" + ticket.id} className="handler-div">
       <div className="ticket-handle-information-div">
         <div className="ticket-title-information-div">
           <label>Title</label>
-          <label>{ticket.title}</label>
+          <label className="ticket-title-label">{ticket.title} #{ticket.caseNumber}</label>
         </div>
         <div className="ticket-description-information-div">
           <label>Description</label>
-          <p>{ticket.description}</p>
+          <label className="ticket-description-label">{ticket.description}</label>
         </div>
         <div className="ticket-notes">
           <label>Internal notes</label>
