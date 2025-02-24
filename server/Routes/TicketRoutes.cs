@@ -81,14 +81,18 @@ public static class TicketRoutes
     public static async Task<IResult>
         PutTicketStatus(int status, int ticket_id, NpgsqlDataSource db)
     {
-        await using var cmd = new NpgsqlCommand("UPDATE tickets SET status_id = $1 WHERE id = $2");
-        cmd.Parameters.AddWithValue(status);
-        cmd.Parameters.AddWithValue(ticket_id);
+        await using var cmd = db.CreateCommand("UPDATE tickets SET status_id = @status WHERE id = @ticket_id");
+        cmd.Parameters.AddWithValue("@status", status);
+        cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
 
         try
         {
-            await cmd.ExecuteNonQueryAsync();
-            return Results.Ok("Ticket status updated");
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if (rowsAffected == 0)
+            {
+                return Results.NotFound("Ticket not found or status unchanged.");
+            }
+            return Results.Ok("Ticket status updated successfully.");
         }
         catch (Exception e)
         {
@@ -99,23 +103,21 @@ public static class TicketRoutes
     public static async Task<IResult>
         PutTicketCategory(int ticket_id, int category_id, NpgsqlDataSource db)
     {
-        try
-        {
             await using var conn = await db.OpenConnectionAsync();
             await using var cmd = conn.CreateCommand();
 
             cmd.CommandText = "UPDATE tickets SET category_id = @category_id WHERE id = @ticket_id";
             cmd.Parameters.AddWithValue("@category_id", category_id);
             cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
-
-            int rowsAffected = await cmd.ExecuteNonQueryAsync();
             
+        try
+        {
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
             if (rowsAffected == 0)
             {
-                return Results.BadRequest("Ticket not found or category not updated.");
+                return Results.NotFound("Category not found or status unchanged.");
             }
-            
-            return Results.Ok("Ticket category updated successfully.");
+            return Results.Ok("Category status updated successfully.");
         }
         catch (Exception ex)
         {

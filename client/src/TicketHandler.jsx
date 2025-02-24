@@ -1,9 +1,9 @@
-import { useEffect, useState, } from "react";
-import { useParams } from "react-router";
+import React, { useEffect, useState, } from "react";
+import { useParams, Link } from 'react-router';
 import "./TicketHandler.css";
 
 
-function TicketHandler()
+const TicketHandler =() =>
 {
   const {ticketId} = useParams();
   const [ticket, setTicket] = useState([]);
@@ -11,7 +11,7 @@ function TicketHandler()
   const [ticketStatus, setTicketStatus] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-
+  
   useEffect(() => { 
     fetch(`/api/tickets/${ticketId}`)
         .then(response => {
@@ -23,11 +23,27 @@ function TicketHandler()
         .then(data => {
           console.log("Fetched ticket data:", data);
           setTicket(data); // Set the ticket data directly
-          setSelectedCategory(data.categoryname); // Assuming categoryname is part of the response
-          setSelectedStatus(data.status); // Assuming status is part of the response
+          
+          console.log("Available categories:", categories); // Log all categories
+          const matchingCategory = categories.find(category => category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase());
+
+          if (matchingCategory) {
+            setSelectedCategory(matchingCategory.id);
+            console.log("Mapped category ID:", matchingCategory.id);
+          } else {
+            console.error("No matching category found for:", data.categoryname);
+          }
+          
+          console.log("Available statuses:", ticketStatus); // Log all statuses
+          const matchingStatus = ticketStatus.find(status => status.statusName === data.status);
+
+          if (matchingStatus) {
+            setSelectedStatus(matchingStatus.id);
+            console.log("Mapped status ID:", matchingStatus.id);
+          }
         })
         .catch((error) => console.error("Error fetching ticket", error));
-  }, [ticketId]);
+  }, [ticketId, ticketStatus, categories]);
 
 
   useEffect(() => {
@@ -39,16 +55,15 @@ function TicketHandler()
         })
         .catch((error) => console.error("Error fetching categories", error));
   }, []);
-  
+
   useEffect(() => {
     fetch(`/api/ticketstatus`)
         .then(response => response.json())
         .then(data => {
-      console.log("Fetched status data from api: ", data)
-      setTicketStatus(data);
-      
-    })
-        .catch((error) => console.error("Error fetched status", error));
+          console.log("Fetched status data from api:", data);
+          setTicketStatus(data);
+        })
+        .catch((error) => console.error("Error fetching status", error));
   }, []);
 
   const handleTicketStatusChange = async (e) => {
@@ -72,7 +87,7 @@ function TicketHandler()
   };
 
   const handleCategoryChange = async (e) => {
-    const newCategoryId  = parseInt(e.target.value);
+    const newCategoryId  = e.target.value;
     setSelectedCategory(newCategoryId);
 
     try {
@@ -90,7 +105,7 @@ function TicketHandler()
       console.error("Error updating ticket:", error);
     }
   };
-
+  
   if (!ticket) return <p>Loading ticket...</p>;
   
   return <main>
@@ -115,11 +130,11 @@ function TicketHandler()
             <label>Ticket Status</label>
             <form onSubmit={(e) => e.preventDefault()}>
               <select
-                  value={selectedStatus}
+                  value={selectedStatus || ""}
                   onChange={handleTicketStatusChange}>
-                {ticketStatus.map((ticketSt) => (
-                    <option key={ticketSt.id} value={ticketSt.statusName}>
-                      {ticketSt.statusName}
+                {ticketStatus.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.statusName}
                     </option>
                 ))}
               </select>
@@ -129,9 +144,9 @@ function TicketHandler()
             <div className="ticket-category-div">
               <label>Category</label>
               <form onSubmit={(e) => e.preventDefault()}>
-                <select value={selectedCategory} onChange={handleCategoryChange}>
+                <select value={selectedCategory || ""} onChange={handleCategoryChange}>
                   {categories.map((category) => (
-                      <option key={category.id} value={category.name}>  {/* Assuming 'category.name' is the name */}
+                      <option key={category.id} value={category.id}>  {/* Assuming 'category.name' is the name */}
                         {category.name}
                       </option>
                   ))}
@@ -155,12 +170,13 @@ function TicketHandler()
         </div>
         <div className="chat-response-div">
           <form>
-            <textarea></textarea>
+
           </form>
         </div>
         <button>Send</button>
       </div>
     </div>
+
   </main>
 }
 

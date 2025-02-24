@@ -58,9 +58,6 @@ app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketF
 // Category API:s
 app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 
-// Meddelande-API:er
-app.MapPost("/api/messages", MessageRoutes.PostMessage);
-
 // Nya rutter för att hämta ärenden och ärendedetaljer för en specifik användare
 app.MapGet("/api/user/{id}/cases", (int id, NpgsqlDataSource db) => CaseRoutes.GetUserCases(id, db));
 app.MapGet("/api/user/{id}/cases/{caseId}", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseDetails(id, caseId, db));

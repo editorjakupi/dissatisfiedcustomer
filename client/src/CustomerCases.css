@@ -15,7 +15,6 @@
     overflow-x: auto;
     /* Lägg till horisontell rullning om innehållet är för brett */
 }
-
 @media (max-width: 768px) {
     .cases-container {
         margin-left: 0;
