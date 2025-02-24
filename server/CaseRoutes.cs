@@ -1,5 +1,6 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using server; // Lägg till detta för att använda Message-klassen
 
 namespace server;
 
@@ -52,4 +53,58 @@ public static class CaseRoutes
 
         return TypedResults.Ok(caseDetails);
     }
+
+
+    // Metod för att lägga till ett meddelande till ett befintligt ärende
+    public static async Task<Results<Ok, NotFound>> AddCaseMessage(int userId, int caseId, Message message, NpgsqlDataSource db)
+    {
+        // Kontrollera om ärendet existerar
+        using var checkCmd = db.CreateCommand("SELECT COUNT(*) FROM tickets WHERE id = $1 AND user_id = $2");
+        checkCmd.Parameters.AddWithValue(caseId);
+        checkCmd.Parameters.AddWithValue(userId);
+
+        var caseExists = (long)await checkCmd.ExecuteScalarAsync() > 0;
+        if (!caseExists)
+        {
+            return TypedResults.NotFound();
+        }
+
+        // Lägg till meddelandet i tabellen 'messages'
+        using var cmd = db.CreateCommand("INSERT INTO messages (ticket_id, message, user_id) VALUES ($1, $2, $3)");
+        cmd.Parameters.AddWithValue(caseId);
+        cmd.Parameters.AddWithValue(message.Content);
+        cmd.Parameters.AddWithValue(message.UserId);
+
+        await cmd.ExecuteNonQueryAsync();
+        return TypedResults.Ok();
+    }
+
+
+    public record MessageDetails(int MessageId, int UserId, string Content);
+
+    public static async Task<List<MessageDetails>> GetCaseMessages(int userId, int caseId, NpgsqlDataSource db)
+    {
+        var result = new List<MessageDetails>();
+        using var cmd = db.CreateCommand("SELECT id, user_id, message FROM messages WHERE ticket_id = $1 AND user_id = $2");
+        cmd.Parameters.AddWithValue(caseId);
+        cmd.Parameters.AddWithValue(userId);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            result.Add(new MessageDetails(
+                reader.GetInt32(0),
+                reader.GetInt32(1),
+                reader.GetString(2)
+            ));
+        }
+
+        return result;
+    }
+
+    
+
+   
+    
+
 }

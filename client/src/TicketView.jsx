@@ -43,8 +43,52 @@ export default function TicketView() {
     const navigate = useNavigate();
     const [sortedTickets, setSortedTickets] = useState([]);
     const [defaultOrder, setDefaultOrder] = useState([]);
-    const [sortOrder, setSortOrder] = useState("default");
+    
+    const [sortOrderTitle, setSortOrderTitle] = useState("default");
+    const [sortOrderCategory, setSortOrderCategory] = useState("default");
+
     const view = searchparams.get("view");
+    
+    // Sort by title function
+    function SortByTitle() {
+        let sorted;
+
+        if (sortOrderTitle === "default") {
+            sorted = [...tickets].sort((a, b) => a.title.localeCompare(b.title, "sv"));
+            setSortOrderTitle("asc");
+        } else if (sortOrderTitle === "asc") {
+            sorted = [...tickets].sort((a, b) => b.title.localeCompare(a.title, "sv"));
+            setSortOrderTitle("desc");
+        } else {
+            sorted = [...defaultOrder];
+            setSortOrderTitle("default");
+        }
+
+        // Reset category sorting state
+        setSortOrderCategory("default");
+
+        setSortedTickets(sorted);
+    }
+
+    function SortByCategory() {
+        let sorted;
+
+        if (sortOrderCategory === "default") {
+            sorted = [...tickets].sort((a, b) => a.categoryname.localeCompare(b.categoryname, "sv"));
+            setSortOrderCategory("asc");
+        } else if (sortOrderCategory === "asc") {
+            sorted = [...tickets].sort((a, b) => b.categoryname.localeCompare(a.categoryname, "sv"));
+            setSortOrderCategory("desc");
+        } else {
+            sorted = [...defaultOrder];
+            setSortOrderCategory("default");
+        }
+
+        // Reset title sorting state
+        setSortOrderTitle("default");
+
+        setSortedTickets(sorted);
+    }
     
     useEffect(() => {
         fetch("/api/tickets?view=" + view)
@@ -56,21 +100,6 @@ export default function TicketView() {
             })
             .catch((error) => console.error("Error fetching tickets:", error));
     }, [view]);
-
-    function SortByTitle() {
-        if (sortOrder === "default") {
-            const sorted = [...sortedTickets].sort((a, b) => a.title.localeCompare(b.title));
-            setSortedTickets(sorted);
-            setSortOrder("asc");        
-        } else if (sortOrder === "asc") {
-            const sorted = [...sortedTickets].sort((a, b) => b.title.localeCompare(a.title));
-            setSortedTickets(sorted);
-            setSortOrder("desc");
-        } else {
-            setSortedTickets(defaultOrder);
-            setSortOrder("default");
-        }
-    }
 
     // Rendering the table
     function TableItem(ticket) {
@@ -94,8 +123,11 @@ export default function TicketView() {
                     <tr>
                         <th>Date</th>
                         <th onClick={SortByTitle} style={{ cursor: "pointer" }}>
-                            Title {sortOrder === "asc" ? "▲" : sortOrder === "desc" ? "▼" : ""}</th>
-                        <th>Category</th>
+                            Title {sortOrderTitle === "asc" ? "▲" : sortOrderTitle === "desc" ? "▼" : ""}
+                            </th>
+                        <th onClick={SortByCategory} style={{ cursor: "pointer" }}>
+                            Category {sortOrderCategory === "asc" ? "▲" : sortOrderCategory === "desc" ? "▼" : ""}
+                            </th>
                         <th>E-Mail</th>
                         <th>Status</th>
                         <th>Mark As Resolved</th>
