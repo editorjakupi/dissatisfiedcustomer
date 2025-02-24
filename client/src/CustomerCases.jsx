@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router';
+import AddMessageForm from './AddMessageForm';
 import './CustomerCases.css';
 
 const CustomerCases = ({ user }) => {
     const { userId } = useParams();
     const [cases, setCases] = useState([]);
     const [selectedCase, setSelectedCase] = useState(null);
+    const [messages, setMessages] = useState([]);
     const [searchId, setSearchId] = useState("");
 
     useEffect(() => {
@@ -31,16 +33,43 @@ const CustomerCases = ({ user }) => {
             })
             .then((data) => {
                 setSelectedCase(data);
+                fetchMessages(userId, data.caseId);
             })
             .catch((err) => {
                 console.error("Search error:", err.message);
                 setSelectedCase(null);
+                setMessages([]);
+            });
+    };
+
+    const fetchMessages = (userId, caseId) => {
+        fetch(`/api/user/${userId}/cases/${caseId}/messages`)
+            .then(response => response.json())
+            .then(data => {
+                setMessages(data);
+            })
+            .catch(error => {
+                console.error('Error fetching messages:', error);
             });
     };
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSearch();
+        }
+    };
+
+    const handleMessageAdded = () => {
+        // Uppdatera meddelanden efter att ett nytt meddelande har lagts till
+        if (selectedCase) {
+            fetchMessages(userId, selectedCase.caseId);
+        }
+    };
+
+    const handleUpdateMessages = () => {
+        // Hämta meddelanden på nytt
+        if (selectedCase) {
+            fetchMessages(userId, selectedCase.caseId);
         }
     };
 
@@ -95,6 +124,18 @@ const CustomerCases = ({ user }) => {
                     <p><strong>Description:</strong> {selectedCase.description}</p>
                     <p><strong>Status:</strong> {selectedCase.status}</p>
                     <p><strong>Date:</strong> {new Date(selectedCase.createdAt).toLocaleDateString()}</p>
+
+                    <h4>Messages</h4>
+                    <ul className="messages-list">
+                        {messages.map((message, index) => (
+                            <li key={index} className={`message-item ${message.userId === userId ? 'support-message' : 'customer-message'}`}>
+                                <p>{message.content}</p>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <h4>Add a Message</h4>
+                    <AddMessageForm userId={userId} caseId={selectedCase.caseId} onMessageAdded={handleMessageAdded} onUpdateMessages={handleUpdateMessages} />
                 </div>
             )}
         </div>

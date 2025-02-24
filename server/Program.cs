@@ -41,10 +41,6 @@ app.MapPost("/api/login", LoginRoute.LoginUser);
 
 app.MapPut("/api/users", UserRoutes.PutUsers);
 
-// Meddelande-API:er
-app.MapPost("/api/messages", MessageRoutes.PostMessage);
-
-
 
 app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm);
 app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketForm(caseNumber, db));
@@ -52,8 +48,15 @@ app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketF
 // Category API:s
 app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 
+// Meddelande-API:er
+app.MapPost("/api/messages", MessageRoutes.PostMessage);
+
 // Nya rutter för att hämta ärenden och ärendedetaljer för en specifik användare
 app.MapGet("/api/user/{id}/cases", (int id, NpgsqlDataSource db) => CaseRoutes.GetUserCases(id, db));
 app.MapGet("/api/user/{id}/cases/{caseId}", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseDetails(id, caseId, db));
+//Rutt för att lägga till ett meddelande till ett befintligtärende
+app.MapPost("/api/user/{id}/cases/{caseId}/messages", (int id, int caseId, Message message, NpgsqlDataSource db) => CaseRoutes.AddCaseMessage(id, caseId, message, db));
+// Rutt för att hitta meddelanden till ett specifiktärende
+app.MapGet("/api/user/{id}/cases/{caseId}/messages", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseMessages(id, caseId, db));
 
 app.Run();
