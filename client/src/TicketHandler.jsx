@@ -12,40 +12,6 @@ const TicketHandler =() =>
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   
-  useEffect(() => { 
-    fetch(`/api/tickets/${ticketId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json(); // No need to use JSON.parse here
-        })
-        .then(data => {
-          console.log("Fetched ticket data:", data);
-          setTicket(data); // Set the ticket data directly
-          
-          console.log("Available categories:", categories); // Log all categories
-          const matchingCategory = categories.find(category => category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase());
-
-          if (matchingCategory) {
-            setSelectedCategory(matchingCategory.id);
-            console.log("Mapped category ID:", matchingCategory.id);
-          } else {
-            console.error("No matching category found for:", data.categoryname);
-          }
-          
-          console.log("Available statuses:", ticketStatus); // Log all statuses
-          const matchingStatus = ticketStatus.find(status => status.statusName === data.status);
-
-          if (matchingStatus) {
-            setSelectedStatus(matchingStatus.id);
-            console.log("Mapped status ID:", matchingStatus.id);
-          }
-        })
-        .catch((error) => console.error("Error fetching ticket", error));
-  }, [ticketId, ticketStatus, categories]);
-
-
   useEffect(() => {
     fetch(`/api/categories`)
         .then(response => response.json())
@@ -65,6 +31,33 @@ const TicketHandler =() =>
         })
         .catch((error) => console.error("Error fetching status", error));
   }, []);
+  
+  useEffect(() => { 
+    fetch(`/api/tickets/${ticketId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json(); // No need to use JSON.parse here
+        })
+        .then(data => {
+          console.log("Fetched ticket data:", data);
+          setTicket(data); // Set the ticket data directly
+          
+          const matchingCategory = categories.find(category => category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase());
+
+          if (matchingCategory) {
+            setSelectedCategory(matchingCategory.id);
+          }
+          
+          const matchingStatus = ticketStatus.find(status => status.statusName === data.status);
+
+          if (matchingStatus) {
+            setSelectedStatus(matchingStatus.id);
+          }
+        })
+        .catch((error) => console.error("Error fetching ticket", error));
+  }, [ticketId, ticketStatus, categories]);
 
   const handleTicketStatusChange = async (e) => {
     const newStatusId = parseInt(e.target.value);
