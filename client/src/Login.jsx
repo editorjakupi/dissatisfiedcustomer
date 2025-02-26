@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
 import "./NavBar.css";
 
@@ -13,26 +13,43 @@ const Login = ({ user, setUser }) => {
         setError("");
 
         try {
-            const response = await fetch("api/login", {
+            const response = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                credentials: "include", // Ensures session cookie is saved
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) throw new Error("Invalid email or password");
 
             const data = await response.json();
-
-            // Convert roleId to role_id
-            const userWithRoleIdFixed = { ...data, role_id: data.roleId, roleId: undefined };
-
-            setUser(userWithRoleIdFixed);
-            localStorage.setItem("user", JSON.stringify(userWithRoleIdFixed)); // Save corrected user object
+            setUser(data);
             navigate("/dashboard");
         } catch (err) {
             setError("Invalid email or password.");
         }
     };
+
+
+    useEffect(() => {
+        const fetchSessionUser = async () => {
+            try {
+                const response = await fetch("/api/session", {
+                    credentials: "include",
+                });
+
+                if (!response.ok) throw new Error("No session found");
+
+                const data = await response.json();
+                console.log("Session user data:", data);
+                setUser(data);
+            } catch {
+                setUser(null);
+            }
+        };
+
+        fetchSessionUser();
+    }, []);
 
 
     return (

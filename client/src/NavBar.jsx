@@ -12,12 +12,18 @@ const NavBar = ({ user, setUser }) => {
         3: "Admin",
         4: "Super Admin"
     }
-    
-    const handleLogout = () => {
-        localStorage.removeItem("user"); // Clear session
-        setUser(null);
+
+    const handleLogout = async () => {
+        await fetch("/api/logout", {
+            method: "POST",
+            credentials: "include", // Ensures session cookie is deleted
+        });
+
+        setUser(null); // Clear user data
         navigate("/");
-    }
+    };
+
+
 
     return (
         <nav className="sidebar">

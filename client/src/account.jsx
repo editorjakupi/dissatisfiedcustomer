@@ -25,12 +25,7 @@ const AccountInformation = ({ user, setUser }) => {
       });
 
       if (!response.ok) throw new Error("Failed to update user");
-
-      const user2 = await response.json();
-      setUser(user2.role_id ? user2 : { ...user2, role_id: user.role_id });
-
-      localStorage.setItem("user", JSON.stringify(user2.role_id ? user2 : { ...user2, role_id: user.role_id }));
-
+      
     } catch (error) {
       console.error("Error updating user:", error);
     }

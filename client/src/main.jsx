@@ -17,19 +17,29 @@ import NewProduct from "./NewProduct.jsx";
 import CustomerCases from "./CustomerCases";
 
 const App = () => {
-    const [user, setUser] = useState(() => {
-        // Load user from localStorage if it exists
-        const savedUser = localStorage.getItem("user");
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
+    const [user, setUser] = useState(null);
 
+    // Fetch session user when the app loads
     useEffect(() => {
-        if (user && user.role_id !== undefined) {
-            localStorage.setItem("user", JSON.stringify(user)); // Save user, ensuring role_id is included
-        } else {
-            localStorage.removeItem("user"); // Clear storage if user is null
-        }
-    }, [user]);
+        const fetchSessionUser = async () => {
+            try {
+                const response = await fetch("/api/session", {
+                    credentials: "include", // Ensures cookies are sent
+                });
+
+                if (!response.ok) throw new Error("No session found");
+
+                const data = await response.json();
+                console.log("Session user data:", data);
+                setUser(data);
+            } catch {
+                setUser(null); // No session available
+            }
+        };
+
+        fetchSessionUser();
+    }, []);
+
 
     return (
         <Router>
@@ -37,11 +47,10 @@ const App = () => {
                 {user && <NavBar user={user} setUser={setUser} />} {/* Sidebar only shows when logged in */}
 
                 <div className="content">
-
                     <Routes>
                         <Route path="/" element={<Login setUser={setUser} />} />
                         <Route path="/dashboard"
-                            element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
+                               element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path='/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
