@@ -1,4 +1,5 @@
-﻿import React from "react";
+﻿import { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
 import "./NavBar.css";
 import logo from "./assets/logo.png";
@@ -6,13 +7,21 @@ import logo from "./assets/logo.png";
 const NavBar = ({ user, setUser }) => {
     const navigate = useNavigate();
     
+    useEffect(() => {
+        const storedUser = JSON.parse(sessionStorage.getItem("user"));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
+    
     const roleNames = {
         1: "Customer",
         2: "Employee",
         3: "Admin",
         4: "Super Admin"
     }
-
+    console.log("NavBar user object:", user);
+    
     const handleLogout = async () => {
         await fetch("/api/logout", {
             method: "POST",
@@ -38,7 +47,7 @@ const NavBar = ({ user, setUser }) => {
             {user.role_id === 1 && (
                 <div className="nav-section">
                     <h3>Customer Panel</h3>
-                    <button onClick={() => navigate(`/user/${user.id}/cases`)}>My Tickets</button>
+                    <button onClick={() => navigate(`/user/${user.userId}/cases`)}>My Tickets</button>
                     <button onClick={() => navigate("/account")}>My Account</button>
                 </div>
             )}
