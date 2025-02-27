@@ -41,7 +41,6 @@ const Login = ({ user, setUser }) => {
                 if (!response.ok) throw new Error("No session found");
 
                 const data = await response.json();
-                console.log("Session user data:", data);
                 setUser(data);
             } catch {
                 setUser(null);
@@ -73,12 +72,11 @@ const Login = ({ user, setUser }) => {
                                    required/>
                         </label>
                     </div>
-
                     <div className="forgot-password-div">
                         Forgot-password? &nbsp;
-                            <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
-                         </div>
-
+                        <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
+                    </div>
+                    
                     <div id="update-button-div">
                         <button type="submit">Login</button>
                     </div>

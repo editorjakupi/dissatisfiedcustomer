@@ -19,27 +19,6 @@ import CustomerCases from "./CustomerCases";
 const App = () => {
     const [user, setUser] = useState(null);
 
-    // Fetch session user when the app loads
-    useEffect(() => {
-        const fetchSessionUser = async () => {
-            try {
-                const response = await fetch("/api/session", {
-                    credentials: "include", // Ensures cookies are sent
-                });
-
-                if (!response.ok) throw new Error("No session found");
-
-                const data = await response.json();
-                console.log("Session user data:", data);
-                setUser(data);
-            } catch {
-                setUser(null); // No session available
-            }
-        };
-
-        fetchSessionUser();
-    }, []);
-
 
     return (
         <Router>
@@ -55,7 +34,7 @@ const App = () => {
                         <Route path='/account' element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
                         <Route path="/message/:id" element={<Message />} />
-                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
+                            <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user}/> : <Login setUser={setUser}/> }/>
                         <Route path="/employee" element={user ? <NewEmployee user={user}/> : <Login setUser={setUser}/>}/>
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />

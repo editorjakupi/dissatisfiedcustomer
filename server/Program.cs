@@ -32,7 +32,7 @@ app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
-
+    
 //product APIs
 //app.MapGet("/api/products", (int company_id) => ProductRoutes.GetProducts(company_id, db));
 app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db));
