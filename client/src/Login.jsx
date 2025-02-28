@@ -35,17 +35,31 @@ const Login = ({ user, setUser }) => {
         const fetchSessionUser = async () => {
             try {
                 const response = await fetch("/api/session", {
-                    credentials: "include",
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
                 });
 
-                if (!response.ok) throw new Error("No session found");
+                if (!response.ok) {
+                    console.error("Session fetch failed");
+                    setUser(null); // Ensure user is null if not logged in
+                    return;
+                }
 
-                const data = await response.json();
-                setUser(data);
-            } catch {
-                setUser(null);
+                // Check if response body is empty before parsing JSON
+                const text = await response.text();
+                if (!text) {
+                    setUser(null); // If empty, treat as no user
+                    return;
+                }
+
+                const userData = JSON.parse(text);
+                setUser(userData || null); // Ensure user is null if no session exists
+            } catch (error) {
+                console.error("Error fetching session:", error);
+                setUser(null); // Fallback to null if fetch fails
             }
         };
+
 
         fetchSessionUser();
     }, []);

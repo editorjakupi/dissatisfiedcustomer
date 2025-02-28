@@ -8,23 +8,11 @@ NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisf
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173") // Allow frontend origin
-            .AllowCredentials()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 
 var app = builder.Build();
 
 app.UseSession();
-app.UseCors("AllowFrontend"); // Enable CORS for frontend
-
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("api/users/{id}", (int id) => LoginRoute.GetUser(id, db));
