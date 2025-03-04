@@ -214,6 +214,42 @@ ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
 
 
 --
+-- Name: ticket_tokens; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ticket_tokens (
+    id integer NOT NULL,
+    ticket_id integer NOT NULL,
+    token uuid NOT NULL,
+    expires_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.ticket_tokens OWNER TO postgres;
+
+--
+-- Name: ticket_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.ticket_tokens_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.ticket_tokens_id_seq OWNER TO postgres;
+
+--
+-- Name: ticket_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.ticket_tokens_id_seq OWNED BY public.ticket_tokens.id;
+
+
+--
 -- Name: tickets; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -228,7 +264,8 @@ CREATE TABLE public.tickets (
     title character varying(255) NOT NULL,
     description text NOT NULL,
     status_id integer,
-    case_number character varying
+    case_number character varying,
+    token character varying
 );
 
 
@@ -270,9 +307,10 @@ CREATE VIEW public.tickets_all AS
  SELECT t.id,
     t.date,
     t.title,
-    c.name,
+    c.name AS category_name,
     u.email,
-    ts.status_name
+    ts.status_name,
+    t.case_number
    FROM (((public.tickets t
      JOIN public.category c ON ((t.category_id = c.id)))
      JOIN public.users u ON ((t.user_id = u.id)))
@@ -289,7 +327,7 @@ CREATE VIEW public.tickets_closed AS
  SELECT id,
     date,
     title,
-    name,
+    category_name AS name,
     email,
     status_name
    FROM public.tickets_all
@@ -328,7 +366,7 @@ CREATE VIEW public.tickets_open AS
  SELECT id,
     date,
     title,
-    name,
+    category_name AS name,
     email,
     status_name
    FROM public.tickets_all
@@ -345,7 +383,7 @@ CREATE VIEW public.tickets_pending AS
  SELECT id,
     date,
     title,
-    name,
+    category_name AS name,
     email,
     status_name
    FROM public.tickets_all
@@ -425,6 +463,24 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: userxcompany; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.userxcompany AS
+ SELECT u.id,
+    u.email,
+    u.name,
+    u.password,
+    u.phonenumber,
+    u.role_id,
+    e.company_id AS companyid
+   FROM (public.users u
+     JOIN public.employees e ON ((u.id = e.user_id)));
+
+
+ALTER VIEW public.userxcompany OWNER TO postgres;
+
+--
 -- Name: category id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -457,6 +513,13 @@ ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.mes
 --
 
 ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.product_id_seq'::regclass);
+
+
+--
+-- Name: ticket_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket_tokens ALTER COLUMN id SET DEFAULT nextval('public.ticket_tokens_id_seq'::regclass);
 
 
 --
@@ -532,17 +595,14 @@ COPY public.company (id, company_name, company_phone, company_email) FROM stdin;
 
 COPY public.employees (id, user_id, company_id) FROM stdin;
 1	2	1
-3	7	3
-4	9	4
 5	12	5
 6	14	6
-7	2	7
-9	7	9
 10	9	10
-11	12	11
-12	14	12
-13	2	13
-15	7	15
+7	5	1
+13	3	13
+12	13	12
+11	11	11
+4	8	4
 \.
 
 
@@ -554,8 +614,6 @@ COPY public.messages (id, ticket_id, message, user_id) FROM stdin;
 3	2	Hur uppdaterar jag produkten?	3
 5	3	Jag förstår inte fakturan.	5
 6	3	Låt oss gå igenom fakturan tillsammans.	7
-7	4	Vad erbjuder ni för tjänster?	6
-8	4	Här är en lista över våra tjänster.	9
 9	5	Kan jag returnera produkten?	8
 10	5	Självklart, här är returinstruktioner.	12
 15	8	Kan jag få mer information om produkten?	13
@@ -567,7 +625,6 @@ COPY public.messages (id, ticket_id, message, user_id) FROM stdin;
 --
 
 COPY public.product (id, name, description, company_id) FROM stdin;
-1	Produkt A1	Beskrivning av produkt A1	1
 2	Produkt B1	Beskrivning av produkt B1	2
 3	Produkt C1	Beskrivning av produkt C1	3
 4	Produkt D1	Beskrivning av produkt D1	4
@@ -586,19 +643,25 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 
 
 --
+-- Data for Name: ticket_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ticket_tokens (id, ticket_id, token, expires_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: tickets; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description, status_id, case_number) FROM stdin;
-11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	\N
-2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	\N
-5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	\N
-3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	\N
-14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	\N
-8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	\N
-4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	\N
-10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	\N
-15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	\N
+COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description, status_id, case_number, token) FROM stdin;
+2	2	3	4	2	1	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	3	2	\N
+14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	5	\N
+8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	4	\N
+15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	3	\N
+3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	6	\N
+5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	7	\N
+11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	8	\N
 \.
 
 
@@ -636,7 +699,6 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 3	Cecilia Carlsson	cecilia@exempel.se	pass123	070-3333333	1
 5	Erik Eriksson	erik@exempel.se	pass123	070-5555555	3
 6	Frida Fransson	frida@exempel.se	pass123	070-6666666	1
-7	Gustav Gustavsson	gustav@exempel.se	pass123	070-7777777	2
 8	Helena Holm	helena@exempel.se	pass123	070-8888888	1
 9	Ivan Isaksson	ivan@exempel.se	pass123	070-9999999	2
 10	Jenny Johansson	jenny@exempel.se	pass123	070-1010101	1
@@ -652,6 +714,9 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 24	No Name	natna34tn	4962fbf5	\N	1
 25	No Name	gna4nga4g	4ed095a0	\N	1
 12	Linda Larsson	linda@exempel.se	pass123	070-3030303	4
+7	Gustav Gustavsson	gustav@exempel.se	pass123	070-7777777	1
+26	Test	test@exempel.se	5668c936	070-0101010	1
+27	Test	Test@exempel.se	92111f53	070-10101010	1
 \.
 
 
@@ -673,7 +738,7 @@ SELECT pg_catalog.setval('public.company_id_seq', 15, true);
 -- Name: employees_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.employees_id_seq', 15, true);
+SELECT pg_catalog.setval('public.employees_id_seq', 17, true);
 
 
 --
@@ -687,7 +752,14 @@ SELECT pg_catalog.setval('public.messages_id_seq', 22, true);
 -- Name: product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.product_id_seq', 15, true);
+SELECT pg_catalog.setval('public.product_id_seq', 18, true);
+
+
+--
+-- Name: ticket_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.ticket_tokens_id_seq', 1, false);
 
 
 --
@@ -715,7 +787,7 @@ SELECT pg_catalog.setval('public.userroles_id_seq', 4, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 25, true);
+SELECT pg_catalog.setval('public.users_id_seq', 27, true);
 
 
 --
@@ -756,6 +828,22 @@ ALTER TABLE ONLY public.messages
 
 ALTER TABLE ONLY public.product
     ADD CONSTRAINT product_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ticket_tokens ticket_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket_tokens
+    ADD CONSTRAINT ticket_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ticket_tokens ticket_tokens_token_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket_tokens
+    ADD CONSTRAINT ticket_tokens_token_key UNIQUE (token);
 
 
 --
@@ -836,6 +924,14 @@ ALTER TABLE ONLY public.messages
 
 ALTER TABLE ONLY public.product
     ADD CONSTRAINT product_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id);
+
+
+--
+-- Name: ticket_tokens ticket_tokens_ticket_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket_tokens
+    ADD CONSTRAINT ticket_tokens_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES public.tickets(id) ON DELETE CASCADE;
 
 
 --

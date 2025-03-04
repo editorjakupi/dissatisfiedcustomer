@@ -10,7 +10,7 @@ public static class UserRoutes
         List<Users> result = new();
         try
         {
-            using var query = db.CreateCommand("select * from users");
+            using var query = db.CreateCommand("select * from userxcompany");
             using var reader = await query.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -21,7 +21,8 @@ public static class UserRoutes
                         reader.GetString(2),
                         reader.GetString(3), // password
                         reader.GetString(4),
-                        reader.GetInt32(5)
+                        reader.GetInt32(5),
+                        reader.GetInt32(6)
                     )
                 );
             }
@@ -108,7 +109,8 @@ public static class UserRoutes
             reader.GetString(2),
             reader.GetString(3), // password
             reader.GetString(4),
-            reader.GetInt32(5)
+            reader.GetInt32(5),
+            reader.GetInt32(6)
         );
 
         await reader.CloseAsync();
