@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
 import "./NavBar.css";
 
@@ -13,26 +13,56 @@ const Login = ({ user, setUser }) => {
         setError("");
 
         try {
-            const response = await fetch("api/login", {
+            const response = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                credentials: "include", // Ensures session cookie is saved
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) throw new Error("Invalid email or password");
 
             const data = await response.json();
-
-            // Convert roleId to role_id
-            const userWithRoleIdFixed = { ...data, role_id: data.roleId, roleId: undefined };
-
-            setUser(userWithRoleIdFixed);
-            localStorage.setItem("user", JSON.stringify(userWithRoleIdFixed)); // Save corrected user object
+            setUser(data);
             navigate("/dashboard");
         } catch (err) {
             setError("Invalid email or password.");
         }
     };
+
+
+    useEffect(() => {
+        const fetchSessionUser = async () => {
+            try {
+                const response = await fetch("/api/session", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (!response.ok) {
+                    console.error("Session fetch failed");
+                    setUser(null); // Ensure user is null if not logged in
+                    return;
+                }
+
+                // Check if response body is empty before parsing JSON
+                const text = await response.text();
+                if (!text) {
+                    setUser(null); // If empty, treat as no user
+                    return;
+                }
+
+                const userData = JSON.parse(text);
+                setUser(userData || null); // Ensure user is null if no session exists
+            } catch (error) {
+                console.error("Error fetching session:", error);
+                setUser(null); // Fallback to null if fetch fails
+            }
+        };
+
+
+        fetchSessionUser();
+    }, []);
 
 
     return (
@@ -56,12 +86,11 @@ const Login = ({ user, setUser }) => {
                                    required/>
                         </label>
                     </div>
-
                     <div className="forgot-password-div">
                         Forgot-password? &nbsp;
-                            <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
-                         </div>
-
+                        <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
+                    </div>
+                    
                     <div id="update-button-div">
                         <button type="submit">Login</button>
                     </div>

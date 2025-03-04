@@ -6,11 +6,18 @@ const Dashboard = ({ user, setUser }) => {
     const navigate = useNavigate();
 
     const [employeesInfo, setEmployeesInfo] = useState([]);
-    useEffect(()=>{
-        fetch(`/api/employees/${user?.role_id}`)
-        .then(response => response.json())
-        .then(data => {setEmployeesInfo(data)})
-    });
+    useEffect(() => {
+        if (!user?.role_id) return; // Ensure user.role_id is defined before making the request
+
+        fetch(`/api/employees/${user.role_id}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to fetch employees");
+                return response.json();
+            })
+            .then(data => setEmployeesInfo(data))
+            .catch(error => console.error("Error fetching employees:", error));
+    }, [user]); // Runs only when 'user' changes
+
 
     /* 
     const [productsInfo, setProductsInfo] = useState([]);
@@ -24,10 +31,16 @@ const Dashboard = ({ user, setUser }) => {
     */
 
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await fetch("/api/logout", {
+            method: "POST",
+            credentials: "include", // Ensure cookies are cleared
+        });
+
         setUser(null); // Clear user data
-        navigate("/login");
+        navigate("/");
     };
+
 
     return (
         <main id="dashboard-main">
