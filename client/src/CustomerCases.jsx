@@ -11,6 +11,8 @@ const CustomerCases = ({ user }) => {
     const [searchId, setSearchId] = useState("");
 
     useEffect(() => {
+        if (!userId) return; // Ensure userId is not undefined before making the request
+
         fetch(`/api/user/${userId}/cases`)
             .then(response => response.json())
             .then(data => {
@@ -20,6 +22,7 @@ const CustomerCases = ({ user }) => {
                 console.error('Error fetching cases:', error);
             });
     }, [userId]);
+
 
     const handleSearch = () => {
         if (!searchId.trim()) return;
