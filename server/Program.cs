@@ -1,11 +1,14 @@
 using Npgsql;
 using server;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // User & Password set by operationsystem environment variables PGUSER & PGPASSWORD
 NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisfiedcustomer");
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+builder.Services.AddSingleton<PasswordHasher<string>>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
 
@@ -73,5 +76,7 @@ app.MapGet("/api/user/{id}/cases/{caseId}", (int id, int caseId, NpgsqlDataSourc
 app.MapPost("/api/user/{id}/cases/{caseId}/messages", (int id, int caseId, Message message, NpgsqlDataSource db) => CaseRoutes.AddCaseMessage(id, caseId, message, db));
 // Rutt för att hitta meddelanden till ett specifiktärende
 app.MapGet("/api/user/{id}/cases/{caseId}/messages", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseMessages(id, caseId, db));
+
+app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 
 app.Run();

@@ -83,8 +83,8 @@ public static class EmployeeRoute
       result.Add(
         new(
           reader.GetInt32(0),
-          reader.GetString(1),
           reader.GetString(2),
+          reader.GetString(1),
           reader.GetString(3), // password
           reader.GetString(4),
           reader.GetInt32(5),

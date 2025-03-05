@@ -67,14 +67,14 @@ const Login = ({ user, setUser }) => {
     return (
         <main>
             <div id="input-login-div">
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p style={{color: "red"}}>{error}</p>}
                 <form onSubmit={handleSubmit}>
 
                     <div id="input-div">
                         <div id="login-input-button-div">
                             <label>
                                 <p>Email-adress:</p>
-                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
                             </label>
                         </div>
 
@@ -82,12 +82,8 @@ const Login = ({ user, setUser }) => {
                             <label>
                                 <p>Password:</p>
                                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                                    required />
+                                       required/>
                             </label>
-                        </div>
-                        <div className="forgot-password-div">
-                            Forgot-password? &nbsp;
-                            <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
                         </div>
 
                         <div id="update-button-div">
@@ -95,6 +91,11 @@ const Login = ({ user, setUser }) => {
                         </div>
                     </div>
                 </form>
+
+                <div className="forgot-password-div">
+                    Forgot-password? &nbsp;
+                    <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
+                </div>
             </div>
         </main>
     );
