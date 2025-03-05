@@ -9,12 +9,13 @@ const AccountInformation = ({ user, setUser }) => {
     const formData = new FormData(event.target);
 
     const updatedUser = {
-      id: user.id,
+      id: user.userId,
       name: formData.get("name-input") || user.name,
       email: formData.get("email-address-input") || user.email,
       phonenumber: formData.get("phone-number-input") || user.phonenumber,
       password: formData.get("password-input") || "", // Empty means no change
-      role_id: user.role_id
+      role_id: user.role_id,
+      companyId: user.companyId
     };
 
     try {
@@ -25,7 +26,7 @@ const AccountInformation = ({ user, setUser }) => {
       });
 
       if (!response.ok) throw new Error("Failed to update user");
-      
+      alert('Password Updated: ' + updatedUser.password);
     } catch (error) {
       console.error("Error updating user:", error);
     }

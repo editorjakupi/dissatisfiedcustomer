@@ -2,25 +2,25 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import "./NavBar.css";
-import logo from "./assets/logo.png";
+import logo from "../../assets/logo.png";
 
 const NavBar = ({ user, setUser }) => {
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         const storedUser = JSON.parse(sessionStorage.getItem("user"));
         if (storedUser) {
             setUser(storedUser);
         }
     }, []);
-    
+
     const roleNames = {
         1: "Customer",
         2: "Employee",
         3: "Admin",
         4: "Super Admin"
     }
-    
+
     const handleLogout = async () => {
         await fetch("/api/logout", {
             method: "POST",
