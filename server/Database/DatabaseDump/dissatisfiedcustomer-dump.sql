@@ -619,12 +619,12 @@ COPY public.tickets (id, company_id, user_email, employee_id, product_id, catego
 2	2	cecilia@exempel.se	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	CASE000001
 3	3	erik@exempel.se	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	CASE000002
 4	4	frida@exempel.se	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	CASE000003
+5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	CASE000004
 8	8	martin@exempel.se	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	CASE000005
 10	10	cecilia@exempel.se	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	CASE000006
 11	11	linda@exempel.se	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	CASE000007
 14	14	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
 15	15	oskar@exempel.se	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	CASE000009
-5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	3	CASE000004
 \.
 
 
