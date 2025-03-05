@@ -5,7 +5,7 @@ namespace server;
 
 public static class CategoryRoutes
 {
-  public record Category(int id, string name);
+
   public static async Task<List<Category>>
   GetCategories(NpgsqlDataSource db)
   {
@@ -13,10 +13,11 @@ public static class CategoryRoutes
 
     using var query = db.CreateCommand("select id, name from category");
     using var reader = await query.ExecuteReaderAsync();
-      
-    while(await reader.ReadAsync()) {
+
+    while (await reader.ReadAsync())
+    {
       result.Add(new(reader.GetInt32(0), reader.GetString(1)));
     }
     return result;
-    }
+  }
 }
