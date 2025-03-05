@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router';
-import AddMessageForm from './AddMessageForm';
+import AddMessageForm from '../../AddMessageForm';
 import './CustomerCases.css';
 
 const CustomerCases = ({ user }) => {

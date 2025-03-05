@@ -6,7 +6,7 @@ namespace server;
 
 public static class CaseRoutes
 {
-    public record CaseDetails(int CaseId, string Title, string Description, string CaseNumber, string Status, DateTime CreatedAt);
+
 
     public static async Task<List<CaseDetails>> GetUserCases(int userId, NpgsqlDataSource db)
     {
@@ -80,7 +80,7 @@ public static class CaseRoutes
     }
 
 
-    public record MessageDetails(int MessageId, int UserId, string Content);
+
 
     public static async Task<List<MessageDetails>> GetCaseMessages(int userId, int caseId, NpgsqlDataSource db)
     {
@@ -102,9 +102,9 @@ public static class CaseRoutes
         return result;
     }
 
-    
 
-   
-    
+
+
+
 
 }
