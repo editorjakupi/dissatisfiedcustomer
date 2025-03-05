@@ -54,8 +54,8 @@ public class LoginRoute
            await reader.ReadAsync();
            var user = new Users(
                reader.GetInt32(0),
-               reader.GetString(1),
                reader.GetString(2),
+               reader.GetString(1),
                reader.GetString(3),
                reader.GetString(4),
                reader.GetInt32(5),

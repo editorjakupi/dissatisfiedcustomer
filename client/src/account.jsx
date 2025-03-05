@@ -26,7 +26,7 @@ const AccountInformation = ({ user, setUser }) => {
       });
 
       if (!response.ok) throw new Error("Failed to update user");
-      alert('Password Updated: ' + user.password);
+      alert('Password Updated: ' + updatedUser.password);
     } catch (error) {
       console.error("Error updating user:", error);
     }

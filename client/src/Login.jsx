@@ -66,36 +66,37 @@ const Login = ({ user, setUser }) => {
 
     return (
         <main>
-        <div id="input-login-div">
-            {error && <p style={{color: "red"}}>{error}</p>}
-            <form onSubmit={handleSubmit}>
+            <div id="input-login-div">
+                {error && <p style={{color: "red"}}>{error}</p>}
+                <form onSubmit={handleSubmit}>
 
-                <div id="input-div">
-                    <div id="login-input-button-div">
-                        <label>
-                            <p>Email-adress:</p>
-                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-                        </label>
-                    </div>
+                    <div id="input-div">
+                        <div id="login-input-button-div">
+                            <label>
+                                <p>Email-adress:</p>
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                            </label>
+                        </div>
 
-                    <div id="login-input-button-div">
-                        <label>
-                            <p>Password:</p>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                                   required/>
-                        </label>
+                        <div id="login-input-button-div">
+                            <label>
+                                <p>Password:</p>
+                                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                                       required/>
+                            </label>
+                        </div>
+
+                        <div id="update-button-div">
+                            <button type="submit">Login</button>
+                        </div>
                     </div>
-                    <div className="forgot-password-div">
-                        Forgot-password? &nbsp;
-                        <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
-                    </div>
-                    
-                    <div id="update-button-div">
-                        <button type="submit">Login</button>
-                    </div>
+                </form>
+
+                <div className="forgot-password-div">
+                    Forgot-password? &nbsp;
+                    <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
                 </div>
-            </form>
-        </div>
+            </div>
         </main>
     );
 };
