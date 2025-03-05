@@ -61,7 +61,7 @@ public static class UserRoutes
             var userId = await command.ExecuteScalarAsync();
             if (userId is int id)
             {
-                Console.WriteLine($"User created with ID: {id}" + "Users new password: " + generatedPassword);
+                Console.WriteLine($"User created with ID: {id}" + $"User Password: {generatedPassword}");
                 return TypedResults.Created($"/api/users/{id}", id.ToString());
             }
             return TypedResults.BadRequest("Failed to retrieve user ID.");

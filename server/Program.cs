@@ -22,7 +22,7 @@ app.MapGet("api/users/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
-    app.MapPut("/api/users", UserRoutes.PutUsers);
+app.MapPut("/api/users", UserRoutes.PutUsers);
 
 /* Tickets */
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
