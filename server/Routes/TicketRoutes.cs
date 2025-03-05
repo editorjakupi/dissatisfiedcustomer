@@ -1,6 +1,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Builder.Extensions;
+using System.Linq.Expressions;
 
 namespace server;
 
@@ -46,5 +47,30 @@ public static class TicketRoutes
         }
 
         return result;
+    }
+
+    public static async Task<IResult> UpdateTicketStatus(int ticketId, NpgsqlDataSource db)
+    {
+        try
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET status_id = 3 WHERE id = @id");
+            cmd.Parameters.AddWithValue("@id", ticketId);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 1)
+            {
+                return Results.Ok();
+            }
+            else
+            {
+                return Results.NotFound();
+            }
+
+        }
+        catch (Exception e)
+        {
+            return Results.BadRequest(e.Message);
+        }
     }
 }
