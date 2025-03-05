@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { useSearchParams } from "react-router";
 import "./TicketView.css";
 
 function BoxesContainer() {
@@ -152,7 +151,7 @@ export default function TicketView() {
         return (
             <tr key={id}>
                 <td>{date}</td>
-                <td onClick={ () => navigate(`/tickets/handle/${ticket.id}`)}>{title}</td>
+                <td className="ticketname" onClick={ () => navigate(`/tickets/handle/${id}`)}>{title}</td>
                 <td>{categoryname}</td>
                 <td>{email}</td>
                 <td>{status}</td>

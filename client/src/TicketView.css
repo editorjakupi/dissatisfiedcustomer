@@ -17,6 +17,12 @@
     }
 }
 
+.ticketname:hover {
+    cursor: pointer;
+    background-color: #75B9BE;
+}
+
+
 table {
     width: 100%;
     border-collapse: collapse;
