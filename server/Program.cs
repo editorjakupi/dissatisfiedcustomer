@@ -76,4 +76,6 @@ app.MapPost("/api/user/{id}/cases/{caseId}/messages", (int id, int caseId, Messa
 // Rutt för att hitta meddelanden till ett specifiktärende
 app.MapGet("/api/user/{id}/cases/{caseId}/messages", (int id, int caseId, NpgsqlDataSource db) => CaseRoutes.GetCaseMessages(id, caseId, db));
 
+app.MapPost("/api/password/hash", LoginRoute.HashPassword);
+
 app.Run();

@@ -1,5 +1,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace server;
 public static class UserRoutes
@@ -38,17 +40,19 @@ public static class UserRoutes
     public record PostUserDTO(string Name, string Email, string Password, string Phonenumber);
 
     public static async Task<Results<Created<string>, BadRequest<string>>>
-        PostUser(PostUserDTO user, NpgsqlDataSource db)
+        PostUser(PostUserDTO user, NpgsqlDataSource db, PasswordHasher<string> hasher)
     {
         Console.WriteLine($"Received request: {user.Name}, {user.Email}, {user.Password}, {user.Phonenumber}");
         string generatedPassword = MessageRoutes.GenerateRandomPassword();
+        
+        string hashedPassword = hasher.HashPassword("", generatedPassword);
         
         using var command = db.CreateCommand(
             "INSERT INTO users(name, email, password, phonenumber, role_id) VALUES($1, $2, $3, $4, $5) RETURNING id"
         );
         command.Parameters.AddWithValue(user.Name ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(user.Email ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue(generatedPassword ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(hashedPassword ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(user.Phonenumber ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(1);
 
@@ -57,7 +61,7 @@ public static class UserRoutes
             var userId = await command.ExecuteScalarAsync();
             if (userId is int id)
             {
-                Console.WriteLine($"User created with ID: {id}");
+                Console.WriteLine($"User created with ID: {id}" + "Users new password: " + generatedPassword);
                 return TypedResults.Created($"/api/users/{id}", id.ToString());
             }
             return TypedResults.BadRequest("Failed to retrieve user ID.");

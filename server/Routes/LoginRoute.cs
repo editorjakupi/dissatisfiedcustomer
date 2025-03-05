@@ -7,6 +7,14 @@ namespace server;
 
 public class LoginRoute
 {
+    public record HashDTO(string Password);
+    public static IResult
+        HashPassword(HashDTO dto, PasswordHasher<string> hasher)
+    {
+        string hash = hasher.HashPassword("", dto.Password);
+        return Results.Ok(hash);
+    }
+    
    public static async Task<List<Users>> GetUser(int user, NpgsqlDataSource db)
    {
        var users = new List<Users>();
