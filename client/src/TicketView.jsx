@@ -3,12 +3,15 @@ import { useSearchParams } from "react-router";
 import "./TicketView.css";
 
 function BoxesContainer() {
+    // State to keep track of the different tickets
     const [ticketCounts, setTicketCounts] = useState({ active: 0, inactive: 0, resolved: 0, total: 0 });
 
+    // Fetch ticket counts using view=all
     useEffect(() => {
         fetch("/api/tickets?view=all")
             .then((response) => response.json())
             .then((data) => {
+                // Count the number of tickets with different statuses
                 const activeCount = data.filter(ticket => ticket.status === "Unread" || ticket.status === "In Progress" || ticket.status === "Pending").length;
                 const inactiveCount = data.filter(ticket => ticket.status === "Closed").length;
                 const resolvedCount = data.filter(ticket => ticket.status === "Resolved").length;
@@ -23,6 +26,7 @@ function BoxesContainer() {
             .catch((error) => console.error("Error fetching ticket counts:", error));
     }, []);
 
+    // Box-container with ticket counts
     return (
         <div className="boxes-container">
             <div className="column">
@@ -35,27 +39,33 @@ function BoxesContainer() {
     );
 }
 
+
 export default function TicketView() {
     const [tickets, setTickets] = useState([]);
     const [searchparams] = useSearchParams();
     const [sortedTickets, setSortedTickets] = useState([]);
     const [defaultOrder, setDefaultOrder] = useState([]);
 
+    // Using 2 different states to keep track of the sorting order for title and category
     const [sortOrderTitle, setSortOrderTitle] = useState("default");
     const [sortOrderCategory, setSortOrderCategory] = useState("default");
 
+    // Get the view parameter from the URL
     const view = searchparams.get("view");
 
+    // Function to mark a ticket as resolved by pressing a button
     function MarkAsResolved(ticket) {
-        // Save the original status in case of a rollback
         const originalStatus = ticket.status;
-
-        // Optimistically update the ticket status
+    
+        // Update the status of the ticket in the UI
         setTickets(prevTickets =>
             prevTickets.map(t => t.id === ticket.id ? { ...t, status: "Resolved" } : t)
         );
-
-        // Make the API call to update the status on the server
+    
+        setSortedTickets(prevSorted =>
+            prevSorted.map(t => t.id === ticket.id ? { ...t, status: "Resolved" } : t)
+        );
+    
         fetch(`/api/tickets/${ticket.id}`, {
             method: "PUT",
             headers: {
@@ -65,23 +75,24 @@ export default function TicketView() {
         })
             .then((response) => {
                 if (!response.ok) {
-                    // If the request fails, revert the status back to original
-                    setTickets(prevTickets =>
-                        prevTickets.map(t => t.id === ticket.id ? { ...t, status: originalStatus } : t)
-                    );
-                    console.error("Error marking ticket as resolved.");
+                    throw new Error("Failed to update ticket status.");
                 }
             })
+            // If the request fails, revert the status of the ticket in the UI
             .catch((error) => {
-                // If the API call fails (network issues, etc.), revert the status back to original
                 setTickets(prevTickets =>
                     prevTickets.map(t => t.id === ticket.id ? { ...t, status: originalStatus } : t)
                 );
+                setSortedTickets(prevSorted =>
+                    prevSorted.map(t => t.id === ticket.id ? { ...t, status: originalStatus } : t)
+                );
+    
                 console.error("Error marking ticket as resolved:", error);
             });
     }
 
 
+    // Function to sort the tickets by title
     function SortByTitle() {
         let sorted;
 
@@ -96,10 +107,12 @@ export default function TicketView() {
             setSortOrderTitle("default");
         }
 
+        // Reset the category sorting order
         setSortOrderCategory("default");
         setSortedTickets(sorted);
     }
 
+    // Function to sort the tickets by category
     function SortByCategory() {
         let sorted;
 
@@ -114,10 +127,13 @@ export default function TicketView() {
             setSortOrderCategory("default");
         }
 
+        // Reset the title sorting order
         setSortOrderTitle("default");
         setSortedTickets(sorted);
     }
 
+
+    // Fetch tickets based on the view
     useEffect(() => {
         fetch("/api/tickets?view=" + view)
             .then((response) => response.json())
@@ -127,8 +143,9 @@ export default function TicketView() {
                 setDefaultOrder(data);
             })
             .catch((error) => console.error("Error fetching tickets:", error));
-    }, [view]);
+    },[view]);
 
+    // Table Item component to display each ticket
     function TableItem({ id, date, title, categoryname, email, status }) {
         return (
             <tr key={id}>
@@ -150,6 +167,7 @@ export default function TicketView() {
         );
     }
 
+    // Rendering
     return (
         <>
             <div>
