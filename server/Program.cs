@@ -30,6 +30,7 @@ app.MapGet("/api/tickets/{id}", (int id) => TicketRoutes.GetTicket(id, db));
 app.MapPut("/api/ticketscategory", TicketRoutes.PutTicketCategory);
 app.MapPut("/api/ticketstatus", TicketRoutes.PutTicketStatus);
 app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus);
+app.MapPut("/api/tickets/{id}", (int id) => TicketRoutes.UpdateTicketStatus(id, db));
 
 //product APIs
 //app.MapGet("/api/products", (int company_id) => ProductRoutes.GetProducts(company_id, db));
