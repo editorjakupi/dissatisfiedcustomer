@@ -2,12 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.4
+-- Dumped from database version 17.2
+-- Dumped by pg_dump version 17.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -256,7 +257,9 @@ CREATE VIEW public.tickets_all AS
     t.title,
     c.name,
     t.user_email AS email,
-    ts.status_name
+    ts.status_name,
+    t.case_number,
+    t.description
    FROM ((public.tickets t
      JOIN public.category c ON ((t.category_id = c.id)))
      JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
@@ -274,7 +277,9 @@ CREATE VIEW public.tickets_closed AS
     title,
     name,
     email,
-    status_name
+    status_name,
+    case_number,
+    description
    FROM public.tickets_all
   WHERE (((status_name)::text = 'Closed'::text) OR ((status_name)::text = 'Resolved'::text));
 
@@ -313,7 +318,9 @@ CREATE VIEW public.tickets_open AS
     title,
     name,
     email,
-    status_name
+    status_name,
+    case_number,
+    description
    FROM public.tickets_all
   WHERE (((status_name)::text = 'Unread'::text) OR ((status_name)::text = 'In Progress'::text));
 
@@ -330,7 +337,9 @@ CREATE VIEW public.tickets_pending AS
     title,
     name,
     email,
-    status_name
+    status_name,
+    case_number,
+    description
    FROM public.tickets_all
   WHERE ((status_name)::text = 'Pending'::text);
 
