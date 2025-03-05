@@ -7,14 +7,14 @@ import AccountInformation from './User/Account/account.jsx'
 import PasswordForget from './User/passwordforget.jsx'
 import NavBar from "./User/NavBar/NavBar.jsx";
 import TicketView from "./Support/TicketView/TicketView.jsx";
-import UsersList from "./UsersList";
+import UsersList from "./Admin/UsersList/UsersList";
 import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
-import NewEmployee from "./NewEmployee.jsx";
+import NewEmployee from "./Admin/New/NewEmployee.jsx";
 
 import "./User/NavBar/NavBar.css";
 import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
-import NewProduct from "./NewProduct.jsx";
+import NewProduct from "./Admin/New/NewProduct.jsx";
 import CustomerCases from "./Customer/CustomerCases/CustomerCases";
 
 const App = () => {
