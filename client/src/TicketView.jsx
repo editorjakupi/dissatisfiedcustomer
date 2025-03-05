@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import { useSearchParams } from "react-router";
 import "./TicketView.css";
 
@@ -43,6 +44,7 @@ function BoxesContainer() {
 export default function TicketView() {
     const [tickets, setTickets] = useState([]);
     const [searchparams] = useSearchParams();
+    const navigate = useNavigate();
     const [sortedTickets, setSortedTickets] = useState([]);
     const [defaultOrder, setDefaultOrder] = useState([]);
 
@@ -150,7 +152,7 @@ export default function TicketView() {
         return (
             <tr key={id}>
                 <td>{date}</td>
-                <td>{title}</td>
+                <td onClick={ () => navigate(`/tickets/handle/${ticket.id}`)}>{title}</td>
                 <td>{categoryname}</td>
                 <td>{email}</td>
                 <td>{status}</td>

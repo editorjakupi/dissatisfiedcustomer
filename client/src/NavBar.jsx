@@ -33,7 +33,7 @@ const NavBar = ({ user, setUser }) => {
 
 
     return (
-        <nav className="sidebar">
+        <div className="sidebar">
             {/* Clickable Logo Section */}
             <div className="logo-container">
                 <button onClick={() => navigate("/dashboard")} className="logo-button">
@@ -95,7 +95,7 @@ const NavBar = ({ user, setUser }) => {
                 <p><strong>{user?.name}</strong></p>
                 <p>{roleNames[user?.role_id] || "Unknown Role"}</p>
             </div>
-        </nav>
+        </div>
     );
 };
 

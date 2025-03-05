@@ -13,6 +13,7 @@ import NewEmployee from "./NewEmployee.jsx";
 
 import "./NavBar.css";
 import { Message } from "./message.jsx";
+import TicketHandler from "./TicketHandler.jsx";
 import NewProduct from "./NewProduct.jsx";
 import CustomerCases from "./CustomerCases";
 
@@ -40,6 +41,7 @@ const App = () => {
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/user/:userId/cases" element={<CustomerCases user={user} />} />
                         <Route path="/user/:userId/cases/:caseId" element={<CustomerCases user={user} />} />
+                        <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
                     </Routes>
                 </div>
             </div>

@@ -4,7 +4,8 @@
     string email,
     string password,
     string phonenumber,
-    int role_id);
+    int role_id,
+    int companyId);
 
 public record LoginRequest(string email, string password);
 

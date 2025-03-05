@@ -22,7 +22,8 @@ public static class EmployeeRoute
     return result;
   }
 
-  public static async Task<Results<Created, BadRequest<string>>> PostEmployee(Employees employee, NpgsqlDataSource db)
+  public static async Task<Results<Created, BadRequest<string>>> 
+    PostEmployee(Employees employee, NpgsqlDataSource db)
   {
       Console.WriteLine($"Received request: UserId={employee.userId}, CompanyId={employee.companyId}");
   
@@ -73,7 +74,7 @@ public static class EmployeeRoute
     GetEmployee(int userId, NpgsqlDataSource db)
   {
     List<Users> result = new();
-    using var cmd = db.CreateCommand("SELECT users.id, users.name, users.email, users.password, users.phonenumber, users.role_id FROM employees JOIN users ON employees.user_id = users.id");
+    using var cmd = db.CreateCommand("SELECT userxcompany.id, userxcompany.name, userxcompany.email, userxcompany.password, userxcompany.phonenumber, userxcompany.role_id, userxcompany.companyId FROM employees JOIN userxcompany ON employees.user_id = userxcompany.id WHERE userxcompany.companyId = $1");
     cmd.Parameters.AddWithValue(userId);
 
     using var reader = await cmd.ExecuteReaderAsync();
@@ -86,7 +87,8 @@ public static class EmployeeRoute
           reader.GetString(2),
           reader.GetString(3), // password
           reader.GetString(4),
-          reader.GetInt32(5)
+          reader.GetInt32(5),
+          reader.GetInt32(6)
         )
       );
     }
