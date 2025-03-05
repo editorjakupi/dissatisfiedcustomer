@@ -10,6 +10,7 @@ import TicketView from "./Support/TicketView/TicketView.jsx";
 import UsersList from "./Admin/UsersList/UsersList";
 import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
+import AdminList from "./SuperAdmin/AdminList.jsx";
 
 import "./User/NavBar/NavBar.css";
 import { Message } from "./Customer/Message/message.jsx";
@@ -42,6 +43,7 @@ const App = () => {
                         <Route path="/user/:userId/cases" element={<CustomerCases user={user} />} />
                         <Route path="/user/:userId/cases/:caseId" element={<CustomerCases user={user} />} />
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
+                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
                     </Routes>
                 </div>
             </div>
