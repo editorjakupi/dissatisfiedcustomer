@@ -28,7 +28,8 @@ const AdminList = ({ user, setUser }) => {
             .catch((err) => {
                 console.error("Search error:", err.message);
                 setAdmin([]); // Clear Admin list if error
-                setSelectedAdmin(null); // Clear selected admin
+                setSelectedAdmin(null); // Clear selected Admin
+                setSearchId(""); // Reset search field
             });
     };
 

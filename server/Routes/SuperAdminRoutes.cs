@@ -64,7 +64,7 @@ public class SuperAdminRoutes
         GetAdmin(int userId, NpgsqlDataSource db)
     {
         List<Users> result = new();
-        using var cmd = db.CreateCommand("SELECT userxcompany.id, userxcompany.name, userxcompany.email, userxcompany.password, userxcompany.phonenumber, userxcompany.role_id, userxcompany.companyId FROM employees JOIN userxcompany ON employees.user_id = userxcompany.id WHERE userxcompany.companyId = $1");
+        using var cmd = db.CreateCommand("SELECT * FROM userxcompany WHERE userxcompany.id = $1 AND userxcompany.role_id = 3");
         cmd.Parameters.AddWithValue(userId);
 
         using var reader = await cmd.ExecuteReaderAsync();
