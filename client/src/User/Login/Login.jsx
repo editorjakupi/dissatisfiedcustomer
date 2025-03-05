@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
-import "./NavBar.css";
+import "../NavBar/NavBar.css";
 
 const Login = ({ user, setUser }) => {
     const [email, setEmail] = useState("");

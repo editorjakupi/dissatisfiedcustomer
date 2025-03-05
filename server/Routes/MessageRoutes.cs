@@ -11,8 +11,6 @@ using System.Data.Common;
 namespace server;
 public static class MessageRoutes
 {
-    // Dataöverföringsobjekt för inkommande meddelanden
-    public record MessageDTO(string Email, string Name, string Content, int CompanyID);
 
     // Metod för att hantera POST /api/messages
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, NpgsqlDataSource db)

@@ -9,14 +9,14 @@ namespace server;
 
 public static class TicketRoutes
 {
-    public record Ticket(int id, string date, string title, string categoryname, string email, string status, string caseNumber, string description);
+
 
     public static async Task<List<Ticket>>
 
     GetTickets(string? view, NpgsqlDataSource db)
     {
         List<Ticket> result = new();
-        NpgsqlCommand query;    
+        NpgsqlCommand query;
         switch (view)
         {
             case "all":
@@ -80,12 +80,12 @@ public static class TicketRoutes
     public static async Task<Ticket?> GetTicket(int ticketId, NpgsqlDataSource db)
     {
         Ticket? result = null;
-    
+
         var query = db.CreateCommand("SELECT * FROM tickets_all WHERE id = @ticketId");
         query.Parameters.AddWithValue("ticketId", ticketId);
 
         using var reader = await query.ExecuteReaderAsync();
-        if (await reader.ReadAsync()) 
+        if (await reader.ReadAsync())
         {
             result = new Ticket(
                 reader.GetInt32(reader.GetOrdinal("id")),               // id
@@ -129,13 +129,13 @@ public static class TicketRoutes
     public static async Task<IResult>
         PutTicketCategory(int ticket_id, int category_id, NpgsqlDataSource db)
     {
-            await using var conn = await db.OpenConnectionAsync();
-            await using var cmd = conn.CreateCommand();
+        await using var conn = await db.OpenConnectionAsync();
+        await using var cmd = conn.CreateCommand();
 
-            cmd.CommandText = "UPDATE tickets SET category_id = @category_id WHERE id = @ticket_id";
-            cmd.Parameters.AddWithValue("@category_id", category_id);
-            cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
-            
+        cmd.CommandText = "UPDATE tickets SET category_id = @category_id WHERE id = @ticket_id";
+        cmd.Parameters.AddWithValue("@category_id", category_id);
+        cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
+
         try
         {
             int rowsAffected = await cmd.ExecuteNonQueryAsync();

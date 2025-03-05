@@ -33,11 +33,9 @@ public static class UserRoutes
         {
             Console.WriteLine($"Error Fetching users: {ex.Message}");
         }
-        
+
         return result;
     }
-
-    public record PostUserDTO(string Name, string Email, string Password, string Phonenumber);
 
     public static async Task<Results<Created<string>, BadRequest<string>>>
         PostUser(PostUserDTO user, NpgsqlDataSource db, PasswordHasher<string> hasher)
@@ -66,7 +64,7 @@ public static class UserRoutes
             }
             return TypedResults.BadRequest("Failed to retrieve user ID.");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine($"Error creating user: {ex.Message}");
             return TypedResults.BadRequest("Failed to create new user, might already exist?");
@@ -78,7 +76,7 @@ public static class UserRoutes
     {
         using var command = db.CreateCommand("DELETE FROM users WHERE id = $1");
         command.Parameters.AddWithValue(id);
-        
+
         int rowsAffected = await command.ExecuteNonQueryAsync();
         if (rowsAffected > 0)
         {
