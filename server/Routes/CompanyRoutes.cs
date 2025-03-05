@@ -91,38 +91,25 @@ public class CompanyRoutes
     }
 
     public static async Task<Results<Ok<string>, BadRequest<string>>>
-    PutCompany(int id, CompanyDTO company, NpgsqlDataSource db)
-    {
-        string nameQuery = "";
-        string phoneQuery = "";
-        string emailQuery = "";
+    PutCompany(int id, CompanyDTO company, NpgsqlDataSource db){
+        string nameQuery = "company_name";
+        string phoneQuery = "company_phone";
+        string emailQuery = "company_email";
         string query;
 
         if (!string.IsNullOrWhiteSpace(company.name))
         {
             nameQuery = "@company_name";
         }
-        else
-        {
-            nameQuery = "company_name";
-        }
 
         if (!string.IsNullOrWhiteSpace(company.phone))
         {
             phoneQuery = "@company_phone";
         }
-        else
-        {
-            phoneQuery = "company_phone";
-        }
 
         if (!string.IsNullOrWhiteSpace(company.email))
         {
             emailQuery = "@company_email";
-        }
-        else
-        {
-            emailQuery = "company_email";
         }
 
         query = "UPDATE company SET company_name = " + nameQuery + ", company_phone = " + phoneQuery + ", company_email = " + emailQuery + " WHERE id = @id";

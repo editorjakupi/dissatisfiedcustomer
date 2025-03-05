@@ -149,7 +149,7 @@ CREATE TABLE public.messages (
     id integer NOT NULL,
     ticket_id integer,
     message text NOT NULL,
-    user_id integer
+    email text NOT NULL
 );
 
 
@@ -220,7 +220,7 @@ ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
 CREATE TABLE public.tickets (
     id integer NOT NULL,
     company_id integer,
-    user_id integer,
+    user_email text NOT NULL,
     employee_id integer,
     product_id integer,
     category_id integer,
@@ -228,7 +228,7 @@ CREATE TABLE public.tickets (
     title character varying(255) NOT NULL,
     description text NOT NULL,
     status_id integer,
-    case_number character varying
+    case_number character varying NOT NULL
 );
 
 
@@ -247,22 +247,6 @@ CREATE TABLE public.ticketstatus (
 ALTER TABLE public.ticketstatus OWNER TO postgres;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.users (
-    id integer NOT NULL,
-    name character varying(255),
-    email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
-    phonenumber character varying(50),
-    role_id integer NOT NULL
-);
-
-
-ALTER TABLE public.users OWNER TO postgres;
-
---
 -- Name: tickets_all; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -271,11 +255,10 @@ CREATE VIEW public.tickets_all AS
     t.date,
     t.title,
     c.name,
-    u.email,
+    t.user_email AS email,
     ts.status_name
-   FROM (((public.tickets t
+   FROM ((public.tickets t
      JOIN public.category c ON ((t.category_id = c.id)))
-     JOIN public.users u ON ((t.user_id = u.id)))
      JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
 
 
@@ -403,6 +386,22 @@ ALTER SEQUENCE public.userroles_id_seq OWNED BY public.userroles.id;
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    name character varying(255),
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    phonenumber character varying(50),
+    role_id integer NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -423,6 +422,24 @@ ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
+
+--
+-- Name: userxcompany; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.userxcompany AS
+ SELECT u.id,
+    u.email,
+    u.name,
+    u.password,
+    u.phonenumber,
+    u.role_id,
+    e.company_id AS companyid
+   FROM (public.users u
+     JOIN public.employees e ON ((u.id = e.user_id)));
+
+
+ALTER VIEW public.userxcompany OWNER TO postgres;
 
 --
 -- Name: category id; Type: DEFAULT; Schema: public; Owner: postgres
@@ -550,15 +567,15 @@ COPY public.employees (id, user_id, company_id) FROM stdin;
 -- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.messages (id, ticket_id, message, user_id) FROM stdin;
-3	2	Hur uppdaterar jag produkten?	3
-5	3	Jag förstår inte fakturan.	5
-6	3	Låt oss gå igenom fakturan tillsammans.	7
-7	4	Vad erbjuder ni för tjänster?	6
-8	4	Här är en lista över våra tjänster.	9
-9	5	Kan jag returnera produkten?	8
-10	5	Självklart, här är returinstruktioner.	12
-15	8	Kan jag få mer information om produkten?	13
+COPY public.messages (id, ticket_id, message, email) FROM stdin;
+3	2	Hur uppdaterar jag produkten?	cecilia@exempel.se
+5	3	Jag förstår inte fakturan.	erik@exempel.se
+6	3	Låt oss gå igenom fakturan tillsammans.	gustav@exempel.se
+7	4	Vad erbjuder ni för tjänster?	frida@exempel.se
+8	4	Här är en lista över våra tjänster.	ivan@exempel.se
+9	5	Kan jag returnera produkten?	helena@exempel.se
+10	5	Självklart, här är returinstruktioner.	linda@exempel.se
+15	8	Kan jag få mer information om produkten?	martin@exempel.se
 \.
 
 
@@ -589,16 +606,16 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 -- Data for Name: tickets; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tickets (id, company_id, user_id, employee_id, product_id, category_id, date, title, description, status_id, case_number) FROM stdin;
-11	11	5	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	\N
-2	2	3	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	\N
-5	5	8	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	\N
-3	3	5	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	\N
-14	14	10	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	\N
-8	8	13	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	\N
-4	4	6	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	\N
-10	10	3	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	\N
-15	15	11	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	\N
+COPY public.tickets (id, company_id, user_email, employee_id, product_id, category_id, date, title, description, status_id, case_number) FROM stdin;
+2	2	cecilia@exempel.se	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	CASE000001
+3	3	erik@exempel.se	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	CASE000002
+4	4	frida@exempel.se	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	CASE000003
+5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	CASE000004
+8	8	martin@exempel.se	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	CASE000005
+10	10	cecilia@exempel.se	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	CASE000006
+11	11	linda@exempel.se	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	CASE000007
+14	14	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
+15	15	oskar@exempel.se	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	CASE000009
 \.
 
 
@@ -823,14 +840,6 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: messages messages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: product product_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -876,14 +885,6 @@ ALTER TABLE ONLY public.tickets
 
 ALTER TABLE ONLY public.tickets
     ADD CONSTRAINT tickets_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(id);
-
-
---
--- Name: tickets tickets_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.tickets
-    ADD CONSTRAINT tickets_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
