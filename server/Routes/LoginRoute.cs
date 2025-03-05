@@ -20,7 +20,8 @@ public class LoginRoute
                reader.GetString(2),
                reader.GetString(3),
                reader.GetString(4),
-               reader.GetInt32(5)
+               reader.GetInt32(5),
+               reader.GetInt32(6)
            ));
        }
        return users;
@@ -34,7 +35,7 @@ public class LoginRoute
            if (request == null) return Results.BadRequest("Invalid request");
 
            await using var connection = await db.OpenConnectionAsync();
-           await using var command = new NpgsqlCommand("SELECT * FROM users WHERE email = @email", connection);
+           await using var command = new NpgsqlCommand("SELECT * FROM userxcompany WHERE email = @email", connection);
            command.Parameters.AddWithValue("@email", request.email);
 
            await using var reader = await command.ExecuteReaderAsync();
@@ -47,7 +48,8 @@ public class LoginRoute
                reader.GetString(2),
                reader.GetString(3),
                reader.GetString(4),
-               reader.GetInt32(5)
+               reader.GetInt32(5),
+               reader.GetInt32(6)
            );
 
            if (user.password != request.password) // Plain text comparison
@@ -60,7 +62,8 @@ public class LoginRoute
                name = user.name,
                email = user.email,
                phonenumber = user.phonenumber,
-               role_id = user.role_id
+               role_id = user.role_id,
+               companyId = user.companyId
            };
 
            context.Session.SetString("user", System.Text.Json.JsonSerializer.Serialize(sessionUser));

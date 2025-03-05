@@ -16,7 +16,6 @@ const Login = ({ user, setUser }) => {
             const response = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include", // Ensures session cookie is saved
                 body: JSON.stringify({ email, password }),
             });
 
