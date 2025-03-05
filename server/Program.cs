@@ -1,11 +1,14 @@
 using Npgsql;
 using server;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // User & Password set by operationsystem environment variables PGUSER & PGPASSWORD
 NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisfiedcustomer");
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+builder.Services.AddSingleton<PasswordHasher<string>>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
 

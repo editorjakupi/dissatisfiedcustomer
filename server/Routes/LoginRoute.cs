@@ -1,10 +1,12 @@
-﻿using Npgsql;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+
+using Npgsql;
 
 namespace server;
 
 public class LoginRoute
 {
-   // public record GetUserDTO(string email);
    public static async Task<List<Users>> GetUser(int user, NpgsqlDataSource db)
    {
        var users = new List<Users>();
@@ -27,7 +29,7 @@ public class LoginRoute
        return users;
    }
     
-   public static async Task<IResult> LoginUser(HttpContext context, NpgsqlDataSource db)
+   public static async Task<IResult> LoginUser(HttpContext context, NpgsqlDataSource db, PasswordHasher<string> hasher)
    {
        try
        {
@@ -52,7 +54,11 @@ public class LoginRoute
                reader.GetInt32(6)
            );
 
-           if (user.password != request.password) // Plain text comparison
+           string storedHashedPassword = reader.GetString(3); // Get hashed password from DB
+
+           // Verify the password
+           var verifyResult = hasher.VerifyHashedPassword("", storedHashedPassword, request.password);
+           if (verifyResult == PasswordVerificationResult.Failed)
                return Results.Unauthorized();
 
            // Create session user data and store it in the session
