@@ -19,7 +19,7 @@ app.MapGet("api/users/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
-    app.MapPut("/api/users", UserRoutes.PutUsers);
+app.MapPut("/api/users", UserRoutes.PutUsers);
 
 /* Tickets */
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
@@ -27,6 +27,7 @@ app.MapGet("/api/tickets/{id}", (int id) => TicketRoutes.GetTicket(id, db));
 app.MapPut("/api/ticketscategory", TicketRoutes.PutTicketCategory);
 app.MapPut("/api/ticketstatus", TicketRoutes.PutTicketStatus);
 app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus);
+app.MapPut("/api/tickets/{id}", (int id) => TicketRoutes.UpdateTicketStatus(id, db));
 
 //product APIs
 //app.MapGet("/api/products", (int company_id) => ProductRoutes.GetProducts(company_id, db));
