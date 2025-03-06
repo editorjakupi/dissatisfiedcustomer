@@ -23,6 +23,12 @@
     }
 }
 
+.ticketname:hover {
+    cursor: pointer;
+    background-color: #75B9BE;
+}
+
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -36,16 +42,17 @@ td {
 }
 
 th {
-    background-color: #f4f4f4;
+    background-color: #000000;
 }
 
 .resolve-button {
     background-color: #4CAF50;
-    color: white;
+    color: rgb(0, 0, 0);
     border: none;
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
+    width: 50%;
 }
 
 .resolve-button:hover {

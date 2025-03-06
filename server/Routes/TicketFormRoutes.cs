@@ -2,16 +2,12 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Cms;
 using Microsoft.Extensions.ObjectPool;
-using server.Records;
 using static server.CategoryRoutes;
 
 namespace server;
 
 public class TicketFormRoutes
 {
-
-    public record TicketFormDTO(int TicketId, int ProductId, int CategoryId, string Content);
-
     public static async Task<Results<Created, BadRequest<string>>> PostTicketForm(TicketFormDTO ticketform, NpgsqlDataSource db)
     {
         await using var command = db.CreateCommand("UPDATE tickets SET product_id = @product_id, category_id = @category_id, description = @description WHERE id = @id");
@@ -40,24 +36,17 @@ public class TicketFormRoutes
         while (await reader.ReadAsync())
         {
             result.Add(new TicketForm(
-                reader.GetInt32(0), 
-                reader.GetInt32(1), 
-                reader.GetString(2), 
-                reader.GetString(3), 
-                ProductRoute.GetProducts(reader.GetInt32(1), db).Result, 
+                reader.GetInt32(0),
+                reader.GetInt32(1),
+                reader.GetString(2),
+                reader.GetString(3),
+                ProductRoute.GetProducts(reader.GetInt32(1), db).Result,
                 CategoryRoutes.GetCategories(db).Result));
         }
         return result[0];
     }
 
-    public record TicketForm(
-        int ticket_id,
-        int company_id,
-        string title,
-        string description,
-        List<Products> company_products,
-        List<Category> categories
-        );
 
-    
+
+
 }

@@ -1,7 +1,7 @@
 ﻿import React, {useState} from "react";
 import "./main.css";
 
-const NewProduct = () => {
+const NewProduct = ({user}) => {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -45,7 +45,7 @@ const NewProduct = () => {
 
     // Show all products again
     const handleShowAll = () => {
-        fetch("/api/products/1")//Replace 1 with sessionID ( next sprint )
+        fetch(`/api/products/${user.companyId}`)//Replace 1 with sessionID ( next sprint )
             .then((res) => res.json())
             .then((data) => {
                 setProducts(data); // Restore full list of products
@@ -89,7 +89,7 @@ const NewProduct = () => {
                 body: JSON.stringify({
                     name: formData.name,
                     description: formData.description,
-                    companyId: formData.companyId,
+                    companyId: user.companyId,
                 }),
             });
 
@@ -169,8 +169,6 @@ const NewProduct = () => {
                                    onChange={handleChange}
                                    required/>
                             <input type="text" name="description" value={formData.description} placeholder="Description"
-                                   onChange={handleChange} required/>
-                            <input type="text" name="companyId" value={formData.companyId} placeholder="Comapny ID"
                                    onChange={handleChange} required/>
                             <button type="submit">Create Product</button>
                         </form>

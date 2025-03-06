@@ -48,7 +48,7 @@ const NewEmployee = ({ user, setUser }) => {
 
     // Show all employees again
     const handleShowAll = () => {
-        fetch("/api/employee/1")//Replace 1 with sessionID ( next sprint )
+        fetch(`/api/employee/${user.companyId}`)//Replace 1 with sessionID ( next sprint )
             .then((res) => res.json())
             .then((data) => {
                 setEmployees(data); // Restore full list of employees
@@ -124,7 +124,7 @@ const NewEmployee = ({ user, setUser }) => {
             // Send employee request
             const employeeData = {
                 userId,
-                companyId: parseInt(formData.companyId, 10), // Ensure companyId is a number
+                companyId: parseInt(user.companyId, 10), // Ensure companyId is a number
             };
 
             console.log("Sending employee data:", JSON.stringify(employeeData));
@@ -218,8 +218,6 @@ const NewEmployee = ({ user, setUser }) => {
                             <input type="email" name="email" value={formData.email} placeholder="Email"
                                    onChange={handleChange} required/>
                             <input type="text" name="phonenumber" value={formData.phonenumber} placeholder="Phone Number"
-                                   onChange={handleChange} required/>
-                            <input type="text" name="companyId" value={formData.companyId} placeholder="Comapny ID"
                                    onChange={handleChange} required/>
                             <button type="submit">Create Employee</button>
                         </form>

@@ -1,20 +1,22 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Builder.Extensions;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
+
 
 namespace server;
 
 public static class TicketRoutes
 {
-    public record Ticket(int id, string date, string title, string categoryname, string email, string status, string caseNumber, string description);
+
 
     public static async Task<List<Ticket>>
 
     GetTickets(string? view, NpgsqlDataSource db)
     {
         List<Ticket> result = new();
-        NpgsqlCommand query;    
+        NpgsqlCommand query;
         switch (view)
         {
             case "all":
@@ -51,15 +53,39 @@ public static class TicketRoutes
         return result;
     }
 
+    public static async Task<IResult> UpdateTicketStatus(int ticketId, NpgsqlDataSource db)
+    {
+        try
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET status_id = 3 WHERE id = @id");
+            cmd.Parameters.AddWithValue("@id", ticketId);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 1)
+            {
+                return Results.Ok();
+            }
+            else
+            {
+                return Results.NotFound();
+            }
+
+        }
+        catch (Exception e)
+        {
+            return Results.BadRequest(e.Message);
+        }
+    }
     public static async Task<Ticket?> GetTicket(int ticketId, NpgsqlDataSource db)
     {
         Ticket? result = null;
-    
+
         var query = db.CreateCommand("SELECT * FROM tickets_all WHERE id = @ticketId");
         query.Parameters.AddWithValue("ticketId", ticketId);
 
         using var reader = await query.ExecuteReaderAsync();
-        if (await reader.ReadAsync()) 
+        if (await reader.ReadAsync())
         {
             result = new Ticket(
                 reader.GetInt32(reader.GetOrdinal("id")),               // id
@@ -100,16 +126,48 @@ public static class TicketRoutes
         }
     }
 
+
+    //Skapa backend-endpoint för kundens chatt via token
+    // Exempelmetod för att hämta ett ärende baserat på det genererade token (case_number)
+    public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
+    {
+        Ticket? result = null;
+        // Hämtar direkt från tabellen "tickets" i public-schemat
+        using var cmd = db.CreateCommand("SELECT * FROM public.tickets WHERE case_number = $1");
+        cmd.Parameters.AddWithValue(token);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            // Skapa ett Ticket-objekt från kolumnvärdena.
+            // Notera: Om du inte brukar använda JOIN för att få med t.ex. category name och status,
+            // sätts dessa fält till tomma strängar för nu, men du kan senare uppdatera detta.
+            result = new Ticket(
+                reader.GetInt32(reader.GetOrdinal("id")),
+                reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
+                reader.GetString(reader.GetOrdinal("title")),
+                "", // Du kan till exempel hämta kategori från en JOIN, om så önskas
+                reader.GetString(reader.GetOrdinal("user_email")),
+                "", // Om status lagras separat via en JOIN, uppdatera denna rad
+                reader.GetString(reader.GetOrdinal("case_number")),
+                reader.GetString(reader.GetOrdinal("description"))
+            );
+        }
+        return result;
+    }
+
+
+
+
     public static async Task<IResult>
         PutTicketCategory(int ticket_id, int category_id, NpgsqlDataSource db)
     {
-            await using var conn = await db.OpenConnectionAsync();
-            await using var cmd = conn.CreateCommand();
+        await using var conn = await db.OpenConnectionAsync();
+        await using var cmd = conn.CreateCommand();
 
-            cmd.CommandText = "UPDATE tickets SET category_id = @category_id WHERE id = @ticket_id";
-            cmd.Parameters.AddWithValue("@category_id", category_id);
-            cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
-            
+        cmd.CommandText = "UPDATE tickets SET category_id = @category_id WHERE id = @ticket_id";
+        cmd.Parameters.AddWithValue("@category_id", category_id);
+        cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
+
         try
         {
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
