@@ -114,30 +114,30 @@ export default function TicketView() {
     }
     return (
         <main id="ticket-view-main">
-        <div className="info-boxes-div">
-        <BoxesContainer />
-        </div>
-        <div className="ticket-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th onClick={SortByTitle} style={{ cursor: "pointer" }}>
-                            Title {sortOrderTitle === "asc" ? "▲" : sortOrderTitle === "desc" ? "▼" : ""}
-                            </th>
-                        <th onClick={SortByCategory} style={{ cursor: "pointer" }}>
-                            Category {sortOrderCategory === "asc" ? "▲" : sortOrderCategory === "desc" ? "▼" : ""}
-                            </th>
-                        <th>E-Mail</th>
-                        <th>Status</th>
-                        <th>Mark As Resolved</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {sortedTickets.map(ticket => <TableItem key={ticket.id} {...ticket} />)}
-                </tbody>
-            </table>
-        </div>
+            <div className="info-boxes-div">
+                <BoxesContainer />
+            </div>
+            <div className="ticket-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th onClick={SortByTitle} style={{ cursor: "pointer" }}>
+                                Title {sortOrderTitle === "asc" ? "▲" : sortOrderTitle === "desc" ? "▼" : ""}
+                                </th>
+                            <th onClick={SortByCategory} style={{ cursor: "pointer" }}>
+                                Category {sortOrderCategory === "asc" ? "▲" : sortOrderCategory === "desc" ? "▼" : ""}
+                                </th>
+                            <th>E-Mail</th>
+                            <th>Status</th>
+                            <th>Mark As Resolved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedTickets.map(ticket => <TableItem key={ticket.id} {...ticket} />)}
+                    </tbody>
+                </table>
+            </div>
         </main>
     );
 };

@@ -403,7 +403,7 @@ th {
 
 /* Styling applies to all boxes */
 .box {
-  border-radius: 25px;
+  /* border-radius: 25px; */
   height: 100%;
   width: 80%;
   text-align: center;

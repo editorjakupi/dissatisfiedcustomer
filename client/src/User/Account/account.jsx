@@ -1,5 +1,4 @@
-import './main.css';
-
+import './account.css';
 
 const AccountInformation = ({ user, setUser }) => {
 
