@@ -11,7 +11,7 @@ import UsersList from "./UsersList";
 import { TicketForm } from "./TicketForm.jsx";
 import NewEmployee from "./NewEmployee.jsx";
 
-import "./NavBar.css";
+import "./main.css";
 import { Message } from "./message.jsx";
 import TicketHandler from "./TicketHandler.jsx";
 import NewProduct from "./NewProduct.jsx";

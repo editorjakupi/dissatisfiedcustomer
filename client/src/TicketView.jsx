@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import "./TicketView.css"
+import "./main.css"
 
 function BoxesContainer() {
     const [ticketCounts, setTicketCounts] = useState({ active: 0, inactive: 0, resolved: 0, total: 0 });
@@ -113,8 +113,8 @@ export default function TicketView() {
         </tr>
     }
     return (
-        <>
-        <div>
+        <main id="ticket-view-main">
+        <div className="info-boxes-div">
         <BoxesContainer />
         </div>
         <div className="ticket-container">
@@ -138,6 +138,6 @@ export default function TicketView() {
                 </tbody>
             </table>
         </div>
-        </>
+        </main>
     );
 };

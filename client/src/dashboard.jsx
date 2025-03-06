@@ -1,5 +1,5 @@
 ﻿import { useNavigate, Navigate } from "react-router-dom";
-import './dashboard.css';
+import './main.css';
 import { useEffect, useState } from "react";
 
 const Dashboard = ({ user, setUser }) => {

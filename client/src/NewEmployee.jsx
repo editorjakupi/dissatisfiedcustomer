@@ -1,5 +1,5 @@
 ﻿import React, {useState} from "react";
-import "./new.css";
+import "./main.css";
 
 const NewEmployee = ({ user, setUser }) => {
     const [formData, setFormData] = useState({

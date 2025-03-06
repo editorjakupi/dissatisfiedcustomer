@@ -1,9 +1,9 @@
-﻿.users-container {
+﻿.user-container {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center everything horizontally */
     justify-content: center; /* Center everything vertically */
-    height: 100vh;
+    height: 100%;
     padding: 1rem;
     width: 100%;
 }
@@ -14,7 +14,6 @@
     justify-content: space-between; /* Push input left, buttons right */
     align-items: center;
     width: 50%;
-    max-width: 900px; /* Adjust width as needed */
     margin-bottom: 1rem; /* Space between search and main-container */
 }
 
@@ -30,32 +29,50 @@
     gap: 2rem; /* Space between content and form */
     align-items: flex-start;
     width: 100%;
-    max-width: 900px; /* Adjust width as needed */
 }
 
 /* Content Wrapper: Holds user list and details */
 .content-wrapper {
     display: flex;
+    width: 1rem;
     justify-content: center;
     align-items: flex-start;
     gap: 1rem;
     background: #ffffff;
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     flex: 1; /* Takes up remaining space */
-    min-width: 600px;
+    min-width: 50%;
 }
+
+/* User details information */
+.user-details {
+    padding: 0;
+    width: 50%;
+}
+
+/* Text for user list and details */
+.users-list p, .user-details p {
+    width: 60%;
+}
+
 
 /* Form container stays on the right */
 .form-container {
-    width: 300px;
+    width: 50%;
     display: flex;
     flex-direction: column;
     padding: 1rem;
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form container input padding */
+
+.form-container input {
+    margin-bottom: 3%;
 }
 
 /* Search input styling */
@@ -69,7 +86,7 @@
 /* Button styling */
 .search-button,
 .show-all-button {
-    padding: 0.5rem 1rem;
+    padding: 10% 10%;
     border: none;
     border-radius: 4px;
     cursor: pointer;

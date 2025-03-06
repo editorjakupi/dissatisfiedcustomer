@@ -1,7 +1,7 @@
 ﻿import { useEffect } from "react";
 import React from "react";
 import { useNavigate } from "react-router";
-import "./NavBar.css";
+import "./main.css";
 import logo from "./assets/logo.png";
 
 const NavBar = ({ user, setUser }) => {

@@ -1,0 +1,425 @@
+/* Applies to all */
+body, html {
+  background-color: #fef7ff;
+  color: black;
+  margin: 0;
+}
+
+.app-container, main {
+  display: flex;
+  justify-content: center;
+}
+
+p {
+  margin-bottom: 0;
+}
+
+/* Account and login */
+#input-div {
+  display: flex;
+  flex-direction: column;
+}
+
+#input-div text, p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#update-button-div {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  margin-top: 5%;
+}
+
+#input-login-div {
+  display: flex;
+  justify-content: center;
+}
+
+#login-input-button-div {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  margin-top: 5%;
+}
+
+#update-button-div>button {
+  background-color: #75B9BE;
+  border-radius: 20px;
+  width: 25%;
+  border: none;
+  color: black;
+  font-size: 1em;
+}
+
+
+.input-type-div {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 20vw; 
+  height: 100vh;
+  background-color: white;
+  color: black;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1%;
+  box-sizing: border-box;
+}
+
+/* Buttons */
+.sidebar button {
+  width: 100%;
+  height: 11%;
+  padding: 10%;
+  margin: 5% 0;
+  background: #ABCCC8;
+  color: black;
+  border: none;
+  border-radius: 40px;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1em;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.sidebar button span {
+  position: relative;
+  top: -3%;
+}
+
+.nav-selection button:hover {
+  background: #444;
+}
+
+/* User Info Box */
+.user-info {
+  background: #ABCCC8;
+  border-radius: 5px;
+  text-align: center;
+  z-index: 10;
+}
+
+.user-info p {
+  margin: 5% 0;
+  font-size: 1em;
+  color: black;
+}
+
+/* User placeholder container */
+.user-placeholder {
+  margin: 0;
+}
+
+/* Logout Button */
+.logout-container {
+  margin-bottom: -3%;
+}
+
+.logout-button {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.logout-button:hover {
+  background: #ff1a1a;
+}
+
+/* Reset styles for the logo button */
+.sidebar .logo-button {
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Keep the image styling */
+/* Not sure about width and height being 100% instead of auto */
+.logo {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.forgot-password-div button {
+  all: initial;
+}
+
+/* Dashboard Styling */
+#dashboard-main {
+  display: flex;
+  height: 100%;
+}
+
+/* Admin Dashboard Styling */
+.admin-dashboard-div {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.admin-dashboard-content-div {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-dashboard-content-div>form {
+  margin: 2%;
+}
+
+.product-stats, .employees-stats {
+  width: 10rem;
+  height:2.5rem;
+}
+
+.product-stats, .employees-stats, button {
+  border-radius: 5px;
+  background-color: #D9D9D9;
+  cursor: pointer;
+}
+
+/* Admin product and employee */
+.user-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center everything horizontally */
+  justify-content: center; /* Center everything vertically */
+  height: 100%;
+  /* padding: 1rem; */
+  margin: 1%;
+  width: 100%;
+}
+
+/* Search bar stays on top, spreads input left and buttons right */
+.search-container {
+  display: flex;
+  justify-content: space-between; /* Push input left, buttons right */
+  align-items: center;
+  width: 50%;
+  margin-bottom: 1rem; /* Space between search and main-container */
+}
+
+/* Buttons stay together */
+.button-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Content + Form layout below search */
+.main-container {
+  display: flex;
+  gap: 1%; /* Space between content and form */
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Content Wrapper: Holds user list and details */
+.content-wrapper {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  flex: 1; /* Takes up remaining space */
+  min-width: 50%;
+}
+
+/* User details information */
+.user-details {
+  padding: 1%;
+  width: 50%;
+}
+
+/* Text for user list and details */
+.users-list p, .user-details p {
+  width: 100%;
+}
+
+
+/* Form container stays on the right */
+.form-container {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  padding: 1%;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form container input padding */
+
+.form-container input {
+  margin-bottom: 3%;
+  width: 100%;
+}
+
+/* Search input styling */
+.search-input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+}
+
+/* Button styling */
+.search-button,
+.show-all-button {
+  padding: 10% 10%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.search-button:hover {
+  background-color: #45a049;
+}
+
+.show-all-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.show-all-button:hover {
+  background-color: #0056b3;
+}
+
+/* Ticket view styling */
+#ticket-view-main {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1%;
+}
+
+/* Ticket container with ticket grid */
+/* Needs further testing, therefore there are still some code left commented */
+.ticket-container {
+  /* position: fixed; */
+  height: 100%;
+  /* bottom: 5000px; */
+  /* right: 20px; */
+  /* width: 79%; */
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+
+  thead {
+      /* position: sticky; */
+      top: 0;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+.resolve-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.resolve-button:hover {
+  background-color: #45a049;
+}
+
+.info-boxes-div
+{
+  display: flex;
+  justify-content: center;
+  height: 25vh;
+  margin-bottom: 1%;
+}
+
+.boxes-container {
+  height: 100%;
+  width: 50%;
+  display: flex;
+  gap: 5%;
+  margin-left: 0;
+  padding: 0;
+}
+
+/* Left boxes */
+.column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 5%;
+  height: 100%;
+  align-items: center;
+}
+
+/* Styling applies to all boxes */
+.box {
+  border-radius: 25px;
+  height: 100%;
+  width: 80%;
+  text-align: center;
+  flex: 1;
+  background-color: #75B9BE;
+  padding: 0;
+  align-content: center;
+}
+
+/* Right box */
+.box4 {
+  flex: 1;
+  height: 100%
+}
+
+.box2 {
+  background-color: #DC0632;
+}
+
