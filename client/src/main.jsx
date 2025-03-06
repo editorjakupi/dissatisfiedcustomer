@@ -45,7 +45,7 @@ const App = () => {
                         <Route path="/user/:userId/cases/:caseId" element={<CustomerCases user={user} />} />
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
-                        <Route path="/companies" element={<NewCompany />} />
+                        <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />
                     </Routes>
                 </div>
             </div>

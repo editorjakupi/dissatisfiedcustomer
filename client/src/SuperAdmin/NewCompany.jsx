@@ -1,21 +1,21 @@
 import React, {useState} from "react";
 
-const NewCompany = () => {
-    /*const [formData, setFormData] = useState({
+const NewCompany = ({user, setUser}) => {
+    const [formData, setFormData] = useState({
         name: "",
         phone: "",
         email: "",
     });
 
-    const change = (event) => 
+    const handleChange = (event) => 
         setFormData({...formData, [event.target.name]: event.target.value}); 
-*/
+
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
 
     //Company search
-    const search = () => {
+    const handleSearch = () => {
         //if (!searchId.trim()) return;
 
         fetch('/api/company/' + searchId)
@@ -41,7 +41,7 @@ const NewCompany = () => {
     };
 
     //Company list
-    const showAll = () => {
+    const handleShowAll = () => {
         fetch('/api/company/')
         .then((response) => response.json())
         .then((data) => {
@@ -53,7 +53,7 @@ const NewCompany = () => {
     };
 
     //Company delete
-    const Delete = () => {
+    const handleDelete = () => {
         //if(!selectedCompany) return;
 
         fetch('/api/company/' + selectedCompany.id, {
@@ -63,6 +63,7 @@ const NewCompany = () => {
             if (!response.ok){
                 setCompanies((prev) => prev.filter((company) => company.id !== selectedCompany.id));
                 setSelectedCompany(null);
+                setMessage("Company " + company.id + " was deleted");
             }else{
                 console.error("error deleteing company");
             }
@@ -73,12 +74,12 @@ const NewCompany = () => {
     };
 
     //Company create
-    const create = async(event) => {
+    const handleCreate = async(event) => {
         event.preventDeafult();
         setMessage("");
 
         try{
-            companyResponse = await fetch('/api/company', {
+            const companyResponse = await fetch('/api/company', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -87,9 +88,11 @@ const NewCompany = () => {
                     email: formData.email,
                 }),
             });
-            //if (!companyResponse.ok) throw new 
-            setMessage("Company created sucessfully!");
-        } catch (error) {
+            const responseText = await companyResponse.text();
+            if (!companyResponse.ok) throw new Error(responseText || "Failed to create company")
+            setMessage("Company created sucessfully with ID: " + company.id);
+        }
+        catch (error) {
             console.error(error);
             setMessage(error.message);
         }
@@ -119,11 +122,11 @@ const NewCompany = () => {
                         {/* company List */}
                         <div className="users-list">
                             {companies.length > 0 ? (
-                                companiess.map((company) => (
+                                companies.map((company) => (
                                     <div
                                         key={company.id}
                                         className="user-item"
-                                        onClick={() => setSelectedcompany(company)}
+                                        onClick={() => setSelectedCompany(company)}
                                     >
                                         {company.name}
                                     </div>
@@ -135,11 +138,17 @@ const NewCompany = () => {
 
                         {/* company Details */}
                         <div className="user-details">
-                            {selectedcompanies ? (
+                            {selectedCompany ? (
                                 <div className="user-card">
-                                    <h2>{selectedcompanies.name}</h2>
+                                    <h2>{selectedCompany.name}</h2>
                                     <p>
-                                        <strong>Description:</strong> {selectedcompanies.description}
+                                        <strong>Name:</strong> {selectedCompany.name}
+                                    </p>
+                                    <p>
+                                        <strong>Phone:</strong> {selectedCompany.phone}
+                                    </p>
+                                    <p>
+                                        <strong>Email</strong> {selectedCompany.email}
                                     </p>
                                     <button onClick={handleDelete} className="delete-button">
                                         Delete company
@@ -150,18 +159,7 @@ const NewCompany = () => {
                             )}
                         </div>
                     </div>
-                    <div className="form-container">
-                        <form onSubmit={handleSubmit} className="form">
-                            <h2>Create New company:</h2>
-                            <input type="text" name="name" value={formData.name} placeholder="Name"
-                                   onChange={handleChange}
-                                   required/>
-                            <input type="text" name="description" value={formData.description} placeholder="Description"
-                                   onChange={handleChange} required/>
-                            <button type="submit">Create company</button>
-                        </form>
-                        {message && <p>{message}</p>}
-                    </div>
+
                 </div>
             </div>
         </main>
@@ -169,3 +167,23 @@ const NewCompany = () => {
 };
 
 export default NewCompany;
+
+
+
+//update company
+/*
+                    <div className="form-container">
+                        <form onSubmit={handleCreate} className="form">
+                            <h2>Create New company:</h2>
+                            <input type="text" name="name" value={formData.name} placeholder="Name"
+                                   onChange={handleChange}
+                                   required/>
+                            <input type="text" name="phone" value={formData.phone} placeholder="Phone"
+                                   onChange={handleChange} required/>
+                            <input type="test" name="email" value={formData.email} placeholder="Email"
+                                    onClick={handleChange} required/>
+                            <button type="submit">Create company</button>
+                        </form>
+                        {message && <p>{message}</p>}
+                    </div>
+*/
