@@ -1,5 +1,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace server;
 public static class UserRoutes
@@ -36,17 +38,19 @@ public static class UserRoutes
     }
 
     public static async Task<Results<Created<string>, BadRequest<string>>>
-        PostUser(PostUserDTO user, NpgsqlDataSource db)
+        PostUser(PostUserDTO user, NpgsqlDataSource db, PasswordHasher<string> hasher)
     {
         Console.WriteLine($"Received request: {user.Name}, {user.Email}, {user.Password}, {user.Phonenumber}");
         string generatedPassword = MessageRoutes.GenerateRandomPassword();
-
+        
+        string hashedPassword = hasher.HashPassword("", generatedPassword);
+        
         using var command = db.CreateCommand(
             "INSERT INTO users(name, email, password, phonenumber, role_id) VALUES($1, $2, $3, $4, $5) RETURNING id"
         );
         command.Parameters.AddWithValue(user.Name ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(user.Email ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue(generatedPassword ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue(hashedPassword ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(user.Phonenumber ?? (object)DBNull.Value);
         command.Parameters.AddWithValue(1);
 
@@ -55,7 +59,7 @@ public static class UserRoutes
             var userId = await command.ExecuteScalarAsync();
             if (userId is int id)
             {
-                Console.WriteLine($"User created with ID: {id}");
+                Console.WriteLine($"User created with ID: {id}" + $"User Password: {generatedPassword}");
                 return TypedResults.Created($"/api/users/{id}", id.ToString());
             }
             return TypedResults.BadRequest("Failed to retrieve user ID.");
@@ -84,7 +88,7 @@ public static class UserRoutes
         }
     }
 
-    public static async Task<IResult> PutUsers(Users updatedUser, NpgsqlDataSource db)
+    public static async Task<IResult> PutUsers(Users updatedUser, NpgsqlDataSource db, PasswordHasher<string> hasher)
     {
         if (updatedUser == null)
             return Results.BadRequest("Invalid user data");
@@ -93,7 +97,7 @@ public static class UserRoutes
 
         // Fetch existing user
         await using var selectCmd = new NpgsqlCommand(
-            "SELECT id, name, email, password, phonenumber, role_id FROM users WHERE id = @id",
+            "SELECT id, name, email, password, phonenumber, role_id, companyid FROM userxcompany WHERE id = @id",
             connection);
         selectCmd.Parameters.AddWithValue("@id", updatedUser.id);
 
@@ -103,9 +107,9 @@ public static class UserRoutes
 
         var existingUser = new Users(
             reader.GetInt32(0),
-            reader.GetString(1),
             reader.GetString(2),
-            reader.GetString(3), // password
+            reader.GetString(1),
+            reader.GetString(3), // stored hashed password
             reader.GetString(4),
             reader.GetInt32(5),
             reader.GetInt32(6)
@@ -113,8 +117,10 @@ public static class UserRoutes
 
         await reader.CloseAsync();
 
-        // Only update the password if a new one is provided
-        var newPassword = string.IsNullOrEmpty(updatedUser.password) ? existingUser.password : updatedUser.password;
+        // Hash the new password if provided, otherwise keep the existing hashed password
+        string newPasswordHash = string.IsNullOrEmpty(updatedUser.password) 
+            ? existingUser.password 
+            : hasher.HashPassword("", updatedUser.password);
 
         var newUser = existingUser with
         {
@@ -123,23 +129,23 @@ public static class UserRoutes
             phonenumber = !string.IsNullOrEmpty(updatedUser.phonenumber)
                 ? updatedUser.phonenumber
                 : existingUser.phonenumber,
-            password = newPassword
+            password = newPasswordHash
         };
 
         // Update user in database
         await using var updateCmd = new NpgsqlCommand(
             "UPDATE users SET name = @name, email = @email, phonenumber = @phonenumber, password = @password WHERE id = @id",
             connection);
-        updateCmd.Parameters.AddWithValue("@id", newUser.id);
         updateCmd.Parameters.AddWithValue("@name", newUser.name);
         updateCmd.Parameters.AddWithValue("@email", newUser.email);
         updateCmd.Parameters.AddWithValue("@phonenumber", newUser.phonenumber);
         updateCmd.Parameters.AddWithValue("@password", newUser.password);
+        updateCmd.Parameters.AddWithValue("@id", newUser.id); // ID should be last
+
 
         await updateCmd.ExecuteNonQueryAsync();
 
-        return Results.Ok(newUser);
+        return Results.Ok("User updated successfully");
     }
-
-
+    
 }

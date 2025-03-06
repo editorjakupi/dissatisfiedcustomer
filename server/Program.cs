@@ -1,5 +1,7 @@
 using Npgsql;
-using server; // Inkludera Records.cs och andra klasser via namespace "server"
+using server;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,7 @@ builder.Services.AddCors(options =>
 // User & Password set by operationsystem environment variables PGUSER & PGPASSWORD
 NpgsqlDataSource db = NpgsqlDataSource.Create("Host=localhost;Database=dissatisfiedcustomer");
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+builder.Services.AddSingleton<PasswordHasher<string>>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -56,10 +59,11 @@ app.MapPost("/api/products", ProductRoute.PostProduct);
 app.MapDelete("/api/products/{id}", ProductRoute.DeleteProduct);
 app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 
-/* Employee endpoints */
-app.MapGet("/api/employees/{email}", (string email) => EmployeeRoute.GetEmployeeByEmail(email, db));
+/* Employee */
+app.MapGet("/api/employees/{userId}", (int userId) => EmployeeRoute.GetEmployees(userId, db));
+app.MapGet("/api/employee/{user_id}", (int user_id) => EmployeeRoute.GetEmployee(user_id, db));
 app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
-app.MapDelete("/api/employees/{email}", (string email) => EmployeeRoute.DeleteEmployeeByEmail(email, db));
+app.MapDelete("/api/employees/{userId}", (int userId) => EmployeeRoute.DeleteEmployee(userId, db));
 
 /* Login / Session endpoints */
 app.MapPost("/api/login", LoginRoute.LoginUser);
@@ -95,5 +99,13 @@ app.MapGet("/api/tickets/view/{token}", async (string token, NpgsqlDataSource db
     var ticket = await TicketRoutes.GetTicketByToken(token, db);
     return ticket != null ? Results.Ok(ticket) : Results.NotFound();
 });
+
+//Super-Admin API calls
+app.MapGet("/api/adminlist", SuperAdminRoutes.GetAdmins);
+app.MapGet("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.GetAdmin(userId, db));
+app.MapPut("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.PutAdmin(userId, db));
+
+
+app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 
 app.Run();

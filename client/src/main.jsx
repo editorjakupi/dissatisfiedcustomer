@@ -11,10 +11,13 @@ import TicketView from "./Support/TicketView/TicketView.jsx";
 import UsersList from "./Admin/UsersList/UsersList.jsx";
 import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
+import AdminList from "./SuperAdmin/AdminList.jsx";
+
+import "./User/NavBar/NavBar.css";
+import { Message } from "./Customer/Message/message.jsx";
+import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
 import CustomerCases from "./Customer/CustomerCases/CustomerCases.jsx";
-import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
-import { Message } from "./Customer/Message/message.jsx";
 import SessionTest from './SessionTest'; // Importera komponenten
 
 
@@ -76,6 +79,7 @@ const App = () => {
                         {/* Endast en inloggad kund har inte längre ett konto, så vi tar bort /message/:id från kundens vy */}
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/session-test" element={<SessionTest />} />
+                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
                     </Routes>
                 </div>
             </div>
