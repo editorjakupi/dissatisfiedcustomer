@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Builder.Extensions;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticAssets;
 
 
 namespace server;
@@ -46,7 +47,8 @@ public static class TicketRoutes
             reader.GetString(4), // email
             reader.GetString(5),  // status
             reader.GetString(6), // casenumber
-            reader.GetString(7) // description
+            reader.GetString(7), // description
+            reader.GetInt32(8) // company_id
         ));
         }
 
@@ -95,7 +97,8 @@ public static class TicketRoutes
                 reader.GetString(reader.GetOrdinal("email")),           // email
                 reader.GetString(reader.GetOrdinal("status_name")),          // status
                 reader.GetString(reader.GetOrdinal("case_number")),      // caseNumber
-                reader.GetString(reader.GetOrdinal("title"))     // description
+                reader.GetString(reader.GetOrdinal("title")),       // description
+                reader.GetInt32(reader.GetOrdinal("company_id"))     // company_id
             );
         }
 
@@ -149,7 +152,8 @@ public static class TicketRoutes
                 reader.GetString(reader.GetOrdinal("user_email")),
                 "", // Om status lagras separat via en JOIN, uppdatera denna rad
                 reader.GetString(reader.GetOrdinal("case_number")),
-                reader.GetString(reader.GetOrdinal("description"))
+                reader.GetString(reader.GetOrdinal("description")),
+                reader.GetInt32(reader.GetOrdinal("company_id"))
             );
         }
         return result;
@@ -180,6 +184,31 @@ public static class TicketRoutes
         catch (Exception ex)
         {
             return Results.BadRequest($"Error updating ticket category: {ex.Message}");
+        }
+    }
+
+    public static async Task<IResult>
+        PutTicketProduct(int ticket_id, int product_id, NpgsqlDataSource db)
+    {
+        await using var conn = await db.OpenConnectionAsync();
+        await using var cmd = conn.CreateCommand();
+
+        cmd.CommandText = "UPDATE tickets SET product_id = @product_id WHERE id = @ticket_id";
+        cmd.Parameters.AddWithValue("@product_id", product_id);
+        cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
+
+        try
+        {
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if (rowsAffected == 0)
+            {
+                return Results.NotFound("Product not found or status unchanged.");
+            }
+            return Results.Ok("Product status updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return Results.BadRequest($"Error updating ticket product: {ex.Message}");
         }
     }
 }

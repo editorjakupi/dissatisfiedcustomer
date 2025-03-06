@@ -49,6 +49,7 @@ app.MapGet("/api/tickets", TicketRoutes.GetTickets);
 app.MapGet("/api/tickets/{id}", (int id) => TicketRoutes.GetTicket(id, db));
 app.MapPut("/api/ticketscategory", TicketRoutes.PutTicketCategory);
 app.MapPut("/api/ticketstatus", TicketRoutes.PutTicketStatus);
+app.MapPut("/api/ticketsproduct", TicketRoutes.PutTicketProduct);
 app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus);
 app.MapPut("/api/tickets/{id}", (int id) => TicketRoutes.UpdateTicketStatus(id, db));
 
