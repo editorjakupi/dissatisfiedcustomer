@@ -6,8 +6,9 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Ange en alert om sessionen inte är aktiv (dvs ticketstatus=Closed/Resolved)
         if (!isSessionActive) {
-            alert("Sessionen är avslutad. Du kan inte lägga till fler meddelanden.");
+            alert("Ticket is closed. You cannot add new messages.");
             return;
         }
 
@@ -17,7 +18,7 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email: userEmail, content: messageContent }),
-            credentials: 'include',
+            credentials: 'include'
         })
         .then(response => {
             if (!response.ok) {
@@ -29,9 +30,11 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
         })
         .then(() => {
             setMessageContent("");
-            onMessageAdded(); // Uppdatera meddelandelistan efter att ett meddelande lagts till
+            onMessageAdded(); // Uppdatera meddelandelistan
         })
         .catch(error => {
+            // Visa en alert med felmeddelandet
+            alert(error.message);
             console.error('Error adding message:', error);
         });
     };
@@ -43,10 +46,9 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
                 onChange={(e) => setMessageContent(e.target.value)}
                 placeholder="Enter your message"
                 required
-                disabled={!isSessionActive}
             />
             <div className="button-container">
-                <button type="submit" className="add-message-button" disabled={!isSessionActive}>
+                <button type="submit" className="add-message-button">
                     Add Message
                 </button>
             </div>

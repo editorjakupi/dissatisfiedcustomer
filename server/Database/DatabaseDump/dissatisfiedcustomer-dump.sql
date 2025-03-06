@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2
--- Dumped by pg_dump version 17.2
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -345,6 +344,24 @@ CREATE VIEW public.tickets_pending AS
 
 
 ALTER VIEW public.tickets_pending OWNER TO postgres;
+
+--
+-- Name: tickets_with_status; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_with_status AS
+ SELECT t.id,
+    t.date,
+    t.title,
+    t.user_email AS email,
+    t.case_number,
+    t.description,
+    ts.status_name
+   FROM (public.tickets t
+     LEFT JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
+
+
+ALTER VIEW public.tickets_with_status OWNER TO postgres;
 
 --
 -- Name: ticketstatus_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -706,7 +723,7 @@ SELECT pg_catalog.setval('public.employees_id_seq', 15, true);
 -- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.messages_id_seq', 22, true);
+SELECT pg_catalog.setval('public.messages_id_seq', 26, true);
 
 
 --
@@ -720,7 +737,7 @@ SELECT pg_catalog.setval('public.product_id_seq', 15, true);
 -- Name: tickets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tickets_id_seq', 21, true);
+SELECT pg_catalog.setval('public.tickets_id_seq', 23, true);
 
 
 --
