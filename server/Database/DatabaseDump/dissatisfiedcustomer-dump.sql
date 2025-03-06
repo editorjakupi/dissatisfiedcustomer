@@ -258,7 +258,8 @@ CREATE VIEW public.tickets_all AS
     t.user_email AS email,
     ts.status_name,
     t.case_number,
-    t.description
+    t.description,
+    t.company_id
    FROM ((public.tickets t
      JOIN public.category c ON ((t.category_id = c.id)))
      JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
@@ -278,7 +279,8 @@ CREATE VIEW public.tickets_closed AS
     email,
     status_name,
     case_number,
-    description
+    description,
+    company_id
    FROM public.tickets_all
   WHERE (((status_name)::text = 'Closed'::text) OR ((status_name)::text = 'Resolved'::text));
 
@@ -319,7 +321,8 @@ CREATE VIEW public.tickets_open AS
     email,
     status_name,
     case_number,
-    description
+    description,
+    company_id
    FROM public.tickets_all
   WHERE (((status_name)::text = 'Unread'::text) OR ((status_name)::text = 'In Progress'::text));
 
@@ -338,7 +341,8 @@ CREATE VIEW public.tickets_pending AS
     email,
     status_name,
     case_number,
-    description
+    description,
+    company_id
    FROM public.tickets_all
   WHERE ((status_name)::text = 'Pending'::text);
 
@@ -633,15 +637,15 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 --
 
 COPY public.tickets (id, company_id, user_email, employee_id, product_id, category_id, date, title, description, status_id, case_number) FROM stdin;
-2	2	cecilia@exempel.se	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	CASE000001
 3	3	erik@exempel.se	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	CASE000002
 4	4	frida@exempel.se	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	CASE000003
-5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	CASE000004
 8	8	martin@exempel.se	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	CASE000005
 10	10	cecilia@exempel.se	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	CASE000006
 11	11	linda@exempel.se	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	CASE000007
 14	14	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
 15	15	oskar@exempel.se	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	CASE000009
+5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	3	CASE000004
+2	2	cecilia@exempel.se	4	2	9	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	2	CASE000001
 \.
 
 
@@ -675,18 +679,6 @@ COPY public.userroles (id, name) FROM stdin;
 --
 
 COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
-2	Bertil Berg	bertil@exempel.se	pass123	070-2222222	2
-3	Cecilia Carlsson	cecilia@exempel.se	pass123	070-3333333	1
-5	Erik Eriksson	erik@exempel.se	pass123	070-5555555	3
-6	Frida Fransson	frida@exempel.se	pass123	070-6666666	1
-7	Gustav Gustavsson	gustav@exempel.se	pass123	070-7777777	2
-8	Helena Holm	helena@exempel.se	pass123	070-8888888	1
-9	Ivan Isaksson	ivan@exempel.se	pass123	070-9999999	2
-10	Jenny Johansson	jenny@exempel.se	pass123	070-1010101	1
-11	Karl Karlsson	karl@exempel.se	pass123	070-2020202	3
-13	Martin Mattsson	martin@exempel.se	pass123	070-4040404	2
-14	Nina Nilsson	nina@exempel.se	pass123	070-5050505	1
-15	Oskar Olsson	oskar@exempel.se	pass123	070-6060606	2
 22	SigmaMale	asdasdr444	8dda838f	\N	1
 20	asdasd	asdasd	123krikkkk123	\N	1
 21	asdasd	john@example.com	123krikkkk123	\N	1
@@ -694,7 +686,19 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 23	\N	SigmaMale3332424	87ce569c	\N	1
 24	No Name	natna34tn	4962fbf5	\N	1
 25	No Name	gna4nga4g	4ed095a0	\N	1
-12	Linda Larsson	linda@exempel.se	pass123	070-3030303	4
+8	Helena Holm	helena@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-8888888	1
+10	Jenny Johansson	jenny@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-1010101	1
+14	Nina Nilsson	nina@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-5050505	1
+5	Erik Eriksson	erik@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-5555555	3
+3	Cecilia Carlsson	cecilia@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-3333333	1
+12	Linda Larsson	linda@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-3030303	4
+7	Gustav Gustavsson	gustav@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-7777777	2
+6	Frida Fransson	frida@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-6666666	1
+9	Ivan Isaksson	ivan@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-9999999	2
+11	Karl Karlsson	karl@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-2020202	3
+15	Oskar Olsson	oskar@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-6060606	2
+2	Bertil Berg	bertil@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-2222222	2
+13	Martin Mattsson	martin@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-4040404	2
 \.
 
 

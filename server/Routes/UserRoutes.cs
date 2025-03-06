@@ -2,6 +2,9 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using MailKit.Net.Smtp;
+using MimeKit;
+using MailKit.Security;
 
 namespace server;
 public static class UserRoutes
@@ -60,6 +63,7 @@ public static class UserRoutes
             if (userId is int id)
             {
                 Console.WriteLine($"User created with ID: {id}" + $"User Password: {generatedPassword}");
+                await SendConfirmationEmailAsync(user.Email, user.Name, generatedPassword);
                 return TypedResults.Created($"/api/users/{id}", id.ToString());
             }
             return TypedResults.BadRequest("Failed to retrieve user ID.");
@@ -148,4 +152,37 @@ public static class UserRoutes
         return Results.Ok("User updated successfully");
     }
     
+    private static async Task SendConfirmationEmailAsync(string email, string name, string content)
+    {
+        string baseUrl = "http://localhost:5173"; // Uppdaterad bas-URL
+
+        string messageBody = $"Welcome {name ?? "Customer"},\n\n Your login information is:\n\n\"{content}\"\n\n" +
+                             $"To access your login as a customer support, please click the link below:\n" +
+                             $"{baseUrl}\n\n" +
+                             $"Thank you for joining us.\n\nBest regards,\nYour App Team";
+
+        var mimeMessage = new MimeMessage();
+        mimeMessage.From.Add(new MailboxAddress("Your App Name", "dissatisfiedcustomer2025@gmail.com"));
+        mimeMessage.To.Add(new MailboxAddress(name ?? "Customer", email));
+        mimeMessage.Subject = "Chat Access Confirmation";
+        mimeMessage.Body = new TextPart("plain") { Text = messageBody };
+
+        try
+        {
+            using var smtpClient = new SmtpClient();
+            // För testning: inaktivera certifikatvalidering
+            smtpClient.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            smtpClient.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtpClient.Authenticate("dissatisfiedcustomer2025@gmail.com", "yxel egbr xehm wdrt");
+            await smtpClient.SendAsync(mimeMessage);
+            await smtpClient.DisconnectAsync(true);
+            Console.WriteLine("Confirmation email sent successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Email sending failed: {ex.Message}");
+            Console.WriteLine($"Email sending Stack Trace: {ex.StackTrace}");
+            throw;
+        }
+    }
 }
