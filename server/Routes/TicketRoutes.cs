@@ -135,7 +135,7 @@ public static class TicketRoutes
     public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
     {
         Ticket? result = null;
-        // Använd vyn "tickets_with_status" istället för att direkt läsa från tabellen.
+        // Use the view "tickets_with_status" which includes: id, date, title, email, status_name, case_number, description, company_id
         using var cmd = db.CreateCommand(@"
         SELECT id, 
                date, 
@@ -143,28 +143,36 @@ public static class TicketRoutes
                email, 
                status_name, 
                case_number,
-               description
-        FROM public.tickets_with_status
+               description,
+               company_id
+        FROM public.tickets_with_status 
         WHERE case_number = $1");
         cmd.Parameters.AddWithValue(token);
 
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
+            int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
+                                ? (int?)null  // Properly handle null values for company_id
+                                : reader.GetInt32(reader.GetOrdinal("company_id"));
+
             result = new Ticket(
                 reader.GetInt32(reader.GetOrdinal("id")),
                 reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
                 reader.GetString(reader.GetOrdinal("title")),
-                "", // Om du behöver kategori kan du lägga till det i vyn
+                "", // Placeholder for category, if needed
                 reader.GetString(reader.GetOrdinal("email")),
-                reader.GetString(reader.GetOrdinal("status_name")),  // Hämtar status direkt från vyn
+                reader.GetString(reader.GetOrdinal("status_name")),
                 reader.GetString(reader.GetOrdinal("case_number")),
                 reader.GetString(reader.GetOrdinal("description")),
-                reader.GetInt32(reader.GetOrdinal("company_id"))
+                companyId  // Use nullable company_id
             );
         }
         return result;
     }
+
+
+
 
 
 

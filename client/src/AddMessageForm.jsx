@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddMessageForm.css';
 
-const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = true }) => {
+const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive, ticketStatus }) => {
     const [messageContent, setMessageContent] = useState("");
+
+    useEffect(() => {
+        // Log to verify the ticket status
+        console.log("Ticket Status in Component:", ticketStatus);
+    }, [ticketStatus]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         // Ange en alert om sessionen inte är aktiv (dvs ticketstatus=Closed/Resolved)
         if (!isSessionActive) {
-            alert("Ticket is closed. You cannot add new messages.");
+            let alertMessage = "Ticket is closed. You cannot add new messages.";
+            if (ticketStatus === "Resolved") {
+                alertMessage = "Ticket is resolved. You cannot add new messages.";
+            }
+            alert(alertMessage);
             return;
         }
 
