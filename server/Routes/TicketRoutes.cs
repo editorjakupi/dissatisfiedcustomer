@@ -126,6 +126,38 @@ public static class TicketRoutes
         }
     }
 
+
+    //Skapa backend-endpoint för kundens chatt via token
+    // Exempelmetod för att hämta ett ärende baserat på det genererade token (case_number)
+    public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
+    {
+        Ticket? result = null;
+        // Hämtar direkt från tabellen "tickets" i public-schemat
+        using var cmd = db.CreateCommand("SELECT * FROM public.tickets WHERE case_number = $1");
+        cmd.Parameters.AddWithValue(token);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            // Skapa ett Ticket-objekt från kolumnvärdena.
+            // Notera: Om du inte brukar använda JOIN för att få med t.ex. category name och status,
+            // sätts dessa fält till tomma strängar för nu, men du kan senare uppdatera detta.
+            result = new Ticket(
+                reader.GetInt32(reader.GetOrdinal("id")),
+                reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
+                reader.GetString(reader.GetOrdinal("title")),
+                "", // Du kan till exempel hämta kategori från en JOIN, om så önskas
+                reader.GetString(reader.GetOrdinal("user_email")),
+                "", // Om status lagras separat via en JOIN, uppdatera denna rad
+                reader.GetString(reader.GetOrdinal("case_number")),
+                reader.GetString(reader.GetOrdinal("description"))
+            );
+        }
+        return result;
+    }
+
+
+
+
     public static async Task<IResult>
         PutTicketCategory(int ticket_id, int category_id, NpgsqlDataSource db)
     {
