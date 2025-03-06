@@ -68,6 +68,7 @@ const NewEmployee = ({ user, setUser }) => {
                 if (res.ok) {
                     setEmployees((prevemployees) => prevemployees.filter((product) => product.id !== selectedEmployees.id));
                     setSelectedEmployee(null);
+                    alert("Employee deleted successfully!");
                 } else {
                     console.error("Error deleting Employee.");
                 }
@@ -141,6 +142,7 @@ const NewEmployee = ({ user, setUser }) => {
             if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
 
             setMessage("User and Employee created successfully ID: " + userId);
+            alert("Employee created successfully!");
         } catch (error) {
             console.error(error);
             setMessage(error.message);
