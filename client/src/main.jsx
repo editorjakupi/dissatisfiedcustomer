@@ -17,6 +17,7 @@ import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
 import CustomerCases from "./Customer/CustomerCases/CustomerCases";
+import NewCompany from "./SuperAdmin/NewCompany.jsx";
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ const App = () => {
                         <Route path="/user/:userId/cases/:caseId" element={<CustomerCases user={user} />} />
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
+                        <Route path="/companies" element={<NewCompany />} />
                     </Routes>
                 </div>
             </div>
