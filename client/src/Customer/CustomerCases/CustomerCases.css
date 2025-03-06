@@ -1,3 +1,4 @@
+/* Container för hela chat session-sidan */
 .cases-container {
     display: flex;
     flex-direction: column;
@@ -9,81 +10,24 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: calc(100% - 260px);
-    /* Anpassar bredden för att rymmas bredvid sidpanelen */
     box-sizing: border-box;
-    /* Inkluderar padding och border i elementets totala bredd */
     overflow-x: auto;
-    /* Lägg till horisontell rullning om innehållet är för brett */
 }
+
 @media (max-width: 768px) {
     .cases-container {
         margin-left: 0;
-        /* Tar bort marginalen när fönsterstorleken är mindre */
         width: 100%;
-        /* Anpassar bredden till 100% när fönsterstorleken är mindre */
     }
 }
 
+/* Rubrik */
 h2 {
     font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 20px;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-th,
-td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #A8CCC9;
-    color: black;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
-}
-
-button {
-    background-color: #75B9BE;
-    border: none;
-    padding: 5px 10px;
-    /* Minska paddingen för att få texten att rymmas */
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-    color: white;
-    /* Lägg till färg på texten */
-    white-space: nowrap;
-    /* Säkerställer att texten inte bryts */
-    font-size: 12px;
-    /* Minska textstorleken */
-}
-
-button:hover {
-    background-color: #7ecdd3;
-}
-
-.search-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.search-input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    flex: 1;
-}
-
+/* Ärendedetaljer */
 .case-details {
     margin-top: 20px;
     padding: 10px;
@@ -92,29 +36,48 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Meddelandelistan */
 .messages-list {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Gemensam stil för meddelanden */
 .message-item {
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    background-color: #fff;
+    max-width: 60%;
+    word-wrap: break-word;
 }
 
+/* Kundmeddelanden: grön bakgrund, vänsterjusterade */
 .customer-message {
     background-color: #c2e7bf;
-    /* Grönaktig färg för kundmeddelanden */
+    color: #155724;
+    align-self: flex-start;
 }
 
+/* Supportmeddelanden: blå bakgrund, högerjusterade */
 .support-message {
     background-color: #a5cad1;
-    /* Blåaktig färg för supportmeddelanden */
+    color: #0c5460;
+    align-self: flex-end;
 }
 
+/* Styling för nedräkningstimer */
+.session-timer {
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Styling för formuläret att lägga till meddelande */
 .add-message-form {
     display: flex;
     flex-direction: column;
@@ -133,28 +96,25 @@ button:hover {
     resize: vertical;
 }
 
+/* Container för knappar i formuläret */
 .button-container {
     display: flex;
     gap: 10px;
 }
 
-.add-message-button,
-.update-messages-button {
+/* Stil för knappen "Add Message" */
+.add-message-button {
     background-color: #75B9BE;
     border: none;
     padding: 5px 10px;
-    /* Minska paddingen för att få texten att rymmas */
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
     color: white;
     white-space: nowrap;
-    /* Säkerställer att texten inte bryts */
     font-size: 12px;
-    /* Minska textstorleken */
 }
 
-.add-message-button:hover,
-.update-messages-button:hover {
+.add-message-button:hover {
     background-color: #7ecdd3;
 }

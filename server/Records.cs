@@ -1,20 +1,17 @@
 namespace server;
 
 #region Message Records
-public record Message(
-  int UserId,
-  string Content);
+// UPPDATERAD: Använd UserEmail (string) istället för UserId (int)
+// Tidigare: public record Message(int UserId, string Content);
+public record Message(string UserEmail, string Content);
 
-public record MessageDTO(string Email,
-  string Name,
-  string Content,
-  int CompanyID);
+// MessageDTO har redan rätt struktur
+public record MessageDTO(string Email, string Name, string Content, int CompanyID);
 
-public record MessageDetails(
-  int MessageId,
-  int UserId,
-  string Content);
 
+// UPPDATERAD: Ändrat UserId till UserEmail i MessageDetails
+// Tidigare: public record MessageDetails(int MessageId, int UserId, string Content);
+public record MessageDetails(int MessageId, string UserEmail, string Content);
 #endregion
 
 #region Case Records
@@ -33,7 +30,7 @@ public record Company(
   string name,
   string phone,
   string email
-  );
+);
 
 public record CompanyDTO(
   string name,
