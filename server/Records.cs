@@ -110,7 +110,8 @@ public record Ticket(
   string email,
   string status,
   string caseNumber,
-  string description);
+  string description,
+  int company_id);
 
 public record TicketStatus(
   int id,
