@@ -115,17 +115,15 @@ const NewEmployee = ({ user, setUser }) => {
 
                 if (!employeeResponse.ok) throw new Error("Failed to add employee");
 
-            if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
+                if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
 
-            setMessage("User and Employee created successfully ID: " + userId);
-            alert("Employee created successfully!");
-        } catch (error) {
-            console.error(error);
-            setMessage(error.message);
-             setMessage("User and Employee created successfully ID: " + userId);
-             handleShowAll();
+                setMessage("User and Employee created successfully ID: " + userId);
+                alert("Employee created successfully!");
             } catch (error) {
+                console.error(error);
                 setMessage(error.message);
+                setMessage("User and Employee created successfully ID: " + userId);
+                handleShowAll();
             }
         }
     };
