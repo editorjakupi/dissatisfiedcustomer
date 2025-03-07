@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2
--- Dumped by pg_dump version 17.2
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -347,6 +346,26 @@ CREATE VIEW public.tickets_pending AS
 ALTER VIEW public.tickets_pending OWNER TO postgres;
 
 --
+-- Name: tickets_with_status; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_with_status AS
+ SELECT t.id,
+    t.date,
+    t.title,
+    t.user_email AS email,
+    t.case_number,
+    t.description,
+    ts.status_name,
+    e.company_id
+   FROM ((public.tickets t
+     LEFT JOIN public.ticketstatus ts ON ((t.status_id = ts.id)))
+     LEFT JOIN public.employees e ON ((t.employee_id = e.id)));
+
+
+ALTER VIEW public.tickets_with_status OWNER TO postgres;
+
+--
 -- Name: ticketstatus_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -585,6 +604,8 @@ COPY public.messages (id, ticket_id, message, email) FROM stdin;
 9	5	Kan jag returnera produkten?	helena@exempel.se
 10	5	Självklart, här är returinstruktioner.	linda@exempel.se
 15	8	Kan jag få mer information om produkten?	martin@exempel.se
+27	24	This is a test message to validate MailKit SMTP sending.	dissatisfiedcustomer2025@gmail.com
+28	24	HEY	dissatisfiedcustomer2025@gmail.com
 \.
 
 
@@ -625,6 +646,7 @@ COPY public.tickets (id, company_id, user_email, employee_id, product_id, catego
 11	11	linda@exempel.se	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	CASE000007
 14	14	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
 15	15	oskar@exempel.se	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	CASE000009
+24	1	dissatisfiedcustomer2025@gmail.com	\N	\N	\N	2025-03-06 19:28:53.220191	Test Customer	This is a test message to validate MailKit SMTP sending.	3	CASE-FF6D9D6C
 \.
 
 
@@ -706,7 +728,7 @@ SELECT pg_catalog.setval('public.employees_id_seq', 15, true);
 -- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.messages_id_seq', 22, true);
+SELECT pg_catalog.setval('public.messages_id_seq', 28, true);
 
 
 --
@@ -720,7 +742,7 @@ SELECT pg_catalog.setval('public.product_id_seq', 15, true);
 -- Name: tickets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tickets_id_seq', 21, true);
+SELECT pg_catalog.setval('public.tickets_id_seq', 24, true);
 
 
 --

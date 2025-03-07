@@ -1,102 +1,100 @@
 ﻿import { useEffect } from "react";
 import React from "react";
+// Vi använder endast "react-router" om det krävs, men här importeras den vanligaste standarden från "react-router-dom"
+// (För webbaserad app är detta vanligtatt använda)
 import { useNavigate } from "react-router";
 import "./NavBar.css";
 import logo from "../../assets/logo.png";
 
 const NavBar = ({ user, setUser }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const storedUser = JSON.parse(sessionStorage.getItem("user"));
-        if (storedUser) {
-            setUser(storedUser);
-        }
-    }, []);
-
-    const roleNames = {
-        1: "Customer",
-        2: "Employee",
-        3: "Admin",
-        4: "Super Admin"
+  useEffect(() => {
+    // Hämtar användarinfo från sessionStorage om den existerar
+    const storedUser = JSON.parse(sessionStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
     }
+  }, [setUser]);
 
-    const handleLogout = async () => {
-        await fetch("/api/logout", {
-            method: "POST",
-        });
+  // Vi definierar rollnamn för de användare som har konto (employees, admin, superadmin)
+  const roleNames = {
+    2: "Employee",
+    3: "Admin",
+    4: "Super Admin"
+  };
 
-        setUser(null); // Clear user data
-        navigate("/");
-    };
+  const handleLogout = async () => {
+    await fetch("/api/logout", {
+      method: "POST",
+    });
+    setUser(null);
+    navigate("/");
+  };
 
+  return (
+    <div className="sidebar">
+      {/* Logo-sektionen - samma för alla */}
+      <div className="logo-container">
+        <button onClick={() => navigate("/dashboard")} className="logo-button">
+          <img src={logo} alt="Dissatisfied Customer Logo" className="logo" />
+        </button>
+      </div>
 
-
-    return (
-        <div className="sidebar">
-            {/* Clickable Logo Section */}
-            <div className="logo-container">
-                <button onClick={() => navigate("/dashboard")} className="logo-button">
-                    <img src={logo} alt="Dissatisfied Customer Logo" className="logo" />
-                </button>
+      {/* Endast visa navigeringsalternativ för användare med konto (employees, admin, superadmin) */}
+      {user && user.role_id !== 1 && (
+        <>
+          {user.role_id === 2 && (
+            <div className="nav-section">
+              <h3>Employee Panel</h3>
+              <button onClick={() => navigate("/account")}>My Account</button>
+              <button onClick={() => navigate("/tickets?view=all")}>All Tickets</button>
+              <button onClick={() => navigate("/tickets?view=open")}>Open Tickets</button>
+              <button onClick={() => navigate("/tickets?view=pending")}>Pending Tickets</button>
+              <button onClick={() => navigate("/tickets?view=closed")}>Closed Tickets</button>
             </div>
+          )}
 
-            {/* Customer Panel (role_id 1) */}
-            {user.role_id === 1 && (
-                <div className="nav-section">
-                    <h3>Customer Panel</h3>
-                    <button onClick={() => navigate(`/user/${user.userId}/cases`)}>My Tickets</button>
-                    <button onClick={() => navigate("/account")}>My Account</button>
-                </div>
-            )}
-
-            {/* Employee Panel (role_id 2) */}
-            {user.role_id === 2 && (
-                <div className="nav-section">
-                    <h3>Employee Panel</h3>
-                    <button onClick={() => navigate("/account")}>My Account</button>
-                    <button onClick={() => navigate("/tickets?view=all")}>All Tickets</button>
-                    <button onClick={() => navigate("/tickets?view=open")}>Open Tickets</button>
-                    <button onClick={() => navigate("/tickets?view=pending")}>Pending Tickets</button>
-                    <button onClick={() => navigate("/tickets?view=closed")}>Closed Tickets</button>
-                </div>
-            )}
-
-            {/* Admin Panel (role_id 3) */}
-            {user.role_id === 3 && (
-                <div className="nav-section">
-                    <h3>Admin Panel</h3>
-                    <button onClick={() => navigate("/account")}>My Acccount</button>
-                    <button onClick={() => navigate("/dashboard")}>Overview</button>
-                    <button onClick={() => navigate("/products")}>Products</button>
-                    <button onClick={() => navigate("/employee")}>Employees</button>
-                </div>
-            )}
-
-            {/* Super Admin Panel (role_id 4) */}
-            {user.role_id === 4 && (
-                <div className="nav-section">
-                    <h3>Super Admin Panel</h3>
-                    <button onClick={() => navigate("/account")}>My Account</button>
-                    <button onClick={() => navigate("/companies")}>Companies</button>
-                    <button onClick={() => navigate("/admins")}>Admins</button>
-                    <button onClick={() => navigate("/users")}>Users</button>
-                </div>
-            )}
-
-            {/* Logout Button */}
-            <div className="logout-container">
-                <button className="logout-button" onClick={handleLogout}>
-                    Logout
-                </button>
+          {user.role_id === 3 && (
+            <div className="nav-section">
+              <h3>Admin Panel</h3>
+              <button onClick={() => navigate("/account")}>My Account</button>
+              <button onClick={() => navigate("/dashboard")}>Overview</button>
+              <button onClick={() => navigate("/products")}>Products</button>
+              <button onClick={() => navigate("/employee")}>Employees</button>
             </div>
+          )}
 
-            <div className="user-info">
-                <p><strong>{user?.name}</strong></p>
-                <p>{roleNames[user?.role_id] || "Unknown Role"}</p>
+          {user.role_id === 4 && (
+            <div className="nav-section">
+              <h3>Super Admin Panel</h3>
+              <button onClick={() => navigate("/account")}>My Account</button>
+              <button onClick={() => navigate("/companies")}>Companies</button>
+              <button onClick={() => navigate("/admins")}>Admins</button>
+              <button onClick={() => navigate("/users")}>Users</button>
             </div>
+          )}
+        </>
+      )}
+      
+      {/* Kunde-panel tas bort, eftersom kunder inte har konto */}
+      
+      {/* Logout-knapp visas för de inloggade användarna */}
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+      
+      {/* Användarinfo visas endast om det är en anställd/admin (inte för kunder) */}
+      {user && user.role_id !== 1 && (
+        <div className="user-info">
+          <p><strong>{user?.name}</strong></p>
+          <p>{roleNames[user?.role_id] || "Unknown Role"}</p>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default NavBar;

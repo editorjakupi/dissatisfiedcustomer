@@ -21,8 +21,7 @@
     gap: 10px;
 }
 
-.add-message-button,
-.update-messages-button {
+.add-message-button {
     background-color: #75B9BE;
     border: none;
     padding: 10px 20px;
@@ -31,10 +30,8 @@
     transition: background 0.3s;
     color: white;
     white-space: nowrap;
-    /* Säkerställer att texten inte bryts */
 }
 
-.add-message-button:hover,
-.update-messages-button:hover {
+.add-message-button:hover {
     background-color: #7ecdd3;
 }
