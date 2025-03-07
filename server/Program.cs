@@ -67,6 +67,15 @@ app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
 app.MapDelete("/api/employees/{userId}", (int userId) => EmployeeRoute.DeleteEmployee(userId, db));
 
 /* Login / Session endpoints */
+
+//Company Endpoints
+app.MapPost("/api/company", CompanyRoutes.PostCompany);
+app.MapDelete("/api/company/{id}", CompanyRoutes.DeleteCompany);
+app.MapGet("/api/company/{id}", CompanyRoutes.GetCompany);
+app.MapGet("/api/company/", CompanyRoutes.GetCompanies);
+app.MapPut("/api/company/{id}", CompanyRoutes.PutCompany);
+
+/* Login */
 app.MapPost("/api/login", LoginRoute.LoginUser);
 app.MapGet("/api/session", LoginRoute.GetSessionUser);
 app.MapPost("/api/logout", LoginRoute.LogoutUser);

@@ -124,8 +124,6 @@ const NewEmployee = ({ user, setUser }) => {
             setMessage(error.message);
              setMessage("User and Employee created successfully ID: " + userId);
              handleShowAll();
-            } catch (error) {
-                setMessage(error.message);
             }
         }
     };
