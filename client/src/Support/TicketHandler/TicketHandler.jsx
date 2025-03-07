@@ -8,9 +8,11 @@ const TicketHandler =() =>
   const {ticketId} = useParams();
   const [ticket, setTicket] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const [ticketStatus, setTicketStatus] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
   
   useEffect(() => {
     fetch(`/api/categories`)
@@ -43,6 +45,14 @@ const TicketHandler =() =>
         .then(data => {
           console.log("Fetched ticket data:", data);
           setTicket(data); // Set the ticket data directly
+
+          fetch (`/api/products/${data.company_id}`)
+              .then(response => response.json())
+              .then(productData => {
+                console.log("Fetched product data:", productData);
+                setProducts(productData);
+              })
+              .catch((error) => console.error("Error fetching products", error));
           
           const matchingCategory = categories.find(category => category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase());
 
@@ -98,6 +108,27 @@ const TicketHandler =() =>
       console.error("Error updating ticket:", error);
     }
   };
+
+  const handleProductChange = async (e) => {
+    const newProductId = e.target.value;
+    setSelectedProduct(newProductId);
+
+    try {
+      const response = await fetch(`/api/ticketsproduct?ticket_id=${ticket.id}&product_id=${newProductId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update ticket Product");
+      }
+
+      alert("Ticket Product updated successfully!");
+
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+    }
+  };
   
   if (!ticket) return <p>Loading ticket...</p>;
   
@@ -148,9 +179,13 @@ const TicketHandler =() =>
             </div>
             <div className="ticket-product-div">
               <label>Product</label>
-              <form>
-                <select>
-                  <option>Select Product</option>
+              <form onSubmit={(e) => e.preventDefault()}>
+                <select value={selectedProduct || ""} onChange={handleProductChange}>
+                  {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                  ))}
                 </select>
               </form>
             </div>
