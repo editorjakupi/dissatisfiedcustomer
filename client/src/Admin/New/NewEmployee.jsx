@@ -115,17 +115,15 @@ const NewEmployee = ({ user, setUser }) => {
 
                 if (!employeeResponse.ok) throw new Error("Failed to add employee");
 
-            if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
+                if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
 
-            setMessage("User and Employee created successfully ID: " + userId);
-            alert("Employee created successfully!");
-        } catch (error) {
-            console.error(error);
-            setMessage(error.message);
-             setMessage("User and Employee created successfully ID: " + userId);
-             handleShowAll();
+                setMessage("User and Employee created successfully ID: " + userId);
+                alert("Employee created successfully!");
             } catch (error) {
+                console.error(error);
                 setMessage(error.message);
+                setMessage("User and Employee created successfully ID: " + userId);
+                handleShowAll();
             }
         }
     };
@@ -163,12 +161,12 @@ const NewEmployee = ({ user, setUser }) => {
                         </div>
 
                         <div className="user-details">
-                            {selectedEmployees ? (
+                            {selectedEmployee ? (
                                 <div className="user-card">
-                                    <h2>{selectedEmployees.name}</h2>
-                                    <p><strong>Name:</strong> {selectedEmployees.name}</p>
-                                    <p><strong>Email:</strong> {selectedEmployees.email}</p>
-                                    <p><strong>Phone Number:</strong> {selectedEmployees.phonenumber}</p>
+                                    <h2>{selectedEmployee.name}</h2>
+                                    <p><strong>Name:</strong> {selectedEmployee.name}</p>
+                                    <p><strong>Email:</strong> {selectedEmployee.email}</p>
+                                    <p><strong>Phone Number:</strong> {selectedEmployee.phonenumber}</p>
 
                                     <button onClick={handleDelete} className="delete-button">
                                         Delete Employee

@@ -71,6 +71,14 @@ public record Users(
   int role_id,
   int companyId);
 
+public record UserDTO(
+  int id,
+  string name,
+  string email,
+  string password,
+  string phonenumber,
+  int role_id);
+
 public record PostUserDTO(
   string Name,
   string Email,
