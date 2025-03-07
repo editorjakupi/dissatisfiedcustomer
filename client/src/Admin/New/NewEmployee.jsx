@@ -58,6 +58,9 @@ const NewEmployee = ({ user, setUser }) => {
                 if (res.ok) {
                     setEmployees((prev) => prev.filter(emp => emp.id !== selectedEmployee.id));
                     setSelectedEmployee(null);
+                    alert("Employee deleted successfully!");
+                } else {
+                    console.error("Error deleting Employee.");
                     setFormData({name: "", email: "", password: "", phonenumber: "", companyId: ""});
                 }
             })
@@ -112,8 +115,15 @@ const NewEmployee = ({ user, setUser }) => {
 
                 if (!employeeResponse.ok) throw new Error("Failed to add employee");
 
-                setMessage("User and Employee created successfully ID: " + userId);
-                handleShowAll();
+            if (!employeeResponse.ok) throw new Error(employeeResponseText || "Failed to add employee");
+
+            setMessage("User and Employee created successfully ID: " + userId);
+            alert("Employee created successfully!");
+        } catch (error) {
+            console.error(error);
+            setMessage(error.message);
+             setMessage("User and Employee created successfully ID: " + userId);
+             handleShowAll();
             } catch (error) {
                 setMessage(error.message);
             }
