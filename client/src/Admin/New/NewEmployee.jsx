@@ -122,11 +122,8 @@ const NewEmployee = ({ user, setUser }) => {
         } catch (error) {
             console.error(error);
             setMessage(error.message);
-             setMessage("User and Employee created successfully ID: " + userId);
-             handleShowAll();
-            } catch (error) {
-                setMessage(error.message);
-            }
+            setMessage("User and Employee created successfully ID: " + userId);
+            handleShowAll();
         }
     };
 
