@@ -63,7 +63,7 @@ const NewCompany = ({user, setUser}) => {
             if (!response.ok){
                 setCompanies((prev) => prev.filter((company) => company.id !== selectedCompany.id));
                 setSelectedCompany(null);
-                setMessage("Company " + company.id + " was deleted");
+                alert("Company " + selectedCompany.id + " was deleted");
             }else{
                 console.error("error deleteing company");
             }
@@ -90,7 +90,7 @@ const NewCompany = ({user, setUser}) => {
             });
             const responseText = await companyResponse.text();
             if (!companyResponse.ok) throw new Error(responseText || "Failed to create company")
-            setMessage("Company created sucessfully with ID: " + company.id);
+            alert("Company " + formData.name + " created sucessfully");
         }
         catch (error) {
             console.error(error);
