@@ -17,7 +17,6 @@ import "./User/NavBar/NavBar.css";
 import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
-import CustomerCases from "./Customer/CustomerCases/CustomerCases";
 import NewCompany from "./SuperAdmin/NewCompany.jsx";
 import CustomerCases from "./Customer/CustomerCases/CustomerCases.jsx";
 import SessionTest from './SessionTest'; // Importera komponenten
