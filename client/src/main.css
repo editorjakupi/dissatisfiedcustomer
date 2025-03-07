@@ -5,9 +5,15 @@ body, html {
   margin: 0;
 }
 
+/* Not sure if this affects anything */
+.content {
+  width: 80vw;
+}
+
 .app-container, main {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 p {
@@ -70,46 +76,56 @@ p {
   top: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 1%;
+  padding: 0;
   box-sizing: border-box;
+
+  > * {
+      margin: 5%;
+  }
 }
 
-/* Buttons */
-.sidebar button {
-  width: 100%;
-  height: 11%;
-  padding: 10%;
-  margin: 5% 0;
-  background: #ABCCC8;
-  color: black;
-  border: none;
-  border-radius: 40px;
-  justify-content: center;
-  cursor: pointer;
-  text-align: center;
-  font-size: 1em;
-  transition: background 0.2s;
+/* Nav Buttons */
+.nav-section {
   display: flex;
-  align-items: center;
-  position: relative;
-}
+  flex-direction: column;
+  height: 60%;
+  gap: 2%;
+  
+  button {
+      width: 100%;
+      height: 6vh;
+      padding: 0;
+      margin: 0;
+      color: black;
+      border: none;
+      border-radius: 40px;
+      justify-content: center;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1em;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      background: #ABCCC8;
+  }
+  button:hover {
+    background: #444;
+  }
 
-.sidebar button span {
-  position: relative;
-  top: -3%;
-}
-
-.nav-selection button:hover {
-  background: #444;
+  button span {
+    top: -3%;
+  }
 }
 
 /* User Info Box */
 .user-info {
   background: #ABCCC8;
-  border-radius: 5px;
+  border-radius: 0;
   text-align: center;
   z-index: 10;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .user-info p {
@@ -125,20 +141,25 @@ p {
 
 /* Logout Button */
 .logout-container {
-  margin-bottom: -3%;
-}
+  height: 10%;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
 
-.logout-button {
+  button {
   background: #ff4d4d;
   color: white;
   border: none;
-  width: 100%;
+  width: 50%;
   cursor: pointer;
-  border-radius: 5px;
-}
+  height: 100%;
+  padding: 0;
+  border-radius: 40px;
+  }
 
-.logout-button:hover {
-  background: #ff1a1a;
+  button:hover {
+    background: #d31616;
+  }
 }
 
 /* Reset styles for the logo button */
@@ -182,24 +203,34 @@ p {
 .admin-dashboard-content-div {
   display: flex;
   width: 100%;
+  height: 100%;
   flex-direction: column;
   align-items: center;
+  gap: 3%; /* Gap between information */
+  justify-content: center; 
+
+  button {
+    border-radius: 5px;
+    background-color: #D9D9D9;
+    cursor: pointer;
+    width: 15vw;
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    margin: 1%;
+  }
+  
+  button:hover {
+    cursor: pointer;
+    background-color: gray;
+    transition: background 0.2s;
+  }
 }
 
-.admin-dashboard-content-div>form {
-  margin: 2%;
-}
 
-.product-stats, .employees-stats {
-  width: 10rem;
-  height:2.5rem;
-}
 
-.product-stats, .employees-stats, button {
-  border-radius: 5px;
-  background-color: #D9D9D9;
-  cursor: pointer;
-}
 
 /* Admin product and employee */
 .user-container {
@@ -239,16 +270,16 @@ p {
 /* Content Wrapper: Holds user list and details */
 .content-wrapper {
   display: flex;
-  width: 50%;
+  width: 50%; /* Unsure if this affects anything */
   justify-content: center;
   align-items: flex-start;
   gap: 1rem;
   background: #ffffff;
-  padding: 1rem;
+  margin: 0.1%;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   flex: 1; /* Takes up remaining space */
-  min-width: 50%;
+  min-width: 60%;
 }
 
 /* User details information */
@@ -272,6 +303,16 @@ p {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  button {
+    width: 50%;
+  }
+
+  button:hover {
+    background-color: gray;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
 }
 
 /* Form container input padding */
@@ -321,7 +362,8 @@ p {
 #ticket-view-main {
   display: flex;
   flex-direction: column;
-  margin-top: 1%;
+  height: 100%;
+  width: 100%;
 }
 
 /* Ticket container with ticket grid */
@@ -331,7 +373,7 @@ p {
   height: 100%;
   /* bottom: 5000px; */
   /* right: 20px; */
-  /* width: 79%; */
+  width: 99.5%;
   display: flex;
   flex-direction: column;
   background: white;
@@ -343,29 +385,36 @@ p {
       /* position: sticky; */
       top: 0;
   }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th,
+  td {
+    padding: 1%;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+  }
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.ticketname:hover {
+  cursor: pointer;
+  background-color: #75B9BE;
 }
 
-th,
-td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
 
-th {
-  background-color: #f4f4f4;
-}
 
 .resolve-button {
   background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
   cursor: pointer;
   border-radius: 5px;
 }
@@ -378,13 +427,14 @@ th {
 {
   display: flex;
   justify-content: center;
-  height: 25vh;
-  margin-bottom: 1%;
+  height: 25%;
+  width: 40%;
+  margin: 1%;
 }
 
 .boxes-container {
   height: 100%;
-  width: 50%;
+  width: 100%;
   display: flex;
   gap: 5%;
   margin-left: 0;
@@ -403,9 +453,9 @@ th {
 
 /* Styling applies to all boxes */
 .box {
-  /* border-radius: 25px; */
+  border-radius: 25px;
   height: 100%;
-  width: 80%;
+  width: 100%;
   text-align: center;
   flex: 1;
   background-color: #75B9BE;
@@ -423,3 +473,210 @@ th {
   background-color: #DC0632;
 }
 
+.handler-div {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5vh;
+  font-size: 1em;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* Information divs */
+.ticket-handle-information-div {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Ticket title and description */
+.ticket-title-information-div, .ticket-description-information-div {
+  display:flex;
+  flex-direction: column;
+}
+
+.ticket-title-label, .ticket-description-label {
+  background-color: #D9D9D9;
+  width: 30vw;
+  height: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 14px;
+}
+
+/* Selection */
+select {
+  width: 20vw;
+  background-color: #D9D9D9;
+  font-size: 1em;
+}
+
+
+/* Text areas */
+textarea{
+  background-color: #D9D9D9;
+  border-radius: 14px;
+  border: none;
+  width: 30vw;
+  height: 30vh;
+}
+
+/* Chat divs */
+.ticket-chat-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ticket-chat-div>button {
+  border-radius: 14px;
+}
+
+.app-container {
+  display: flex;
+  width: 100%;
+}
+
+/* Super admin user list styling */
+
+.users-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centering horizontally */
+  justify-content: center; /* Centering vertically */
+  height: 100%; /* Full screen height */
+  padding: 0;
+}
+
+.search-container {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1%; /* Space between search and list */
+  width: 100%;
+  justify-content: center;
+}
+
+.search-input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 20%;
+}
+
+.search-button,
+.show-all-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-container button {
+  width: auto;
+  height: auto;
+}
+
+.search-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.search-button:hover {
+  background-color: #45a049;
+}
+
+.show-all-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.show-all-button:hover {
+  background-color: #0056b3;
+}
+
+/* Centering the user list and details */
+.content-wrapper {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: flex-start; /* Aligns content to the top */
+  gap: 1rem;
+  background: #ffffff;
+  padding: 5%;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  min-width: 60%;
+}
+
+/* User List */
+.users-list {
+  width: 40%;
+  min-width: auto;
+  border-right: 1px solid #ccc;
+  padding-right: 1rem;
+}
+
+.user-item {
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-item:hover {
+  background: #e5e7eb;
+}
+
+/* User Details */
+.user-details {
+  flex-grow: 1;
+  min-width: 40%;
+  max-width: 60%;
+  padding: 1%;
+}
+
+.user-card {
+  border: 1px solid #ccc;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  background: #f3f4f6;
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.user-card > * {
+  margin: 4%;
+}
+
+.user-placeholder {
+  color: gray;
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  margin: 5%;
+  width: 40%;
+  height: 10%;
+  align-self: center;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}

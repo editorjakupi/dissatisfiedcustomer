@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from "react";
-import "./UsersList.css"; // Make sure this CSS file is correctly linked
+import "../../main.css"; // Make sure this CSS file is correctly linked
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
