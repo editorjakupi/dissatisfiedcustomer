@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import AddMessageForm from '../../AddMessageForm';
 import SessionTimer from '../../SessionTimer'; // Optional timer component
-import './CustomerCases.css';
+import '../../main.css';
 
 const CustomerCases = () => {
   // Get the token from the URL (e.g., /tickets/view/CASE-XXXXXX)

@@ -1,7 +1,7 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { useParams } from 'react-router'
-import './TicketForm.css'
+import '../../main.css'
 
 
 export function TicketForm() {
