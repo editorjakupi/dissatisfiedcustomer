@@ -1,6 +1,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Cms;
+using System.Data.SqlTypes;
 
 namespace server;
 
@@ -46,7 +47,8 @@ public class CompanyRoutes
     public static async Task<Results<Ok<Company>, NotFound>>
     GetCompany(int id, NpgsqlDataSource db)
     {
-        using var cmd = db.CreateCommand("SELECT * FROM company WHERE id = $1");
+        using var cmd = db.CreateCommand("SELECT company.id, company.name, company.phone, company.email, employees.user_id " +
+            "FROM company LEFT OUTER JOIN employees ON company.id = employees.company_id WHERE id = $1");
         cmd.Parameters.AddWithValue(id);
         await using var reader = await cmd.ExecuteReaderAsync();
         if (!await reader.ReadAsync())
@@ -57,7 +59,8 @@ public class CompanyRoutes
             reader.GetInt32(0),
             reader.GetString(1),
             reader.GetString(2),
-            reader.GetString(3)
+            reader.GetString(3),
+            reader.GetInt32(4)
         );
 
         return TypedResults.Ok(result);
@@ -67,20 +70,26 @@ public class CompanyRoutes
     public static async Task<Results<Ok<List<Company>>, NotFound>>
     GetCompanies(NpgsqlDataSource db)
     {
+        int? adm = null;
         var result = new List<Company>();
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM company");
+            using var cmd = db.CreateCommand("SELECT company.id, company.company_name, " +
+             "company.company_phone, company.company_email, COALESCE(employees.user_id, 0) " +
+            "FROM company LEFT OUTER JOIN employees ON company.id = employees.company_id");
             await using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
+    
                 result.Add(new Company(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetString(2),
-                    reader.GetString(3)
+                    reader.GetString(3),
+                    reader.GetInt32(4)
                 ));
-            }
+                
+
+            
         }
         catch (Exception ex)
         {
