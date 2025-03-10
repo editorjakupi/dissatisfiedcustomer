@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddMessageForm.css';
 
-const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = true }) => {
+const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive, ticketStatus }) => {
     const [messageContent, setMessageContent] = useState("");
+
+    useEffect(() => {
+        // Log to verify the ticket status
+        console.log("Ticket Status in Component:", ticketStatus);
+    }, [ticketStatus]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Ange en alert om sessionen inte är aktiv (dvs ticketstatus=Closed/Resolved)
         if (!isSessionActive) {
-            alert("Sessionen är avslutad. Du kan inte lägga till fler meddelanden.");
+            let alertMessage = "Ticket is closed. You cannot add new messages.";
+            if (ticketStatus === "Resolved") {
+                alertMessage = "Ticket is resolved. You cannot add new messages.";
+            }
+            alert(alertMessage);
             return;
         }
 
@@ -17,7 +27,7 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email: userEmail, content: messageContent }),
-            credentials: 'include',
+            credentials: 'include'
         })
         .then(response => {
             if (!response.ok) {
@@ -29,9 +39,11 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
         })
         .then(() => {
             setMessageContent("");
-            onMessageAdded(); // Uppdatera meddelandelistan efter att ett meddelande lagts till
+            onMessageAdded(); // Uppdatera meddelandelistan
         })
         .catch(error => {
+            // Visa en alert med felmeddelandet
+            alert(error.message);
             console.error('Error adding message:', error);
         });
     };
@@ -43,10 +55,9 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive = t
                 onChange={(e) => setMessageContent(e.target.value)}
                 placeholder="Enter your message"
                 required
-                disabled={!isSessionActive}
             />
             <div className="button-container">
-                <button type="submit" className="add-message-button" disabled={!isSessionActive}>
+                <button type="submit" className="add-message-button">
                     Add Message
                 </button>
             </div>

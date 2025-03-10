@@ -17,6 +17,7 @@ import "./main.css";
 import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
+import NewCompany from "./SuperAdmin/NewCompany.jsx";
 import CustomerCases from "./Customer/CustomerCases/CustomerCases.jsx";
 import SessionTest from './SessionTest'; // Importera komponenten
 
@@ -76,6 +77,7 @@ const App = () => {
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/session-test" element={<SessionTest />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
+                        <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />
                     </Routes>
                 </div>
             </div>

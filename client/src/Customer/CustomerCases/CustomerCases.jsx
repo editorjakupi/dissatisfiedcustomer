@@ -2,21 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import AddMessageForm from '../../AddMessageForm';
-import SessionTimer from '../../SessionTimer'; // Om du valt att använda en timer
+import SessionTimer from '../../SessionTimer'; // Optional timer component
 import './CustomerCases.css';
 
 const CustomerCases = () => {
-  // Hämtar token från URL:en (t.ex. /tickets/view/CASE-XXXXX)
+  // Get the token from the URL (e.g., /tickets/view/CASE-XXXXXX)
   const { token } = useParams();
 
   const [ticket, setTicket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState(null);
   const [isSessionActive, setIsSessionActive] = useState(true);
-  // Spara sessionstiden i sekunder (60 minuter = 3600 sekunder)
   const [sessionExpiry, setSessionExpiry] = useState(3600);
 
-  // Hämtar ärendedetaljer baserat på token
+  // Fetch ticket details using the token
   useEffect(() => {
     if (!token) return;
 
@@ -26,17 +25,20 @@ const CustomerCases = () => {
     })
       .then(response => {
         if (!response.ok) {
-          return response.text().then(text => { 
-            throw new Error(text || "Ticket not found"); 
+          return response.text().then(text => {
+            throw new Error(text || "Ticket not found");
           });
         }
         return response.json();
       })
       .then(data => {
+        console.log("Fetched ticket status:", data.status);
         setTicket(data);
-        // Om status är "Closed" eller "Resolved" inaktiveras sessionen
-        setIsSessionActive(data.status !== "Closed" && data.status !== "Resolved");
-        // Om data finns och har både id och email, hämta meddelanden
+        // Set the session active flag based on ticket's status (case-insensitive)
+        const status = data.status ? data.status.toLowerCase().trim() : "";
+        setIsSessionActive(status !== "closed" && status !== "resolved");
+
+        // Fetch messages if ticket data includes both id and email
         if (data && data.id && data.email) {
           fetchMessages(data.id, data.email);
         } else {
@@ -49,7 +51,7 @@ const CustomerCases = () => {
       });
   }, [token]);
 
-  // Funktion för att hämta meddelanden baserat på ticketId och email
+  // Fetch messages based on ticketId and email.
   const fetchMessages = (ticketId, email) => {
     fetch(`http://localhost:5000/api/user/${email}/cases/${ticketId}/messages`, {
       method: "GET",
@@ -57,8 +59,8 @@ const CustomerCases = () => {
     })
       .then(response => {
         if (!response.ok) {
-          return response.text().then(text => { 
-            throw new Error(text || "Error fetching messages"); 
+          return response.text().then(text => {
+            throw new Error(text || "Error fetching messages");
           });
         }
         return response.json();
@@ -70,7 +72,7 @@ const CustomerCases = () => {
       });
   };
 
-  // Callback för att uppdatera meddelandelistan
+  // Callback for updating the message list
   const handleMessageAdded = () => {
     if (ticket && ticket.id && ticket.email) {
       fetchMessages(ticket.id, ticket.email);
@@ -94,6 +96,7 @@ const CustomerCases = () => {
         <p><strong>Case Number:</strong> {ticket.caseNumber}</p>
         <p><strong>Title:</strong> {ticket.title}</p>
         <p><strong>Description:</strong> {ticket.description}</p>
+        {/* Display the current status of the ticket */}
         <p><strong>Status:</strong> {ticket.status}</p>
         <p><strong>Date:</strong> {new Date(ticket.date).toLocaleDateString()}</p>
       </div>
@@ -102,7 +105,7 @@ const CustomerCases = () => {
       <ul className="messages-list">
         {messages && messages.length > 0 ? (
           messages.map((msg, index) => {
-            // Avgör om meddelandet är från kunden (om msg.email matchar ticket.email)
+            // Determine if the message is from the customer (using ticket.email comparison)
             const isCustomerMessage = msg.email === ticket.email;
             const messageClass = isCustomerMessage ? "customer-message" : "support-message";
             return (
@@ -118,9 +121,9 @@ const CustomerCases = () => {
 
       <h4>Add a Message</h4>
       <AddMessageForm 
-        userEmail={ticket.email}  // Skicka med e-post från ärendet
-        caseId={ticket.id} 
-        onMessageAdded={handleMessageAdded} 
+        userEmail={ticket.email} // Pass the ticket email
+        caseId={ticket.id}
+        onMessageAdded={handleMessageAdded}
         isSessionActive={isSessionActive}
       />
     </div>

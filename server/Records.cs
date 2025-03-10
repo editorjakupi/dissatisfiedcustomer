@@ -103,15 +103,17 @@ public record TicketFormDTO(
   string Content);
 
 public record Ticket(
-  int id,
-  string date,
-  string title,
-  string categoryname,
-  string email,
-  string status,
-  string caseNumber,
-  string description,
-  int company_id);
+    int Id,
+    string Date,
+    string Title,
+    string CategoryName,
+    string Email,
+    string Status,
+    string CaseNumber,
+    string Description,
+    int? CompanyId  // Make company_id nullable
+);
+
 
 public record TicketStatus(
   int id,
