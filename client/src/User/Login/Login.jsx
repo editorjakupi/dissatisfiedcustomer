@@ -87,14 +87,13 @@ const Login = ({ user, setUser }) => {
                         </div>
 
                         <div id="update-button-div">
-                            <button type="submit">Login</button>
+                            <button style={{ cursor: "pointer" }} type="submit">Login</button>
                         </div>
                     </div>
                 </form>
 
                 <div className="forgot-password-div">
-                    Forgot-password? &nbsp;
-                    <button id="button" onClick={() => navigate("/forgot-password")}>Click Me!</button>
+                    <button id="button" style={{ cursor: "pointer" }} onClick={() => navigate("/forgot-password")}>Forgot Password!</button>
                 </div>
             </div>
         </main>

@@ -44,12 +44,24 @@ p {
   height: 5%;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 5%;
 }
 
 #input-login-div {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  input {
+    background-color: #75B9BE;
+    width: 20vh;
+    height: 5vh;
+    border-radius: 20px;
+    padding: 0 10px;
+    margin: 10px;
+    border: 1px solid #ccc;
+  }
 }
 
 #login-input-button-div {
@@ -57,22 +69,51 @@ p {
   height: 20%;
   display: flex;
   justify-content: center;
-  margin-top: 5%;
+  margin-top: 1%;
 }
 
 #update-button-div>button {
   background-color: #75B9BE;
   border-radius: 20px;
-  width: 50%;
+  width: 5%;
+  height: 4vh;
   border: none;
   color: black;
   font-size: 1em;
+  cursor: pointer;
+
+  max-width: 50%;
+}
+
+
+
+/* Account Info Styling */
+#account-info-form {
+
+  button {
+    background-color: #75B9BE;
+    border-radius: 20px;
+    width: 100%;
+    border: none;
+    color: black;
+    font-size: 1em;
+  }
+
+  input {
+    background-color: #75B9BE;
+    width: 20vh;
+    height: 5vh;
+    border-radius: 20px;
+    padding: 0 10px;
+    margin: 10px;
+    border: 1px solid #ccc;
+  }
 }
 
 
 .input-type-div {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; 
 }
 
 /* Sidebar Styling */
@@ -189,6 +230,14 @@ p {
   width: 100%;
   height: 100%;
   transition: transform 0.2s ease-in-out;
+}
+
+.forgot-password-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
 }
 
 .forgot-password-div button {
