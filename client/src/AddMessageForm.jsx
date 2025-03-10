@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './AddMessageForm.css';
+import './main.css';
 
 const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive, ticketStatus }) => {
     const [messageContent, setMessageContent] = useState("");
