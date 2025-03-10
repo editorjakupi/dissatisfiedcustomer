@@ -77,6 +77,7 @@ const UsersList = () => {
                 if (res.ok) {
                     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== selectedUser.id));
                     setSelectedUser(null); 
+                    alert("User deleted successfully!");
                 } else {
                     console.error("Error deleting user.");
                 }
@@ -96,6 +97,7 @@ const UsersList = () => {
                 if (res.ok) {
                     setUsers((prevUser) => prevUser.filter((user) => user.id !== selectedUser.userId));
                     setSelectedUser(null);
+                    alert("User promoted successfully!");
                 } else {
                     console.error("Error promoting admin.");
                 }
