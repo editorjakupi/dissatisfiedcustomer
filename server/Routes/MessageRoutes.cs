@@ -5,25 +5,32 @@ using MimeKit;
 using MailKit.Security;
 using System;
 using System.Data.Common;
+using Microsoft.AspNetCore.StaticAssets;
 
 namespace server;
 
 public static class MessageRoutes
 {
-    // Dataöverföringsobjekt för inkommande meddelanden från kund.
-    // Kunden fyller i sin e-post, men får inget konto – vi använder e-posten direkt.
+    public static async Task<CatAndProd>
+    GetCatAndProd(int company_id, NpgsqlDataSource db)
+    {
+        return new CatAndProd(
+                
+            CategoryRoutes.GetCategories(db).Result,
+            ProductRoute.GetProducts(company_id, db).Result);
+    }
     
 
     // Metod för att hantera POST /api/messages för kundens meddelande.
     // UPPDATERAD: Vi tar inte längre emot/skapar user_id, utan använder Email och genererar en token för kundsession
     public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, HttpContext context, NpgsqlDataSource db)
     {
-        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}");
+        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}, CategoryID: {message.CategoryID}, ProductID: {message.ProductID}");
 
         // Validera inkommande data.
-        if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
+        if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content) || message.CategoryID == null)
         {
-            return TypedResults.BadRequest("Email, Name, and Content are required.");
+            return TypedResults.BadRequest("Email, Name, Content, and Category are required.");
         }
 
         using var conn = db.CreateConnection();
@@ -34,7 +41,7 @@ public static class MessageRoutes
 
         try
         {
-            int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, conn, transaction);
+            int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, message.CategoryID, message.ProductID, conn, transaction);
 
             await using var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
@@ -88,13 +95,13 @@ public static class MessageRoutes
 
     // Skapar ett nytt ärende (ticket) för kund.
     // UPPDATERAD: Använder email istället för user_id, och genererar ett token (sparat i case_number).
-    private static async Task<int> CreateTicketForCustomerAsync(string email, string title, string description, int company_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    private static async Task<int> CreateTicketForCustomerAsync(string email, string title, string description, int company_id, int? category_id, int? product_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
     {
         await using var cmd = conn.CreateCommand();
         cmd.Transaction = transaction;
         // Generera ett unikt token via GenerateUniqueCaseNumber och använd det även som case_number.
         string token = GenerateUniqueCaseNumber();
-        cmd.CommandText = "INSERT INTO tickets (user_email, title, description, case_number, company_id, date, status_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
+        cmd.CommandText = "INSERT INTO tickets (user_email, title, description, case_number, company_id, date, status_id, category_id, product_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id";
         cmd.Parameters.AddWithValue(email);
         cmd.Parameters.AddWithValue(title);
         cmd.Parameters.AddWithValue(description);
@@ -102,6 +109,8 @@ public static class MessageRoutes
         cmd.Parameters.AddWithValue(company_id);
         cmd.Parameters.AddWithValue(DateTime.UtcNow);
         cmd.Parameters.AddWithValue(1); // Sätter default status_id till 1 (Unread)
+        cmd.Parameters.AddWithValue(category_id);
+        cmd.Parameters.AddWithValue(product_id);
 
         var ticketId = (int)(await cmd.ExecuteScalarAsync() ?? throw new InvalidOperationException("Failed to create ticket."));
         Console.WriteLine($"Ticket created with token (case_number): {token}");

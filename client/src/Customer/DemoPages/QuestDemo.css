@@ -1,0 +1,88 @@
+.quest
+{
+    background-color: #fff;
+
+    font-family: Helvetica;
+}
+
+input.quest
+{
+    border: solid;
+    border-color: #cbd2d9;
+    height: 40px;
+    width: 400px;
+    font-size: 22px;
+    border-radius: 80px;
+}
+input.quest:hover{
+    border-color: #0082fb;
+}
+
+input.quest:focus{
+    outline-color: #0065c4;
+}
+
+input.quest:hover::placeholder{
+    color: #0082fb;
+}
+
+select.quest
+{
+    border: solid;
+    border-color: #cbd2d9;
+    height: 40px;
+    width: 400px;
+    font-size: 22px;
+    border-radius: 80px;
+}
+select.quest:hover{
+    border-color: #0082fb;
+}
+
+select.quest:focus{
+    outline-color: #0065c4;
+}
+
+
+textarea.quest{
+    height: 250px;
+    border-radius: 12px;
+    background-color: #fff;
+    border: solid;
+    border-color: #cbd2d9;
+    width: 400px;
+    font-size: 22px;
+  }
+
+textarea.quest:hover{
+    border-color: #0082fb;
+}
+
+textarea.quest:hover::placeholder{
+    color: #0082fb;
+}
+
+textarea.quest:focus{
+    outline-color: #0065c4;
+}
+
+.quest.logo{
+    content:url(https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Meta_Quest_logo.svg/1280px-Meta_Quest_logo.svg.png);
+    width: 300px;
+}
+
+.quest.submit {
+    background-color: #0082fb;
+  }
+  
+  .quest.submit:hover {
+    background-color: #0065c4;
+  }
+  
+  .quest.cancel {
+    background-color: #DC0632;
+  }
+  
+  .quest.cancel:hover {
+    background-color: #be0d31;
+  }

@@ -6,8 +6,15 @@ namespace server;
 public record Message(string UserEmail, string Content);
 
 // MessageDTO har redan rätt struktur
-public record MessageDTO(string Email, string Name, string Content, int CompanyID);
+// Dataöverföringsobjekt för inkommande meddelanden från kund.
+// Kunden fyller i sin e-post, men får inget konto – vi använder e-posten direkt.
+public record MessageDTO(string Email, string Name, string Content, int CompanyID, int? CategoryID, int? ProductID);
 
+
+public record CatAndProd(
+    List<Category> categories,
+    List<Products> products
+  );
 
 // UPPDATERAD: Ändrat UserId till UserEmail i MessageDetails
 // Tidigare: public record MessageDetails(int MessageId, int UserId, string Content);
