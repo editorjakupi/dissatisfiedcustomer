@@ -117,7 +117,58 @@ app.MapGet("/api/adminlist", SuperAdminRoutes.GetAdmins);
 app.MapGet("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.GetAdmin(userId, db));
 app.MapPut("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.PutAdmin(userId, db));
 
+app.MapGet("/api/tickets/feedback", async (HttpContext context) =>
+{
+    var companyId = context.Request.Query["companyId"];
+    if (!int.TryParse(companyId, out int parsedCompanyId))
+    {
+        return Results.BadRequest("Invalid companyId.");
+    }
+
+    using var cmd = db.CreateCommand();
+    cmd.CommandText = @"
+        SELECT t.id, t.title, t.user_email, u.name as employee_name, f.rating, f.comment, f.date
+FROM tickets t
+         JOIN employees e ON t.employee_id = e.id
+        JOIN users u ON e.user_id = u.id
+         left JOIN feedback f ON t.id = f.ticket_id
+WHERE t.company_id = @companyId";
+
+    cmd.Parameters.AddWithValue("companyId", parsedCompanyId);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    var ticketFeedbackList = new List<TicketFeedback>();
+
+    while (await reader.ReadAsync())
+    {
+        ticketFeedbackList.Add(new TicketFeedback(
+            reader.GetInt32(0),
+            reader.GetString(1), 
+            reader.GetString(2),
+            reader.GetString(3), 
+            reader.GetInt32(4),
+            reader.GetString(5),
+            reader.GetDateTime(6)
+        ));
+    }
+
+    Console.WriteLine("API Response: " + System.Text.Json.JsonSerializer.Serialize(ticketFeedbackList));
+
+    return Results.Json(ticketFeedbackList);
+});
+
 
 app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 
 app.Run();
+
+public record TicketFeedback(
+    int Id, 
+    string Title, 
+    string UserEmail, 
+    string EmployeeName, 
+    int? Rating, 
+    string? Comment, 
+    DateTime? Date
+);
+

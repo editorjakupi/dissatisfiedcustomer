@@ -62,6 +62,7 @@ const NavBar = ({ user, setUser }) => {
               <button onClick={() => navigate("/dashboard")}>Overview</button>
               <button onClick={() => navigate("/products")}>Products</button>
               <button onClick={() => navigate("/employee")}>Employees</button>
+              <button onClick={() => navigate("/feedback")}>Feedback</button>
             </div>
           )}
 
