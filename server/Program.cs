@@ -123,14 +123,3 @@ app.MapGet("/api/tickets/feedback", TicketRoutes.Feedback);
 app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 
 app.Run();
-
-public record TicketFeedback(
-    int Id, 
-    string Title, 
-    string UserEmail, 
-    string EmployeeName, 
-    int? Rating, 
-    string? Comment, 
-    DateTime? Date
-);
-
