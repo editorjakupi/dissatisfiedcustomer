@@ -293,7 +293,8 @@ CREATE VIEW public.tickets_closed AS
     email,
     status_name,
     case_number,
-    description
+    description,
+    company_id
    FROM public.tickets_all
   WHERE (((status_name)::text = 'Closed'::text) OR ((status_name)::text = 'Resolved'::text));
 
@@ -334,7 +335,8 @@ CREATE VIEW public.tickets_open AS
     email,
     status_name,
     case_number,
-    description
+    description,
+    company_id
    FROM public.tickets_all
   WHERE (((status_name)::text = 'Unread'::text) OR ((status_name)::text = 'In Progress'::text));
 
@@ -353,7 +355,8 @@ CREATE VIEW public.tickets_pending AS
     email,
     status_name,
     case_number,
-    description
+    description,
+    company_id
    FROM public.tickets_all
   WHERE ((status_name)::text = 'Pending'::text);
 
