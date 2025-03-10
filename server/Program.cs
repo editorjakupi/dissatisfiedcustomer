@@ -55,6 +55,8 @@ app.MapPut("/api/ticketsproduct", TicketRoutes.PutTicketProduct);
 app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus);
 app.MapPut("/api/tickets/{id}", (int id) => TicketRoutes.UpdateTicketStatus(id, db));
 
+app.MapPost("/api/feedback", FeedbackRoutes.PostFeedback);
+
 // Produkt endpoints
 app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db));
 app.MapGet("/api/product/{product_id}", (int product_id) => ProductRoute.GetProduct(product_id, db));
