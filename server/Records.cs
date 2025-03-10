@@ -30,7 +30,7 @@ public record Company(
   string name,
   string phone,
   string email,
-  int? admin
+  string admin
 );
 
 public record CompanyDTO(
