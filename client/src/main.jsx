@@ -13,7 +13,7 @@ import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
 import AdminList from "./SuperAdmin/AdminList.jsx";
 
-import "./User/NavBar/NavBar.css";
+import "./main.css";
 import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
