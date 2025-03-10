@@ -23,7 +23,6 @@ import SessionTest from './SessionTest'; // Importera komponenten
 
 
 // Importera eventuella CSS-filer
-import "./User/NavBar/NavBar.css";
 import FeedbackView from "./Admin/Feedback/FeedbackView.jsx";
 
 const App = () => {
