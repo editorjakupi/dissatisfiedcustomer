@@ -50,9 +50,37 @@ export default function TicketView() {
     // Using 2 different states to keep track of the sorting order for title and category
     const [sortOrderTitle, setSortOrderTitle] = useState("default");
     const [sortOrderCategory, setSortOrderCategory] = useState("default");
+    const [companyId, setCompanyId] = useState(null);
 
     // Get the view parameter from the URL
     const view = searchparams.get("view");
+
+    useEffect(() => {
+        // Fetch the session to get the companyId
+        fetch("/api/session")
+            .then((response) => response.json())
+            .then((data) => {
+                const companyId = data?.companyId;
+                if (companyId) {
+                    setCompanyId(companyId);
+                    console.log("Company ID:", companyId);
+    
+                    // Now make the ticket request with the correct companyId
+                    fetch(`/api/tickets?view=${view}&companyId=${companyId}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            setTickets(data);
+                            setSortedTickets(data);
+                            setDefaultOrder(data);
+                        })
+                        .catch((error) => console.error("Error fetching tickets:", error));
+                } else {
+                    console.error("No companyId found in the session.");
+                }
+            })
+            .catch((error) => console.error("Error fetching session:", error));
+    }, [view]);  // This ensures the fetch happens again when `view` changes
+    
 
     // Function to mark a ticket as resolved by pressing a button
     function MarkAsResolved(ticket) {
@@ -118,10 +146,10 @@ export default function TicketView() {
         let sorted;
 
         if (sortOrderCategory === "default") {
-            sorted = [...tickets].sort((a, b) => a.categoryname.localeCompare(b.categoryname, "sv"));
+            sorted = [...tickets].sort((a, b) => a.categoryName.localeCompare(b.categoryName, "sv"));
             setSortOrderCategory("asc");
         } else if (sortOrderCategory === "asc") {
-            sorted = [...tickets].sort((a, b) => b.categoryname.localeCompare(a.categoryname, "sv"));
+            sorted = [...tickets].sort((a, b) => b.categoryName.localeCompare(a.categoryName, "sv"));
             setSortOrderCategory("desc");
         } else {
             sorted = [...defaultOrder];
@@ -133,31 +161,18 @@ export default function TicketView() {
         setSortedTickets(sorted);
     }
 
-
-    // Fetch tickets based on the view
-    useEffect(() => {
-        fetch("/api/tickets?view=" + view)
-            .then((response) => response.json())
-            .then((data) => {
-                setTickets(data);
-                setSortedTickets(data);
-                setDefaultOrder(data);
-            })
-            .catch((error) => console.error("Error fetching tickets:", error));
-    },[view]);
-
     // Table Item component to display each ticket
-    function TableItem({ id, date, title, categoryname, email, status }) {
+    function TableItem({ id, date, title, categoryName, email, status }) {
         return (
             <tr key={id}>
                 <td>{date}</td>
                 <td className="ticketname" onClick={ () => navigate(`/tickets/handle/${id}`)}>{title}</td>
-                <td>{categoryname}</td>
+                <td>{categoryName}</td>
                 <td>{email}</td>
                 <td>{status}</td>
                 <td>
                     {status !== "Resolved" ? (
-                        <button className="resolve-button" onClick={() => MarkAsResolved({ id, date, title, categoryname, email, status })}>
+                        <button className="resolve-button" onClick={() => MarkAsResolved({ id, date, title, categoryName, email, status })}>
                             Mark as Resolved
                         </button>
                     ) : (

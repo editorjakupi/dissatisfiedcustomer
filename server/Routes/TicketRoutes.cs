@@ -14,7 +14,7 @@ public static class TicketRoutes
 
     public static async Task<List<Ticket>>
 
-    GetTickets(string? view, NpgsqlDataSource db)
+    GetTickets(string? view, int? companyId, NpgsqlDataSource db)
     {
         List<Ticket> result = new();
         NpgsqlCommand query;
@@ -36,6 +36,13 @@ public static class TicketRoutes
                 query = db.CreateCommand("SELECT * FROM tickets_all");
                 break;
         }
+
+        if (companyId.HasValue)
+        {
+            query.CommandText += " WHERE company_id = @company_id";
+            query.Parameters.AddWithValue("company_id", companyId.Value);
+        }
+
         using var reader = await query.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
