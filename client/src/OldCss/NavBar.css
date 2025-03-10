@@ -9,30 +9,27 @@
     height: 100vh;
     background-color: white;
     color: black;
-    padding: 20px;
-    /* position: fixed; */
     left: 0;
     top: 0;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     justify-content: space-between;
-    padding: 20px;
+    padding: 1%;
     box-sizing: border-box;
-    
-    
 }
 
 /* Sections */
-.nav-section {
+/* .nav-section {
     margin-bottom: 15vh;
-}
+} */
 
 /* Buttons */
 .sidebar button {
     width: 100%;
-    padding: 20px;
-    margin: 10px 0;
+    height: 11%;
+    padding: 10%;
+    margin: 5% 0;
     background: #ABCCC8;
     color: black;
     border: none;
@@ -49,7 +46,7 @@
 
 .sidebar button span {
     position: relative;
-    top: -3px;
+    top: -3%;
 }
 
 
@@ -60,23 +57,23 @@
 /* User Info Box */
 .user-info {
     background: #ABCCC8;
-    padding: 12px;
+    /* padding: 5%; */
     border-radius: 5px;
     text-align: center;
-    margin-bottom: 20px;
-    position: relative;
+    /* margin-bottom: 15%; */
+    /* position: relative; */
     z-index: 10;
 }
 
 .user-info p {
-    margin: 5px 0;
+    margin: 5% 0;
     font-size: 1em;
     color: black;
 }
 
 /* Logout Button */
 .logout-container {
-    margin-top: 10px;
+    margin-bottom: -5%;
 }
 
 .logout-button {
@@ -93,13 +90,13 @@
     background: #ff1a1a;
 }
 
-.dashboard-container {
+/* .dashboard-container {
     padding: 20px;
     margin-left: 18vw;
     width: calc(100vw - 16.67vw);
     min-height: 100vh;
     background: #f5f5f5;
-}
+} */
 
 /* Reset styles for the logo button */
 .sidebar .logo-button {

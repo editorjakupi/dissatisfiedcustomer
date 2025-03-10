@@ -13,17 +13,13 @@ import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
 import AdminList from "./SuperAdmin/AdminList.jsx";
 
-import "./User/NavBar/NavBar.css";
+import "./main.css";
 import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
 import NewCompany from "./SuperAdmin/NewCompany.jsx";
 import CustomerCases from "./Customer/CustomerCases/CustomerCases.jsx";
 import SessionTest from './SessionTest'; // Importera komponenten
-
-
-// Importera eventuella CSS-filer
-import "./User/NavBar/NavBar.css";
 
 const App = () => {
     const [user, setUser] = useState(null);

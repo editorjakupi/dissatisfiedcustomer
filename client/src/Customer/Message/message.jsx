@@ -2,7 +2,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useParams } from 'react-router';
-import './message.css';
+// import '../../message.css';
 
 export function Message() {
   const params = useParams();

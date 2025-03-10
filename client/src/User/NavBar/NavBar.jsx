@@ -3,7 +3,7 @@ import React from "react";
 // Vi använder endast "react-router" om det krävs, men här importeras den vanligaste standarden från "react-router-dom"
 // (För webbaserad app är detta vanligtatt använda)
 import { useNavigate } from "react-router";
-import "./NavBar.css";
+import "../../main.css";
 import logo from "../../assets/logo.png";
 
 const NavBar = ({ user, setUser }) => {

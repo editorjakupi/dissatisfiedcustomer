@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import "./TicketView.css";
+import "../../main.css";
 
 function BoxesContainer() {
     // State to keep track of the different tickets
@@ -170,8 +170,8 @@ export default function TicketView() {
 
     // Rendering
     return (
-        <>
-            <div>
+        <main id="ticket-view-main">
+            <div className="info-boxes-div">
                 <BoxesContainer />
             </div>
             <div className="ticket-container">
@@ -195,6 +195,6 @@ export default function TicketView() {
                     </tbody>
                 </table>
             </div>
-        </>
+        </main>
     );
 };
