@@ -164,6 +164,7 @@ const UsersList = () => {
             phonenumber: "",
             companyId: "",
         });
+        setMessage(null);
     };
     
     return (

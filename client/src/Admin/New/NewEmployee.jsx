@@ -137,6 +137,7 @@ const NewEmployee = ({ user, setUser }) => {
             phonenumber: "",
             companyId: "",
         });
+        setMessage(null);
     };
 
     return (

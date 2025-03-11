@@ -134,6 +134,7 @@ const NewProduct = ({user}) => {
             name: "",
             description: ""
         });
+        setMessage(null);
     };
     return (
         <main>
