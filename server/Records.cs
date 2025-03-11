@@ -29,7 +29,8 @@ public record Company(
   int id,
   string name,
   string phone,
-  string email
+  string email,
+  string admin
 );
 
 public record CompanyDTO(

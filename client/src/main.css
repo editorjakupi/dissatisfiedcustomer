@@ -7,6 +7,8 @@ body, html {
 
 /* Not sure if this affects anything */
 .content {
+  display: flex;
+  justify-content: center;
   width: 80vw;
 }
 
@@ -328,7 +330,7 @@ p {
 /* Content Wrapper: Holds user list and details */
 .content-wrapper {
   display: flex;
-  width: 50%; /* Unsure if this affects anything */
+  width: 70%; /* Unsure if this affects anything */
   justify-content: center;
   align-items: flex-start;
   gap: 1rem;
@@ -354,13 +356,17 @@ p {
 
 /* Form container stays on the right */
 .form-container {
-  width: 50%;
+  width: 60%;
   display: flex;
   flex-direction: column;
-  padding: 1%;
+  /* padding: 1%; */
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  
+  h2 {
+    margin-top: 0%;
+  }
 
   button {
     width: 50%;
@@ -373,11 +379,46 @@ p {
   }
 }
 
-/* Form container input padding */
+/* form input and button styling */
 
-.form-container input {
-  margin-bottom: 3%;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+  height: 100%;
+  margin: 3%;
+  
+  input {
+    width: 90%;
+    height: 100%;
+    padding: 0%;
+    border: none;
+    background: #ABCCC8;
+    border-radius: 7px;
+    font-size: 1rem;
+    margin-bottom: 3%;
+  }
+
+  button {
+    background-color: #75B9BE;
+    color: black;
+    border: none;
+    padding: 4%;
+    cursor: pointer;
+    font-size: 100%;
+    border-radius: 5px;
+    margin: 5%;
+    width: 40%;
+    height: 10%;
+    align-self: center;
+  }
+  
+  button:hover {
+    background-color: #548385;
+  }
 }
 
 /* Search input styling */
@@ -609,6 +650,7 @@ textarea{
   align-items: center; /* Centering horizontally */
   justify-content: center; /* Centering vertically */
   height: 100%; /* Full screen height */
+  width: 100%;
   padding: 0;
 }
 
@@ -666,10 +708,15 @@ textarea{
   align-items: flex-start; /* Aligns content to the top */
   gap: 1rem;
   background: #ffffff;
-  padding: 5%;
+  /* padding: 5%; */
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   min-width: 60%;
+  width: 80%;
+
+  div {
+    margin: 1%;
+  }
 }
 
 /* User List */
@@ -677,7 +724,6 @@ textarea{
   width: 40%;
   min-width: auto;
   border-right: 1px solid #ccc;
-  padding-right: 1rem;
 }
 
 .user-item {
@@ -698,7 +744,28 @@ textarea{
   flex-grow: 1;
   min-width: 40%;
   max-width: 60%;
-  padding: 1%;
+  padding: 0%;
+  padding-top: 0%;
+
+  
+  
+  .promote-button {
+    background-color: #75B9BE;
+    color: black;
+    border: none;
+    padding: 4%;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 5%;
+    width: 40%;
+    height: 10%;
+    align-self: center;
+  }
+  
+  .promote-button:hover {
+    background-color: #548385;
+  }
 }
 
 .user-card {
@@ -711,7 +778,7 @@ textarea{
   width: 100%;
   display: flex;
   flex-direction: column;
-
+  margin: 0%;
 }
 
 .user-card > * {
@@ -726,7 +793,7 @@ textarea{
   background-color: #e74c3c;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 4%;
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
@@ -738,4 +805,122 @@ textarea{
 
 .delete-button:hover {
   background-color: #c0392b;
+}
+
+/* AddMessageForm */
+.add-message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .button-container {
+    display: flex;
+    gap: 10px;
+  }
+
+  textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+  }
+}
+
+.add-message-button {
+  background-color: #75B9BE;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  color: white;
+  white-space: nowrap;
+}
+
+.add-message-button:hover {
+  background-color: #7ecdd3;
+}
+
+/* Customer cases */
+
+/* Container for the chat session page */
+.cases-container {
+  display: flex;
+  flex-direction: column;
+  margin: 2%;
+  /* Consider sidebar width */
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: calc(100% - 260px);
+  box-sizing: border-box;
+  overflow-x: auto;
+
+  h2 {
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cases-container {
+      margin-left: 0;
+      width: 100%;
+  }
+}
+
+/* Ticket details styling */
+.case-details {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Message list styling */
+.messages-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Common message item styling */
+.message-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+
+/* Styling for customer messages (green background, left aligned) */
+.customer-message {
+  background-color: #c2e7bf;
+  color: #155724;
+  align-self: flex-start;
+}
+
+/* Styling for support messages (blue background, right aligned) */
+.support-message {
+  background-color: #a5cad1;
+  color: #0c5460;
+  align-self: flex-end;
+}
+
+/* Styling for the session timer */
+.session-timer {
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 15px;
+  color: #333;
 }
