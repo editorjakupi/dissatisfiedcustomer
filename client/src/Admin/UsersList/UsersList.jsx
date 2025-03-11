@@ -111,26 +111,59 @@ const UsersList = () => {
         e.preventDefault();
         setMessage("");
 
-        try {
-            // Create the user
-            const userResponse = await fetch("/api/users", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                    phonenumber: formData.phonenumber,
-                }),
-            });
+        if (selectedUser) {
+            // Update existing employee
+            try {
+                const response = await fetch(`/api/putuser/${selectedUser.id}`, {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        id: selectedUser.id,
+                        name: formData.name,
+                        email: formData.email,
+                        phonenumber: formData.phonenumber,
+                    }),
+                });
 
-            if (!userResponse.ok) throw new Error("Failed to create user");
+                if (!response.ok) throw new Error("Failed to update User");
 
-            setMessage("User created successfully!");
-        } catch (error) {
-            console.error(error);
-            setMessage(error.message);
+                setMessage("User updated successfully");
+                setUsers((prev) => prev.map(emp => emp.id === selectedUser.id ? {...emp, ...formData} : emp));
+            } catch (error) {
+                setMessage(error.message);
+            }
+        } else {
+            try {
+                // Create the user
+                const userResponse = await fetch("/api/users", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        name: formData.name,
+                        email: formData.email,
+                        password: formData.password,
+                        phonenumber: formData.phonenumber,
+                    }),
+                });
+
+                if (!userResponse.ok) throw new Error("Failed to create user");
+
+                setMessage("User created successfully!");
+            } catch (error) {
+                console.error(error);
+                setMessage(error.message);
+            }
         }
+    };
+    const handleClearSelection = () => {
+        setSelectedUser(null); // Reset selected employee
+        setFormData({
+            name: "",
+            email: "",
+            password: "",
+            phonenumber: "",
+            companyId: "",
+        });
     };
     
     return (
@@ -161,7 +194,10 @@ const UsersList = () => {
                             <div
                                 key={user.id}
                                 className="user-item"
-                                onClick={() => setSelectedUser(user)}
+                                onClick={() => {
+                                    setSelectedUser(user);
+                                    setFormData(user);
+                                }}
                             >
                                 {user.name}
                             </div>
@@ -191,6 +227,9 @@ const UsersList = () => {
                             <button onClick={handlePromote} className="promote-button">
                                 Promote User
                             </button>
+                            <button onClick={handleClearSelection} className="clear-button">
+                                Clear Selection
+                            </button>
                         </div>
                     ) : (
                         <p className="user-placeholder">Select a user to see details</p>
@@ -199,7 +238,7 @@ const UsersList = () => {
 
                 <div className="form-container">
                     <form onSubmit={handleSubmit} className="form">
-                        <h2>Create New User:</h2>
+                        <h2>{selectedUser ? "Update User" : "Create New User"}</h2>
                         <input type="text" name="name" value={formData.name || ""} placeholder="Name"
                                onChange={handleChange} required/>
                         <input type="email" name="email" value={formData.email || ""} placeholder="Email"
@@ -208,7 +247,7 @@ const UsersList = () => {
                                placeholder="Phone Number"
                                onChange={handleChange} required/>
                         <button
-                            type="submit">Create User</button>
+                            type="submit">{selectedUser ? "Update User" : "Create User"}</button>
                     </form>
                     {message && <p>{message}</p>}
                 </div>

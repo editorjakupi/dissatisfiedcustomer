@@ -120,16 +120,23 @@ const NewEmployee = ({ user, setUser }) => {
             setMessage("User and Employee created successfully ID: " + userId);
             alert("Employee created successfully!");
         } catch (error) {
-            console.error(error);
-            setMessage(error.message);
-             setMessage("User and Employee created successfully ID: " + userId);
-             handleShowAll();
+                console.error(error);
+                setMessage(error.message);
+                setMessage("User and Employee created successfully ID: " + userId);
+                handleShowAll();
             }
         }
     };
 
     const handleClearSelection = () => {
         setSelectedEmployee(null); // Reset selected employee
+        setFormData({
+            name: "",
+            email: "",
+            password: "",
+            phonenumber: "",
+            companyId: "",
+        });
     };
 
     return (
