@@ -215,8 +215,7 @@ public static class UserRoutes
 
         return Results.Ok("User updated successfully");
     }
-
-    public record PutUserDTO(int id, string name, string email, string phonenumber);
+    
     public static async Task<IResult> PutUserForSAdmin(PutUserDTO postUser, NpgsqlDataSource db)
     {
         await using var connection = await db.OpenConnectionAsync();
