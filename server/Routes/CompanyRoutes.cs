@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Cms;
 using System.Data.SqlTypes;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
+using Org.BouncyCastle.Tls;
 
 namespace server;
 
@@ -20,12 +22,28 @@ public class CompanyRoutes
         try
         {
             await cmd.ExecuteNonQueryAsync();
+
+            
+            using var cmd2 = db.CreateCommand("INSERT INTO employees(company_id, user_id) VALUES($1, $2)");
+            cmd.Parameters.AddWithValue(company.id);
+            cmd.Parameters.AddWithValue(company.admin);
+                  try
+        {
+            await cmd.ExecuteNonQueryAsync();
+
             return TypedResults.Created();
         }
         catch
         {
             return TypedResults.BadRequest("Failed to add company: " + company);
         }
+
+        }
+        catch
+        {
+            return TypedResults.BadRequest("Failed to add company: " + company);
+        }
+        
     }
 
     public static async Task<Results<NoContent, NotFound>>
