@@ -13,7 +13,7 @@ import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
 import AdminList from "./SuperAdmin/AdminList.jsx";
 
-import "./User/NavBar/NavBar.css";
+import "./main.css";
 import { Message } from "./Customer/Message/message.jsx";
 import TicketHandler from "./Support/TicketHandler/TicketHandler.jsx";
 import NewProduct from "./Admin/New/NewProduct.jsx";
@@ -23,7 +23,7 @@ import SessionTest from './SessionTest'; // Importera komponenten
 
 
 // Importera eventuella CSS-filer
-import "./User/NavBar/NavBar.css";
+import FeedbackView from "./Admin/Feedback/FeedbackView.jsx";
 import { Feedback } from "./Customer/Feedback/Feedback.jsx";
 
 const App = () => {
@@ -71,6 +71,7 @@ const App = () => {
                         <Route path="/users" element={user ? <UsersList user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/employee" element={user ? <NewEmployee user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
+                        <Route path="/feedback" element={user ? <FeedbackView user={user} /> : <Login setUser={setUser} />} />
 
                         {/* Employee-endpoint för att hantera ärenden */}
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
@@ -85,7 +86,7 @@ const App = () => {
                         <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
 
 
-                        <Route path="/feedback" element={<Feedback />} />
+                        <Route path="/givefeedback" element={<Feedback />} />
                     </Routes>
                 </div>
             </div>

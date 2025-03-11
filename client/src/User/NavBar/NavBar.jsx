@@ -3,7 +3,7 @@ import React from "react";
 // Vi använder endast "react-router" om det krävs, men här importeras den vanligaste standarden från "react-router-dom"
 // (För webbaserad app är detta vanligtatt använda)
 import { useNavigate } from "react-router";
-import "./NavBar.css";
+import "../../main.css";
 import logo from "../../assets/logo.png";
 
 const NavBar = ({ user, setUser }) => {
@@ -62,6 +62,7 @@ const NavBar = ({ user, setUser }) => {
               <button onClick={() => navigate("/dashboard")}>Overview</button>
               <button onClick={() => navigate("/products")}>Products</button>
               <button onClick={() => navigate("/employee")}>Employees</button>
+              <button onClick={() => navigate("/feedback")}>Feedback</button>
             </div>
           )}
 

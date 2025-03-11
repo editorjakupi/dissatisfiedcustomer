@@ -11,6 +11,8 @@
     display: flex;
     gap: 0.5rem;
     margin-bottom: 1rem; /* Space between search and list */
+    width: 100%;
+    justify-content: center;
 }
 
 .search-input {
@@ -27,6 +29,11 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.2s;
+}
+
+.search-container button {
+    width: auto;
+    height: auto;
 }
 
 .search-button {
@@ -111,7 +118,9 @@
     cursor: pointer;
     font-size: 16px;
     border-radius: 5px;
-    margin-top: 20px;
+    margin-top: 5%;
+    width: auto;
+    height: auto;
 }
 
 .delete-button:hover {
