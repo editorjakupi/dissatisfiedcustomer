@@ -29,7 +29,8 @@ public record Company(
   int id,
   string name,
   string phone,
-  string email
+  string email,
+  string admin
 );
 
 public record CompanyDTO(
@@ -71,6 +72,14 @@ public record Users(
   int role_id,
   int companyId);
 
+public record UserDTO(
+  int id,
+  string name,
+  string email,
+  string password,
+  string phonenumber,
+  int role_id);
+
 public record PostUserDTO(
   string Name,
   string Email,
@@ -88,6 +97,17 @@ public record Employees(
 #endregion
 
 #region Ticket Records
+public record TicketFeedback(
+  int Id, 
+  string Title, 
+  string UserEmail, 
+  string EmployeeName, 
+  int? Rating, 
+  string? Comment, 
+  DateTime? Date
+);
+
+
 public record TicketForm(
       int ticket_id,
       int company_id,

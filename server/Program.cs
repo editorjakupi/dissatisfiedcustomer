@@ -39,10 +39,12 @@ app.MapGet("/", () => "Hello World!");
 
 // Användar endpoints (för employees, admin, superadmin)
 app.MapGet("api/users/{id}", (int id) => LoginRoute.GetUser(id, db));
+app.MapGet("/api/usersfromcompany", UserRoutes.GetUsersFromCompanys);
 app.MapGet("/api/users", UserRoutes.GetUsers);
 app.MapPost("/api/users", UserRoutes.PostUser);
 app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
-app.MapPut("/api/users", UserRoutes.PutUsers);
+app.MapPut("/api/users/{userId}", UserRoutes.PutUsers);
+app.MapPut("/api/promoteuser/{userId}", UserRoutes.PutPromoteAdmin);
 
 /* Tickets */
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
@@ -116,6 +118,8 @@ app.MapGet("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.GetAdmin(
 app.MapPut("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.PutAdmin(userId, db));
 app.MapDelete("/api/company/admins/{userId}", (int userId) => SuperAdminRoutes.DeleteAdmin(userId, db));
 
+
+app.MapGet("/api/tickets/feedback", TicketRoutes.Feedback);
 
 
 app.MapPost("/api/password/hash", LoginRoute.HashPassword);

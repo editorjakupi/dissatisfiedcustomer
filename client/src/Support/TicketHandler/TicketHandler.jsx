@@ -1,6 +1,6 @@
 import React, { useEffect, useState, } from "react";
 import { useParams, Link } from 'react-router';
-import "./TicketHandler.css";
+import "../../main.css";
 
 
 const TicketHandler =() =>

@@ -1,11 +1,25 @@
 ﻿import React, { useState, useEffect } from "react";
-import "./UsersList.css"; // Make sure this CSS file is correctly linked
+import "../../main.css"; // Make sure this CSS file is correctly linked
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchId, setSearchId] = useState("");
 
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        phonenumber: "",
+        companyId: "",
+    });
+
+    const [message, setMessage] = useState("");
+
+    const handleChange = (e) => {
+        setFormData({...formData, [e.target.name]: e.target.value});
+    };
+    
     // Fetch all users on component mount
     useEffect(() => {
         fetch("/api/users")
@@ -63,6 +77,7 @@ const UsersList = () => {
                 if (res.ok) {
                     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== selectedUser.id));
                     setSelectedUser(null); 
+                    alert("User deleted successfully!");
                 } else {
                     console.error("Error deleting user.");
                 }
@@ -72,9 +87,52 @@ const UsersList = () => {
             });
     };
     
-    console.log("Users state:", users); // Log the users state
-    console.log("Selected User state:", selectedUser); // Log the selected user state
+    const handlePromote = async () => {
+        if (!selectedUser) return;
 
+        fetch(`/api/promoteuser/${selectedUser.id}`, {
+            method: 'PUT',
+        })
+            .then((res) => {
+                if (res.ok) {
+                    setUsers((prevUser) => prevUser.filter((user) => user.id !== selectedUser.userId));
+                    setSelectedUser(null);
+                    alert("User promoted successfully!");
+                } else {
+                    console.error("Error promoting admin.");
+                }
+            })
+            .catch((err) => {
+                console.error("Delete promoting:", err);
+            });
+    };
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage("");
+
+        try {
+            // Create the user
+            const userResponse = await fetch("/api/users", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    phonenumber: formData.phonenumber,
+                }),
+            });
+
+            if (!userResponse.ok) throw new Error("Failed to create user");
+
+            setMessage("User created successfully!");
+        } catch (error) {
+            console.error(error);
+            setMessage(error.message);
+        }
+    };
+    
     return (
         <div className="users-container">
             {/* Search Bar */}
@@ -124,13 +182,35 @@ const UsersList = () => {
                             <p>
                                 <strong>Phone:</strong> {selectedUser.phonenumber}
                             </p>
+                            <p>
+                                <strong>Role ID:</strong> {selectedUser.role_id}
+                            </p>
                             <button onClick={handleDelete} className="delete-button">
                                 Delete User
+                            </button>
+                            <button onClick={handlePromote} className="promote-button">
+                                Promote User
                             </button>
                         </div>
                     ) : (
                         <p className="user-placeholder">Select a user to see details</p>
                     )}
+                </div>
+
+                <div className="form-container">
+                    <form onSubmit={handleSubmit} className="form">
+                        <h2>Create New User:</h2>
+                        <input type="text" name="name" value={formData.name || ""} placeholder="Name"
+                               onChange={handleChange} required/>
+                        <input type="email" name="email" value={formData.email || ""} placeholder="Email"
+                               onChange={handleChange} required/>
+                        <input type="text" name="phonenumber" value={formData.phonenumber || ""}
+                               placeholder="Phone Number"
+                               onChange={handleChange} required/>
+                        <button
+                            type="submit">Create User</button>
+                    </form>
+                    {message && <p>{message}</p>}
                 </div>
             </div>
         </div>

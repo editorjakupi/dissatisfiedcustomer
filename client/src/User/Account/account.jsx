@@ -1,5 +1,4 @@
-import './account.css';
-
+import '../../main.css';
 
 const AccountInformation = ({ user, setUser }) => {
 
@@ -34,7 +33,7 @@ const AccountInformation = ({ user, setUser }) => {
 
   return (
       <main>
-        <form onSubmit={handleUpdate}>
+        <form onSubmit={handleUpdate} id='account-info-form'>
           <div id="input-div">
             <div className="input-type-div">
               <label>

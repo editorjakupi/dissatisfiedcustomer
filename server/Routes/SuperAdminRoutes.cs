@@ -83,7 +83,7 @@ public class SuperAdminRoutes
                 )
             );
         }
-        return result;
+            return result;
     }
 
     public static async Task<Results<NoContent, NotFound>> DeleteAdmin(int id, NpgsqlDataSource db)

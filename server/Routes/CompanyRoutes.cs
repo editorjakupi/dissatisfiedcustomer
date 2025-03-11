@@ -1,6 +1,8 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Cms;
+using System.Data.SqlTypes;
+using System.Data;
 
 namespace server;
 
@@ -46,7 +48,7 @@ public class CompanyRoutes
     public static async Task<Results<Ok<Company>, NotFound>>
     GetCompany(int id, NpgsqlDataSource db)
     {
-        using var cmd = db.CreateCommand("SELECT * FROM company WHERE id = $1");
+        using var cmd = db.CreateCommand("SELECT * FROM company_view WHERE id = $1");
         cmd.Parameters.AddWithValue(id);
         await using var reader = await cmd.ExecuteReaderAsync();
         if (!await reader.ReadAsync())
@@ -57,7 +59,8 @@ public class CompanyRoutes
             reader.GetInt32(0),
             reader.GetString(1),
             reader.GetString(2),
-            reader.GetString(3)
+            reader.GetString(3),
+            reader.GetString(4)
         );
 
         return TypedResults.Ok(result);
@@ -66,21 +69,26 @@ public class CompanyRoutes
 
     public static async Task<Results<Ok<List<Company>>, NotFound>>
     GetCompanies(NpgsqlDataSource db)
-    {
+    {// AND users.role_id = 3 
+        int? adm = null;
         var result = new List<Company>();
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM company");
+            using var cmd = db.CreateCommand("SELECT * FROM company_view");
+
             await using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
+    
                 result.Add(new Company(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetString(2),
-                    reader.GetString(3)
+                    reader.GetString(3),
+                    reader.GetString(4)
                 ));
-            }
+                
+
+            
         }
         catch (Exception ex)
         {
