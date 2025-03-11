@@ -57,8 +57,9 @@ public record PostProductDTO(
   int companyId);
 
 public record PutProductDTO(
-  string Name,
-  string Description);
+  int id,
+  string name,
+  string description);
 #endregion
 
 #region User & Employee Records
