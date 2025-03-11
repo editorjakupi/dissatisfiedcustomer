@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 // Vi använder BrowserRouter från react-router-dom om vi driver en webbaserad app
-import { BrowserRouter as Router, Routes, Route } from "react-router"; 
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./User/Login/Login.jsx";
 import Dashboard from "./User/Dashboard/dashboard.jsx";
 import AccountInformation from "./User/Account/account.jsx";
@@ -24,6 +24,7 @@ import SessionTest from './SessionTest'; // Importera komponenten
 
 // Importera eventuella CSS-filer
 import "./User/NavBar/NavBar.css";
+import { Feedback } from "./Customer/Feedback/Feedback.jsx";
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -70,7 +71,7 @@ const App = () => {
                         <Route path="/users" element={user ? <UsersList user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/employee" element={user ? <NewEmployee user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
-                        
+
                         {/* Employee-endpoint för att hantera ärenden */}
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
 
@@ -80,8 +81,11 @@ const App = () => {
                         {/* Endast en inloggad kund har inte längre ett konto, så vi tar bort /message/:id från kundens vy */}
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/session-test" element={<SessionTest />} />
-                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
-                        <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />
+                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user} />} />
+                        <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
+
+
+                        <Route path="/feedback" element={<Feedback />} />
                     </Routes>
                 </div>
             </div>
