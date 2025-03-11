@@ -132,17 +132,13 @@ const NewProduct = ({user}) => {
                         <div className="users-list">
                             {products.length > 0 ? (
                                 products.map((product) => (
-                                    <div
-                                        key={product.id}
+                                    <div key={product.id}
                                         className="user-item"
-                                        onClick={() => setSelectedProduct(product)}
-                                    >
+                                        onClick={() => setSelectedProduct(product)}>
                                         {product.name}
                                     </div>
                                 ))
-                            ) : (
-                                <p>No products found.</p>
-                            )}
+                            ) : <p>No products found.</p>}
                         </div>
 
                         {/* product Details */}
@@ -161,8 +157,7 @@ const NewProduct = ({user}) => {
                                 <p className="user-placeholder">Select a product to see details</p>
                             )}
                         </div>
-                    </div>
-                    <div className="form-container">
+                        <div className="form-container">
                         <form onSubmit={handleSubmit} className="form">
                             <h2>Create New Product:</h2>
                             <input type="text" name="name" value={formData.name} placeholder="Name"
@@ -173,6 +168,7 @@ const NewProduct = ({user}) => {
                             <button type="submit">Create Product</button>
                         </form>
                         {message && <p>{message}</p>}
+                    </div>
                     </div>
                 </div>
             </div>

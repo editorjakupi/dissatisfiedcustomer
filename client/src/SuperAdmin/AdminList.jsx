@@ -68,8 +68,9 @@ const AdminList = ({ user, setUser }) => {
     function handleDelete() {
         if (!selectedAdmin) return;
         
+        console.log(selectedAdmin.id);
         fetch(`/api/company/admins/${selectedAdmin.id}`, {
-            method: 'PUT',
+            method: 'DELETE',
         })
             .then((response) => {
                 if (response.ok) {
@@ -143,12 +144,14 @@ const AdminList = ({ user, setUser }) => {
                                     <p>
                                         <strong>Company ID:</strong> {selectedAdmin.companyId}
                                     </p>
-                                    <button onClick={handleDemote} className="demote-button">
-                                        Demote admin
-                                    </button>
-                                    <button onClick={handleDelete} className="delete-button">
-                                        Delete Admin
-                                    </button>
+                                    <div className="admin-buttons-container"> 
+                                        <button onClick={handleDemote} className="demote-button">
+                                            Demote admin
+                                        </button>
+                                        <button onClick={handleDelete} className="delete-button">
+                                            Delete Admin
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 <p className="user-placeholder">Select a Admin to see details</p>
