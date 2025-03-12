@@ -119,8 +119,9 @@ app.MapPut("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.PutAdmin(
 app.MapDelete("/api/company/admins/{userId}", (int userId) => SuperAdminRoutes.DeleteAdmin(userId, db));
 
 
-app.MapGet("/api/tickets/feedback", TicketRoutes.Feedback);
+app.MapPut("/api/putuser/{userId}", UserRoutes.PutUserForSAdmin);
 
+app.MapGet("/api/tickets/feedback", TicketRoutes.Feedback);
 
 app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 
