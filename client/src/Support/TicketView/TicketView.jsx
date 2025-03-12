@@ -106,6 +106,8 @@ export default function TicketView() {
             });
     }
 
+    console.log("Tickets data:", tickets);
+
 
     // Function to sort the tickets by title
     function SortByTitle() {
@@ -153,10 +155,10 @@ export default function TicketView() {
         let sorted;
 
         if (sortOrderStatus === "default") {
-            sorted = [...tickets].sort((a, b) => a.statusName.localeCompare(b.statusName, "sv"));
+            sorted = [...tickets].sort((a, b) => a.status.localeCompare(b.status, "sv"));
             setSortOrderStatus("asc");
         } else if (sortOrderStatus === "asc") {
-            sorted = [...tickets].sort((a, b) => b.statusName.localecompare(a.statusName, "sv"));
+            sorted = [...tickets].sort((a, b) => b.status.localeCompare(a.status, "sv"));
             setSortOrderStatus("desc");
         } else {
             sorted = [...defaultOrder];
