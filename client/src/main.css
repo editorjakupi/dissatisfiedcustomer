@@ -289,15 +289,12 @@ p {
   }
 }
 
-
-
-
 /* Admin product and employee */
 .user-container {
   display: flex;
   flex-direction: column;
   align-items: center; /* Center everything horizontally */
-  justify-content: center; /* Center everything vertically */
+  justify-content: center; /* Center everythingx vertically */
   height: 100%;
   /* padding: 1rem; */
   margin: 1%;
@@ -351,6 +348,7 @@ p {
 /* Text for user list and details */
 .users-list p, .user-details p {
   width: 100%;
+  margin-top: 0%;
 }
 
 
@@ -389,7 +387,7 @@ p {
   align-items: center;
   width: 100%;
   height: 100%;
-  margin: 3%;
+  margin: 0%;
   
   input {
     width: 90%;
@@ -418,6 +416,12 @@ p {
   
   button:hover {
     background-color: #548385;
+  }
+
+  h2 {
+    width: 100%;
+    height: 100%;
+    text-align: center;
   }
 }
 
@@ -727,7 +731,7 @@ textarea{
 }
 
 .user-item {
-  padding: 0.5rem;
+  padding: 5%;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
   overflow: hidden;
@@ -741,14 +745,13 @@ textarea{
 
 /* User Details */
 .user-details {
+  display: flex;
   flex-grow: 1;
   min-width: 40%;
   max-width: 60%;
   padding: 0%;
   padding-top: 0%;
 
-  
-  
   .promote-button {
     background-color: #75B9BE;
     color: black;
@@ -778,7 +781,7 @@ textarea{
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 0%;
+  margin: 100%;
 }
 
 .user-card > * {
@@ -789,21 +792,55 @@ textarea{
   color: gray;
 }
 
-.delete-button {
+/* Admin employee button container */
+.admin-emplyee-buttons-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+/* Clear Selection button */
+.clear-button {
+background-color: #007bff;
+color: white;
+border: none;
+cursor: pointer;
+font-size: 16px;
+border-radius: 5px;
+margin: 2%;
+width: 30%;
+height: 100%;
+align-self: center;
+
+  .clear-button:hover {
+    background-color: #0056b3;
+  }
+  
+}
+
+.admin-buttons-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+/* Demote admin button */
+.demote-button, .delete-button {
   background-color: #e74c3c;
   color: white;
   border: none;
-  padding: 4%;
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
-  margin: 5%;
-  width: 40%;
-  height: 10%;
+  margin: 2%;
+  width: 30%;
+  height: 100%;
   align-self: center;
 }
 
-.delete-button:hover {
+.delete-button:hover, .demote-button:hover {
   background-color: #c0392b;
 }
 

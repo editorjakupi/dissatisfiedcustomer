@@ -12,45 +12,51 @@ public static class TicketRoutes
 {
 
 
-    public static async Task<List<Ticket>>
+    public static async Task<IResult>
 
-        GetTickets(string? view, NpgsqlDataSource db)
+    GetTickets(string? view, NpgsqlDataSource db, HttpContext context)
     {
         List<Ticket> result = new();
         NpgsqlCommand query;
-        switch (view)
+        if (context.Session.GetInt32("company") is int company_id)
         {
-            case "all":
-                query = db.CreateCommand("SELECT * FROM tickets_all");
-                break;
-            case "open":
-                query = db.CreateCommand("SELECT * FROM tickets_open");
-                break;
-            case "closed":
-                query = db.CreateCommand("SELECT * FROM tickets_closed");
-                break;
-            case "pending":
-                query = db.CreateCommand("SELECT * FROM tickets_pending");
-                break;
-            default:
-                query = db.CreateCommand("SELECT * FROM tickets_all");
-                break;
-        }
+            switch (view)
+            {
+                case "all":
+                    query = db.CreateCommand("SELECT * FROM tickets_all WHERE company_id = $1");
+                    break;
+                case "open":
+                    query = db.CreateCommand("SELECT * FROM tickets_open WHERE company_id = $1");
+                    break;
+                case "closed":
+                    query = db.CreateCommand("SELECT * FROM tickets_closed WHERE company_id = $1");
+                    break;
+                case "pending":
+                    query = db.CreateCommand("SELECT * FROM tickets_pending WHERE company_id = $1");
+                    break;
+                default:
+                    query = db.CreateCommand("SELECT * FROM tickets_all WHERE company_id = $1");
+                    break;
+            }
+            query.Parameters.AddWithValue(company_id);
 
-        using var reader = await query.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            result.Add(new(
+
+            using var reader = await query.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(new(
                 reader.GetInt32(0), // id
                 reader.GetDateTime(1).ToString("yyyy-MM-dd"), // date
                 reader.GetString(2), // title
                 reader.GetString(3), // category_name
                 reader.GetString(4), // email
-                reader.GetString(5), // status
+                reader.GetString(5),  // status
                 reader.GetString(6), // casenumber
                 reader.GetString(7), // description
                 reader.GetInt32(8) // company_id
             ));
+            }
+            return Results.Ok(result);
         }
 
         return result;
@@ -200,7 +206,6 @@ public static class TicketRoutes
             {
                 return Results.NotFound("Category not found or status unchanged.");
             }
-
             return Results.Ok("Category status updated successfully.");
         }
         catch (Exception ex)
