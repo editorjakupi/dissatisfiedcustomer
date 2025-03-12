@@ -41,6 +41,11 @@ public record CompanyDTO(
   int admin);
 #endregion
 
+public record Admin(
+  int id,
+  string name
+);
+
 #region Category Records
 public record Category(
   int id,

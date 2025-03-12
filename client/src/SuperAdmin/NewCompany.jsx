@@ -1,27 +1,35 @@
 import React, {useState} from "react";
+import "../main.css";
 
-const NewCompany = ({user, setUser}) => {
+const NewCompany = ({}) => {
     const [formData, setFormData] = useState({
+        id: null,
         name: "",
         phone: "",
         email: "",
+        admin: null,
     });
 
-    const handleChange = (event) => 
-        setFormData({...formData, [event.target.name]: event.target.value}); 
+    const [message, setMessage] = useState("");
 
+    const handleChange = (event) => {
+        setFormData({...formData, [event.target.name]: event.target.value}); 
+        setAdmin(event.target.admin);
+};
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
+    const [admin, setAdmin] = useState([])
 
     //Company search
     const handleSearch = () => {
-        //if (!searchId.trim()) return;
+        if (!searchId.trim()) return;
 
         fetch('/api/company/' + searchId)
         .then((response) => {
-            /*if(!response.ok)
-                throw new Error("Error: " + response.status + "-" + response.statusText);*/
+            if(!response.ok){
+                throw new Error("Error: " + response.status + "-" + response.statusText);
+            }
             return response.json();
         })
         .then((data) => {
@@ -35,7 +43,6 @@ const NewCompany = ({user, setUser}) => {
             console.error("company search failed: ", error);
             setCompanies([]);
             setSelectedCompany(null);
-            setSearchId("");
         });
 
     };
@@ -54,7 +61,7 @@ const NewCompany = ({user, setUser}) => {
 
     //Company delete
     const handleDelete = () => {
-        //if(!selectedCompany) return;
+        if(!selectedCompany) return;
 
         fetch('/api/company/' + selectedCompany.id, {
             method: 'DELETE',
@@ -72,32 +79,62 @@ const NewCompany = ({user, setUser}) => {
             console.error("company delete failed:", error);
         });
     };
-
-    //Company create
-    const handleCreate = async(event) => {
-        event.preventDeafult();
+    const handleSubmit = async (e) => {
+        e.preventDefualt();
         setMessage("");
 
-        try{
-            const companyResponse = await fetch('/api/company', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+    //Company create
+    if (selectedCompany) {
+        // Update existing Company
+        try {
+            const response = await fetch(`/api/company/`, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
+                    id: formData.id,
                     name: formData.name,
                     phone: formData.phone,
-                    email: formData.email
+                    email: formData.email,
+                    admin: formData.admin
                 }),
             });
-            const responseText = await companyResponse.text();
-            if (!companyResponse.ok) throw new Error(responseText || "Failed to create company")
-            alert("Company " + formData.name + " created sucessfully");
+
+            if (!response.ok) throw new Error("Failed to update company");
+
+            setMessage("Company updated successfully");
+            setCompanies((prev) => prev.map(emp => emp.id === selectedCompany.id ? {...emp, ...formData} : emp));
+        } catch (error) {
+            setMessage(error.message);
         }
-        catch (error) {
+    } else {
+        try {
+            // Create the company
+            const companyResponse = await fetch("/api/company/", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    id: formData.id,
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email,
+                    admin: formData.admin
+                }),
+            });
+
+            // Debugging: Log full response
+            const responseText = await companyResponse.text();
+            console.log("Company API full response:", responseText);
+            console.log("Company API response status:", companyResponse.status);
+
+            if (!companyResponse.ok) throw new Error(responseText || "Failed to create company");
+
+            setMessage("Company created successfully!");
+        } catch (error) {
             console.error(error);
             setMessage(error.message);
         }
+        }
     };
-
 
 
     return(
@@ -128,7 +165,10 @@ const NewCompany = ({user, setUser}) => {
                                     <div
                                         key={company.id}
                                         className="user-item"
-                                        onClick={() => setSelectedCompany(company)}
+                                        onClick={() => {
+                                            setSelectedCompany(company)
+                                            setFormData(company)
+                                        }}
                                     >
                                         {company.name}
                                     </div>
@@ -163,8 +203,29 @@ const NewCompany = ({user, setUser}) => {
                                 <p className="user-placeholder">Select a company to see details</p>
                             )}
                         </div>
+                        <div className="form-container">
+                        <form onSubmit={handleSubmit} className="form">
+                            <h2>{selectedCompany ? "Update Company" : "Create New Company"}</h2>
+                            <input type="text" name="name" value={formData.name || ""} placeholder="Name"
+                                   onChange={handleChange}
+                                   required/>
+                            <input type="text" name="phone" value={formData.phone || ""} placeholder="Phone"
+                                   onChange={handleChange} required/>
+                            <input type="text" name="email" value={formData.email || ""} placeholder="Email"
+                                    onClick={handleChange} required/>
+                            <label>
+                                Admin
+                            <select value={formData.admin || "NA"} onClick={handleChange}>
+                                <option value="admin1">Admin 1</option>
+                                <option value="admin2">Admin 2</option>
+                            </select>
+                            </label>
+                            <button type="submit">{selectedCompany ? "Update Company" : "Create Company"}</button>
+                        </form>
+                        {message && <p>{message}</p>}
                     </div>
 
+                    </div>
                 </div>
             </div>
         </main>
@@ -177,18 +238,5 @@ export default NewCompany;
 
 //update company
 /*
-                    <div className="form-container">
-                        <form onSubmit={handleCreate} className="form">
-                            <h2>Create New company:</h2>
-                            <input type="text" name="name" value={formData.name} placeholder="Name"
-                                   onChange={handleChange}
-                                   required/>
-                            <input type="text" name="phone" value={formData.phone} placeholder="Phone"
-                                   onChange={handleChange} required/>
-                            <input type="test" name="email" value={formData.email} placeholder="Email"
-                                    onClick={handleChange} required/>
-                            <button type="submit">Create company</button>
-                        </form>
-                        {message && <p>{message}</p>}
-                    </div>
+
 */
