@@ -60,11 +60,17 @@ public record PostProductDTO(
   int companyId);
 
 public record PutProductDTO(
-  string Name,
-  string Description);
+  int id,
+  string name,
+  string description);
 #endregion
 
 #region User & Employee Records
+public record PutUserDTO(
+  int id,
+  string name,
+  string email,
+  string phonenumber);
 public record Users(
   int id,
   string name,

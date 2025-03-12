@@ -81,32 +81,61 @@ const NewProduct = ({user}) => {
         e.preventDefault();
         setMessage("");
 
-        try {
-            // Create the product
-            const productResponse = await fetch("/api/products", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: formData.name,
-                    description: formData.description,
-                    companyId: user.companyId,
-                }),
-            });
+        if (selectedProducts) {
+            // Update existing employee
+            try {
+                const response = await fetch(`/api/products/${selectedProducts.id}`, {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        name: formData.name,
+                        description: formData.description,
+                    }),
+                });
 
-            // Debugging: Log full response
-            const responseText = await productResponse.text();
-            console.log("Product API full response:", responseText);
-            console.log("Product API response status:", productResponse.status);
+                if (!response.ok) throw new Error("Failed to update product");
 
-            if (!productResponse.ok) throw new Error(responseText || "Failed to create product");
-            
-            setMessage("Product created successfully!");
-        } catch (error) {
-            console.error(error);
-            setMessage(error.message);
+                setMessage("Product updated successfully");
+                setProducts((prev) => prev.map(emp => emp.id === selectedProducts.id ? {...emp, ...formData} : emp));
+            } catch (error) {
+                setMessage(error.message);
+            }
+        } else {
+            try {
+                // Create the product
+                const productResponse = await fetch("/api/products", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        name: formData.name,
+                        description: formData.description,
+                        companyId: user.companyId,
+                    }),
+                });
+
+                // Debugging: Log full response
+                const responseText = await productResponse.text();
+                console.log("Product API full response:", responseText);
+                console.log("Product API response status:", productResponse.status);
+
+                if (!productResponse.ok) throw new Error(responseText || "Failed to create product");
+
+                setMessage("Product created successfully!");
+            } catch (error) {
+                console.error(error);
+                setMessage(error.message);
+            }
         }
     };
-
+    
+    const handleClearSelection = () => {
+        setSelectedProduct(null); // Reset selected employee
+        setFormData({
+            name: "",
+            description: ""
+        });
+        setMessage(null);
+    };
     return (
         <main>
             <div className="user-container">
@@ -135,7 +164,10 @@ const NewProduct = ({user}) => {
                                     <div
                                         key={product.id}
                                         className="user-item"
-                                        onClick={() => setSelectedProduct(product)}
+                                        onClick={() => {
+                                            setSelectedProduct(product)
+                                            setFormData(product)
+                                        }}
                                     >
                                         {product.name}
                                     </div>
@@ -156,6 +188,9 @@ const NewProduct = ({user}) => {
                                     <button onClick={handleDelete} className="delete-button">
                                         Delete product
                                     </button>
+                                    <button onClick={handleClearSelection} className="clear-button">
+                                        Clear Selection
+                                    </button>
                                 </div>
                             ) : (
                                 <p className="user-placeholder">Select a product to see details</p>
@@ -164,13 +199,13 @@ const NewProduct = ({user}) => {
                     </div>
                     <div className="form-container">
                         <form onSubmit={handleSubmit} className="form">
-                            <h2>Create New Product:</h2>
+                            <h2>{selectedProducts ? "Update Product" : "Create New Product"}</h2>
                             <input type="text" name="name" value={formData.name} placeholder="Name"
                                    onChange={handleChange}
                                    required/>
                             <input type="text" name="description" value={formData.description} placeholder="Description"
                                    onChange={handleChange} required/>
-                            <button type="submit">Create Product</button>
+                            <button type="submit">{selectedProducts ? "Update Product" : "Create Product"}</button>
                         </form>
                         {message && <p>{message}</p>}
                     </div>
