@@ -10,7 +10,7 @@ namespace server;
 public static class UserRoutes
 {
     public static async Task<List<Users>>
-        GetUsers(NpgsqlDataSource db)
+        GetUsersFromCompanys(NpgsqlDataSource db)
     {
         List<Users> result = new();
         try
@@ -38,6 +38,70 @@ public static class UserRoutes
         }
 
         return result;
+    }
+    
+    public static async Task<List<UserDTO>>
+        GetUsers(NpgsqlDataSource db)
+    {
+        List<UserDTO> result = new();
+        try
+        {
+            using var query = db.CreateCommand("select * from users");
+            using var reader = await query.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(
+                    new(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3), // password
+                        reader.GetString(4),
+                        reader.GetInt32(5)
+                    )
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error Fetching users: {ex.Message}");
+        }
+
+        return result;
+    }
+    
+    public static async Task<IResult> PutPromoteAdmin(int userId, NpgsqlDataSource db)
+    {
+        Console.WriteLine($"Received request: UserId={userId} promote to admin.");
+        
+        await using var conn = await db.OpenConnectionAsync();
+        await using var transaction = await conn.BeginTransactionAsync();
+
+        try
+        {
+            await using var updateCmd = conn.CreateCommand();
+            updateCmd.CommandText = "UPDATE users SET role_id = 3 WHERE id = $1";
+            updateCmd.Parameters.AddWithValue(userId);
+            updateCmd.Transaction = transaction;
+            
+            int updated = await updateCmd.ExecuteNonQueryAsync();
+            if (updated == 0)
+            {
+                await transaction.RollbackAsync();
+                return TypedResults.BadRequest("Failed to promote to admin role!");
+            }
+
+            await transaction.CommitAsync();
+            return TypedResults.Created();
+
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            Console.WriteLine($"Error promote to admin: {ex.Message}");
+            return TypedResults.BadRequest("Failed to promote to Admin!");
+        }
+
     }
 
     public static async Task<Results<Created<string>, BadRequest<string>>>
@@ -149,6 +213,22 @@ public static class UserRoutes
 
         await updateCmd.ExecuteNonQueryAsync();
 
+        return Results.Ok("User updated successfully");
+    }
+    
+    public static async Task<IResult> PutUserForSAdmin(PutUserDTO postUser, NpgsqlDataSource db)
+    {
+        await using var connection = await db.OpenConnectionAsync();
+        
+        await using var updateCmd = new NpgsqlCommand(
+            "UPDATE users SET name = @name, email = @email, phonenumber = @phonenumber WHERE id = @id",
+            connection);
+        updateCmd.Parameters.AddWithValue("@name", postUser.name);
+        updateCmd.Parameters.AddWithValue("@email", postUser.email);
+        updateCmd.Parameters.AddWithValue("@phonenumber", postUser.phonenumber);
+        updateCmd.Parameters.AddWithValue("@id", postUser.id); // ID should be last
+        
+        await updateCmd.ExecuteNonQueryAsync();
         return Results.Ok("User updated successfully");
     }
     

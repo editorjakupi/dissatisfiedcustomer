@@ -36,7 +36,8 @@ public record Company(
   int id,
   string name,
   string phone,
-  string email
+  string email,
+  string admin
 );
 
 public record CompanyDTO(
@@ -64,11 +65,17 @@ public record PostProductDTO(
   int companyId);
 
 public record PutProductDTO(
-  string Name,
-  string Description);
+  int id,
+  string name,
+  string description);
 #endregion
 
 #region User & Employee Records
+public record PutUserDTO(
+  int id,
+  string name,
+  string email,
+  string phonenumber);
 public record Users(
   int id,
   string name,
@@ -77,6 +84,14 @@ public record Users(
   string phonenumber,
   int role_id,
   int companyId);
+
+public record UserDTO(
+  int id,
+  string name,
+  string email,
+  string password,
+  string phonenumber,
+  int role_id);
 
 public record PostUserDTO(
   string Name,
@@ -95,6 +110,17 @@ public record Employees(
 #endregion
 
 #region Ticket Records
+public record TicketFeedback(
+  int Id, 
+  string Title, 
+  string UserEmail, 
+  string EmployeeName, 
+  int? Rating, 
+  string? Comment, 
+  DateTime? Date
+);
+
+
 public record TicketForm(
       int ticket_id,
       int company_id,
@@ -110,15 +136,17 @@ public record TicketFormDTO(
   string Content);
 
 public record Ticket(
-  int id,
-  string date,
-  string title,
-  string categoryname,
-  string email,
-  string status,
-  string caseNumber,
-  string description,
-  int company_id);
+    int Id,
+    string Date,
+    string Title,
+    string CategoryName,
+    string Email,
+    string Status,
+    string CaseNumber,
+    string Description,
+    int? CompanyId  // Make company_id nullable
+);
+
 
 public record TicketStatus(
   int id,

@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2
--- Dumped by pg_dump version 17.2
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -141,6 +140,20 @@ ALTER SEQUENCE public.employees_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.employees_id_seq OWNED BY public.employees.id;
 
+
+--
+-- Name: feedback; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.feedback (
+    ticket_id integer NOT NULL,
+    rating integer NOT NULL,
+    comment text,
+    date date
+);
+
+
+ALTER TABLE public.feedback OWNER TO postgres;
 
 --
 -- Name: messages; Type: TABLE; Schema: public; Owner: postgres
@@ -349,6 +362,26 @@ CREATE VIEW public.tickets_pending AS
 
 
 ALTER VIEW public.tickets_pending OWNER TO postgres;
+
+--
+-- Name: tickets_with_status; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.tickets_with_status AS
+ SELECT t.id,
+    t.date,
+    t.title,
+    t.user_email AS email,
+    t.case_number,
+    t.description,
+    ts.status_name,
+    e.company_id
+   FROM ((public.tickets t
+     LEFT JOIN public.ticketstatus ts ON ((t.status_id = ts.id)))
+     LEFT JOIN public.employees e ON ((t.employee_id = e.id)));
+
+
+ALTER VIEW public.tickets_with_status OWNER TO postgres;
 
 --
 -- Name: ticketstatus_column_name_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -561,18 +594,29 @@ COPY public.company (id, company_name, company_phone, company_email) FROM stdin;
 --
 
 COPY public.employees (id, user_id, company_id) FROM stdin;
-1	2	1
-3	7	3
-4	9	4
 5	12	5
 6	14	6
-7	2	7
 9	7	9
 10	9	10
-11	12	11
-12	14	12
 13	2	13
-15	7	15
+1	15	1
+7	3	7
+15	5	15
+12	13	12
+11	11	11
+4	8	4
+16	26	15
+3	6	15
+\.
+
+
+--
+-- Data for Name: feedback; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.feedback (ticket_id, rating, comment, date) FROM stdin;
+15	5	nice	2025-03-03
+14	3	noice	2025-03-06
 \.
 
 
@@ -620,15 +664,15 @@ COPY public.product (id, name, description, company_id) FROM stdin;
 --
 
 COPY public.tickets (id, company_id, user_email, employee_id, product_id, category_id, date, title, description, status_id, case_number) FROM stdin;
-3	3	erik@exempel.se	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	2	CASE000002
+2	2	cecilia@exempel.se	4	2	2	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	1	CASE000001
 4	4	frida@exempel.se	9	4	4	2025-02-06 20:45:05.494515	Allmän fråga	Allmän fråga om tjänster	3	CASE000003
+5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	5	CASE000004
 8	8	martin@exempel.se	4	8	8	2025-02-06 20:45:05.494515	Produktinformation för Produkt H1	Förfrågan om specifikationer	3	CASE000005
 10	10	cecilia@exempel.se	9	10	10	2025-02-06 20:45:05.494515	Uppdateringar för Produkt J1	Förfrågan om senaste uppdateringar	2	CASE000006
 11	11	linda@exempel.se	12	11	11	2025-02-06 20:45:05.494515	Installation av Produkt K1	Hjälp med installation	4	CASE000007
-14	14	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
 15	15	oskar@exempel.se	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	CASE000009
-5	5	helena@exempel.se	12	5	5	2025-02-06 20:45:05.494515	Retur av Produkt E1	Förfrågan om retur	3	CASE000004
-2	2	cecilia@exempel.se	4	2	9	2025-02-06 20:45:05.494515	Fråga om Produkt B1	Detaljer om frågan kring Produkt B1	2	CASE000001
+3	3	erik@exempel.se	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	3	CASE000002
+14	15	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
 \.
 
 
@@ -662,13 +706,6 @@ COPY public.userroles (id, name) FROM stdin;
 --
 
 COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
-22	SigmaMale	asdasdr444	8dda838f	\N	1
-20	asdasd	asdasd	123krikkkk123	\N	1
-21	asdasd	john@example.com	123krikkkk123	\N	1
-18	John	John	123krikkkk123	\N	1
-23	\N	SigmaMale3332424	87ce569c	\N	1
-24	No Name	natna34tn	4962fbf5	\N	1
-25	No Name	gna4nga4g	4ed095a0	\N	1
 8	Helena Holm	helena@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-8888888	1
 10	Jenny Johansson	jenny@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-1010101	1
 14	Nina Nilsson	nina@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-5050505	1
@@ -682,6 +719,8 @@ COPY public.users (id, name, email, password, phonenumber, role_id) FROM stdin;
 15	Oskar Olsson	oskar@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-6060606	2
 2	Bertil Berg	bertil@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-2222222	2
 13	Martin Mattsson	martin@exempel.se	AQAAAAIAAYagAAAAEB+QwoULm69YkfM1yEPdaKbw5CHDhYi7fwSjpqmXs3Y/QKkfGWckhG8QpTU78ExS2g==	070-4040404	2
+29	Gustav Gustavsson	gustav@exempel1.se	AQAAAAIAAYagAAAAEJBobk+QQNnTC+VAd619G0hQ3H1AGpDtVgwoHGZZtViu6Gwu3XOVguVyvAOBQdjxAA==	070-7777777	3
+26	Sebastian Larsson	Sebbelarsson9601@gmail.com	AQAAAAIAAYagAAAAEKprlQZNqmHZrK0UAa4A5V+/Wyz7TqxVlNMyxNwqEUjIikoB1gTSY22cnQ9tA79dXg==	076-8855568	3
 \.
 
 
@@ -710,7 +749,7 @@ SELECT pg_catalog.setval('public.employees_id_seq', 15, true);
 -- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.messages_id_seq', 22, true);
+SELECT pg_catalog.setval('public.messages_id_seq', 28, true);
 
 
 --
@@ -724,7 +763,7 @@ SELECT pg_catalog.setval('public.product_id_seq', 15, true);
 -- Name: tickets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tickets_id_seq', 21, true);
+SELECT pg_catalog.setval('public.tickets_id_seq', 24, true);
 
 
 --
@@ -829,6 +868,13 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: feedback_ticket_id_uindex; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX feedback_ticket_id_uindex ON public.feedback USING btree (ticket_id);
+
+
+--
 -- Name: employees employees_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -842,6 +888,14 @@ ALTER TABLE ONLY public.employees
 
 ALTER TABLE ONLY public.employees
     ADD CONSTRAINT employees_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: feedback feedback_tickets_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.feedback
+    ADD CONSTRAINT feedback_tickets_id_fk FOREIGN KEY (ticket_id) REFERENCES public.tickets(id);
 
 
 --

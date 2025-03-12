@@ -135,29 +135,46 @@ public static class TicketRoutes
     public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
     {
         Ticket? result = null;
-        // Hämtar direkt från tabellen "tickets" i public-schemat
-        using var cmd = db.CreateCommand("SELECT * FROM public.tickets WHERE case_number = $1");
+        // Use the view "tickets_with_status" which includes: id, date, title, email, status_name, case_number, description, company_id
+        using var cmd = db.CreateCommand(@"
+        SELECT id, 
+               date, 
+               title, 
+               email, 
+               status_name, 
+               case_number,
+               description,
+               company_id
+        FROM public.tickets_with_status 
+        WHERE case_number = $1");
         cmd.Parameters.AddWithValue(token);
+
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            // Skapa ett Ticket-objekt från kolumnvärdena.
-            // Notera: Om du inte brukar använda JOIN för att få med t.ex. category name och status,
-            // sätts dessa fält till tomma strängar för nu, men du kan senare uppdatera detta.
+            int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
+                                ? (int?)null  // Properly handle null values for company_id
+                                : reader.GetInt32(reader.GetOrdinal("company_id"));
+
             result = new Ticket(
                 reader.GetInt32(reader.GetOrdinal("id")),
                 reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
                 reader.GetString(reader.GetOrdinal("title")),
-                "", // Du kan till exempel hämta kategori från en JOIN, om så önskas
-                reader.GetString(reader.GetOrdinal("user_email")),
-                "", // Om status lagras separat via en JOIN, uppdatera denna rad
+                "", // Placeholder for category, if needed
+                reader.GetString(reader.GetOrdinal("email")),
+                reader.GetString(reader.GetOrdinal("status_name")),
                 reader.GetString(reader.GetOrdinal("case_number")),
                 reader.GetString(reader.GetOrdinal("description")),
-                reader.GetInt32(reader.GetOrdinal("company_id"))
+                companyId  // Use nullable company_id
             );
         }
         return result;
     }
+
+
+
+
+
 
 
 
@@ -210,5 +227,44 @@ public static class TicketRoutes
         {
             return Results.BadRequest($"Error updating ticket product: {ex.Message}");
         }
+    }
+    
+    public static async Task<IResult> Feedback(HttpContext context, NpgsqlDataSource db)
+    {
+        var companyId = context.Request.Query["companyId"];
+        if (!int.TryParse(companyId, out int parsedCompanyId))
+        {
+            return Results.BadRequest("Invalid companyId.");
+        }
+
+        using var cmd = db.CreateCommand();
+        cmd.CommandText = @"
+            SELECT t.id, t.title, t.user_email, u.name as employee_name, 
+                   f.rating, f.comment, f.date
+            FROM tickets t
+            JOIN employees e ON t.employee_id = e.id
+            JOIN users u ON e.user_id = u.id
+            LEFT JOIN feedback f ON t.id = f.ticket_id
+            WHERE t.company_id = @companyId";
+
+        cmd.Parameters.AddWithValue("companyId", parsedCompanyId);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        var ticketFeedbackList = new List<TicketFeedback>();
+
+        while (await reader.ReadAsync())
+        {
+            ticketFeedbackList.Add(new TicketFeedback(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                reader.GetString(3),
+                reader.IsDBNull(4) ? null : reader.GetInt32(4),  // Handle nullable rating
+                reader.IsDBNull(5) ? null : reader.GetString(5), // Handle nullable comment
+                reader.IsDBNull(6) ? null : reader.GetDateTime(6) // Handle nullable date
+            ));
+        }
+        
+        return Results.Json(ticketFeedbackList);
     }
 }
