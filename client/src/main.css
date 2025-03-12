@@ -903,7 +903,13 @@ textarea{
   word-wrap: break-word;
 }
 
-/* Styling for customer messages (green background, left aligned) */
+.employee-message {
+  background-color: #007bff;
+  /* blå bakgrund för anställdsmeddelanden */
+  color: white;
+  align-self: flex-end;
+}
+
 .customer-message {
   background-color: #c2e7bf;
   color: #155724;
@@ -923,4 +929,15 @@ textarea{
   font-family: Arial, Helvetica, sans-serif;
   margin-bottom: 15px;
   color: #333;
+}
+
+
+.message-item.customer-message {
+  background-color: #d4edda;
+  /* Grön bakgrund */
+}
+
+.message-item.employee-message {
+  background-color: #22636e;
+  /* Blå bakgrund */
 }

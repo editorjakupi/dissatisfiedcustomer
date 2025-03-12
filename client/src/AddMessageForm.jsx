@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import './main.css';
+import '../../main.css';
 
 const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive, ticketStatus }) => {
     const [messageContent, setMessageContent] = useState("");
 
     useEffect(() => {
-        // Log to verify the ticket status
         console.log("Ticket Status in Component:", ticketStatus);
     }, [ticketStatus]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Ange en alert om sessionen inte är aktiv (dvs ticketstatus=Closed/Resolved)
         if (!isSessionActive) {
             let alertMessage = "Ticket is closed. You cannot add new messages.";
             if (ticketStatus === "Resolved") {
@@ -39,10 +37,9 @@ const AddMessageForm = ({ userEmail, caseId, onMessageAdded, isSessionActive, ti
         })
         .then(() => {
             setMessageContent("");
-            onMessageAdded(); // Uppdatera meddelandelistan
+            onMessageAdded(); // Triggerar en uppdatering av meddelandelistan
         })
         .catch(error => {
-            // Visa en alert med felmeddelandet
             alert(error.message);
             console.error('Error adding message:', error);
         });

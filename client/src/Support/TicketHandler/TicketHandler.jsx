@@ -1,74 +1,127 @@
-import React, { useEffect, useState, } from "react";
-import { useParams, Link } from 'react-router';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router";
 import "../../main.css";
+import EmployeeChat from "./EmployeeChat"; // Importera EmployeeChat-komponenten
 
-
-const TicketHandler =() =>
-{
-  const {ticketId} = useParams();
-  const [ticket, setTicket] = useState([]);
+const TicketHandler = () => {
+  const { ticketId } = useParams();
+  const [ticket, setTicket] = useState(null);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [ticketStatus, setTicketStatus] = useState([]);
+  const [ticketStatusList, setTicketStatusList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
-  
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    // Poll for new messages every 5 seconds
+    const intervalId = setInterval(() => {
+      if (ticket && ticket.id && ticket.email) {
+        fetchMessages(ticket.id, ticket.email);
+      }
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, [ticket]);
+
+  // Hämta kategorier
   useEffect(() => {
     fetch(`/api/categories`)
-        .then(response => response.json())
-        .then(data => {
-          console.log('Fetched Categories:', data);
-          setCategories(data);
-        })
-        .catch((error) => console.error("Error fetching categories", error));
+      .then(response => response.json())
+      .then(data => {
+        console.log('Fetched Categories:', data);
+        setCategories(data);
+      })
+      .catch((error) => console.error("Error fetching categories", error));
   }, []);
 
+  // Hämta ticket status-lista
   useEffect(() => {
     fetch(`/api/ticketstatus`)
-        .then(response => response.json())
-        .then(data => {
-          console.log("Fetched status data from api:", data);
-          setTicketStatus(data);
-        })
-        .catch((error) => console.error("Error fetching status", error));
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched ticket status list:", data);
+        setTicketStatusList(data);
+      })
+      .catch((error) => console.error("Error fetching ticket status", error));
   }, []);
-  
-  useEffect(() => { 
+
+  // Hämta ticket baserat på ticketId
+  useEffect(() => {
+    if (!ticketId) return;
+
     fetch(`/api/tickets/${ticketId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json(); // No need to use JSON.parse here
-        })
-        .then(data => {
-          console.log("Fetched ticket data:", data);
-          setTicket(data); // Set the ticket data directly
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Fetched ticket data:", data);
+        setTicket(data);
+        // Hämta meddelanden för detta ärende
+        if (data && data.id && data.email) {
+          fetchMessages(data.id, data.email);
+        }
+        // Hämta produkter baserat på company_id, men endast om company_id är definierat
+        if (data.company_id) {
+          fetch(`/api/products/${data.company_id}`)
+            .then(response => response.json())
+            .then(productData => {
+              console.log("Fetched product data:", productData);
+              setProducts(productData);
+            })
+            .catch((error) => console.error("Error fetching products", error));
+        } else {
+          console.warn("Company ID is undefined");
+          setProducts([]); // Om company_id är undefined, sätt products till tom array
+        }
 
-          fetch (`/api/products/${data.company_id}`)
-              .then(response => response.json())
-              .then(productData => {
-                console.log("Fetched product data:", productData);
-                setProducts(productData);
-              })
-              .catch((error) => console.error("Error fetching products", error));
-          
-          const matchingCategory = categories.find(category => category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase());
-
+        // Uppdatera vald kategori med hjälp av data (om kategorier redan är laddade)
+        if (data.categoryname && categories.length > 0) {
+          const matchingCategory = categories.find(category =>
+            category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase()
+          );
           if (matchingCategory) {
             setSelectedCategory(matchingCategory.id);
           }
-          
-          const matchingStatus = ticketStatus.find(status => status.statusName === data.status);
+        }
 
+        // Uppdatera vald status med hjälp av data (om ticketStatusList redan är laddad)
+        if (data.status && ticketStatusList.length > 0) {
+          const matchingStatus = ticketStatusList.find(status =>
+            status.statusName === data.status
+          );
           if (matchingStatus) {
             setSelectedStatus(matchingStatus.id);
           }
-        })
-        .catch((error) => console.error("Error fetching ticket", error));
-  }, [ticketId, ticketStatus, categories]);
+        }
+      })
+      .catch((error) => console.error("Error fetching ticket", error));
+  }, [ticketId, categories, ticketStatusList]);
 
+  // Funktion för att hämta meddelanden
+  const fetchMessages = (ticketId, email) => {
+    fetch(`http://localhost:5000/api/user/${email}/cases/${ticketId}/messages`, {
+      method: "GET",
+      credentials: "include"
+    })
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text || "Error fetching messages"); });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Fetched messages:", data);
+        setMessages(data);
+      })
+      .catch(err => {
+        console.error("Error fetching messages:", err);
+      });
+  };
+  // Handlers för status, kategori och produkt ändringar
   const handleTicketStatusChange = async (e) => {
     const newStatusId = parseInt(e.target.value);
     setSelectedStatus(newStatusId);
@@ -76,21 +129,19 @@ const TicketHandler =() =>
     try {
       const response = await fetch(`/api/ticketstatus?ticket_id=${ticket.id}&status=${newStatusId}`, {
         method: "PUT",
-        headers: {"Content-Type": "application/json",},
+        headers: { "Content-Type": "application/json" },
       });
-
       if (!response.ok) {
         throw new Error("Failed to update ticket Status");
       }
-
       alert("Ticket Status updated successfully!");
     } catch (error) {
-      console.error("Error updating ticket:", error);
+      console.error("Error updating ticket status:", error);
     }
   };
 
   const handleCategoryChange = async (e) => {
-    const newCategoryId  = e.target.value;
+    const newCategoryId = e.target.value;
     setSelectedCategory(newCategoryId);
 
     try {
@@ -98,14 +149,12 @@ const TicketHandler =() =>
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });
-
       if (!response.ok) {
         throw new Error("Failed to update ticket Category");
       }
-
       alert("Ticket Category updated successfully!");
     } catch (error) {
-      console.error("Error updating ticket:", error);
+      console.error("Error updating ticket category:", error);
     }
   };
 
@@ -118,94 +167,103 @@ const TicketHandler =() =>
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });
-
       if (!response.ok) {
         throw new Error("Failed to update ticket Product");
       }
-
       alert("Ticket Product updated successfully!");
-
     } catch (error) {
-      console.error("Error updating ticket:", error);
+      console.error("Error updating ticket product:", error);
     }
   };
-  
+
   if (!ticket) return <p>Loading ticket...</p>;
-  
-  return <main>
-    <div key={"handler-div-" + ticket.id} className="handler-div">
-      <div className="ticket-handle-information-div">
-        <div className="ticket-title-information-div">
-          <label>Title</label>
-          <label className="ticket-title-label">{ticket.title} #{ticket.caseNumber}</label>
-        </div>
-        <div className="ticket-description-information-div">
-          <label>Description</label>
-          <label className="ticket-description-label">{ticket.description}</label>
-        </div>
-        <div className="ticket-notes">
-          <label>Internal notes</label>
-          <form>
-            <textarea></textarea>
-          </form>
-        </div>
-        <div className="ticket-status-product-div">
-          <div className="ticket-status-div">
-            <label>Ticket Status</label>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <select
-                  value={selectedStatus || ""}
-                  onChange={handleTicketStatusChange}>
-                {ticketStatus.map((status) => (
+
+  return (
+    <main className="ticket-handler-container">
+      <div key={`handler-div-${ticket.id}`} className="handler-div">
+        <div className="ticket-handle-information-div">
+          <div className="ticket-title-information-div">
+            <label>Title</label>
+            <label className="ticket-title-label">{ticket.title} #{ticket.caseNumber}</label>
+          </div>
+          <div className="ticket-description-information-div">
+            <label>Description</label>
+            <label className="ticket-description-label">{ticket.description}</label>
+          </div>
+          <div className="ticket-notes">
+            <label>Internal notes</label>
+            <form>
+              <textarea placeholder="Write internal notes here..."></textarea>
+            </form>
+          </div>
+          <div className="ticket-status-product-div">
+            <div className="ticket-status-div">
+              <label>Ticket Status</label>
+              <form onSubmit={(e) => e.preventDefault()}>
+                <select value={selectedStatus || ""} onChange={handleTicketStatusChange}>
+                  {ticketStatusList.map((status) => (
                     <option key={status.id} value={status.id}>
                       {status.statusName}
                     </option>
-                ))}
-              </select>
-            </form>
-          </div>
-          <div className="ticket-product-category-div">
-            <div className="ticket-category-div">
-              <label>Category</label>
-              <form onSubmit={(e) => e.preventDefault()}>
-                <select value={selectedCategory || ""} onChange={handleCategoryChange}>
-                  {categories.map((category) => (
-                      <option key={category.id} value={category.id}>  {/* Assuming 'category.name' is the name */}
-                        {category.name}
-                      </option>
                   ))}
                 </select>
               </form>
             </div>
-            <div className="ticket-product-div">
-              <label>Product</label>
-              <form onSubmit={(e) => e.preventDefault()}>
-                <select value={selectedProduct || ""} onChange={handleProductChange}>
-                  {products.map((product) => (
+            <div className="ticket-product-category-div">
+              <div className="ticket-category-div">
+                <label>Category</label>
+                <form onSubmit={(e) => e.preventDefault()}>
+                  <select value={selectedCategory || ""} onChange={handleCategoryChange}>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </form>
+              </div>
+              <div className="ticket-product-div">
+                <label>Product</label>
+                <form onSubmit={(e) => e.preventDefault()}>
+                  <select value={selectedProduct || ""} onChange={handleProductChange}>
+                    {products.map((product) => (
                       <option key={product.id} value={product.id}>
                         {product.name}
                       </option>
-                  ))}
-                </select>
-              </form>
+                    ))}
+                  </select>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="ticket-chat-div">
-        <div className="chat-div">
-          <label>Chat</label>
+        {/* Chat-delen med meddelandelista och EmployeeChat */}
+        <div className="ticket-chat-div">
+          <div className="chat-div">
+            <label>Chat</label>
+          </div>
+          <ul className="messages-list">
+            {messages && messages.length > 0 ? (
+              messages.map((msg, index) => {
+                const isCustomerMessage = (msg.email?.toLowerCase() === ticket.email?.toLowerCase());
+                const prefix = isCustomerMessage ? "Customer: " : "Customer Service: ";
+                const messageClass = isCustomerMessage ? "customer-message" : "employee-message";
+                return (
+                  <li key={index} className={`message-item ${messageClass}`}>
+                    <p>{prefix}{msg.content}</p>
+                  </li>
+                );
+              })
+            ) : (
+              <li className="message-item">No messages yet.</li>
+            )}
+          </ul>
+          {/* EmployeeChat-komponenten hanterar meddelandeinmatning för anställda */}
+          <EmployeeChat ticket={ticket} fetchMessages={fetchMessages} />
         </div>
-        <div className="chat-response-div">
-          <form>
-
-          </form>
-        </div>
-        <button>Send</button>
       </div>
-    </div>
-
-  </main>
-}
+    </main>
+  );
+};
 
 export default TicketHandler;
