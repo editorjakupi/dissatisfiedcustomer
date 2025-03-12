@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 namespace server;
 
 public class SuperAdminRoutes
@@ -82,6 +83,23 @@ public class SuperAdminRoutes
                 )
             );
         }
-        return result;
+            return result;
     }
+
+    public static async Task<Results<NoContent, NotFound>> DeleteAdmin(int id, NpgsqlDataSource db)
+    {
+        using var command = db.CreateCommand("DELETE FROM users WHERE id = $1");
+        command.Parameters.AddWithValue(id);
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+        if (rowsAffected > 0)
+        {
+            return TypedResults.NoContent();
+        }
+        else
+        {
+            return TypedResults.NotFound();
+        }
+    }
+
 }

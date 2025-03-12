@@ -116,7 +116,12 @@ app.MapGet("/api/tickets/view/{token}", async (string token, NpgsqlDataSource db
 app.MapGet("/api/adminlist", SuperAdminRoutes.GetAdmins);
 app.MapGet("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.GetAdmin(userId, db));
 app.MapPut("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.PutAdmin(userId, db));
+app.MapDelete("/api/company/admins/{userId}", (int userId) => SuperAdminRoutes.DeleteAdmin(userId, db));
 
+
+app.MapPut("/api/putuser/{userId}", UserRoutes.PutUserForSAdmin);
+
+app.MapGet("/api/tickets/feedback", TicketRoutes.Feedback);
 
 app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 

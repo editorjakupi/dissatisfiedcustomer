@@ -237,4 +237,43 @@ public static class TicketRoutes
             return Results.BadRequest($"Error updating ticket product: {ex.Message}");
         }
     }
+    
+    public static async Task<IResult> Feedback(HttpContext context, NpgsqlDataSource db)
+    {
+        var companyId = context.Request.Query["companyId"];
+        if (!int.TryParse(companyId, out int parsedCompanyId))
+        {
+            return Results.BadRequest("Invalid companyId.");
+        }
+
+        using var cmd = db.CreateCommand();
+        cmd.CommandText = @"
+            SELECT t.id, t.title, t.user_email, u.name as employee_name, 
+                   f.rating, f.comment, f.date
+            FROM tickets t
+            JOIN employees e ON t.employee_id = e.id
+            JOIN users u ON e.user_id = u.id
+            LEFT JOIN feedback f ON t.id = f.ticket_id
+            WHERE t.company_id = @companyId";
+
+        cmd.Parameters.AddWithValue("companyId", parsedCompanyId);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        var ticketFeedbackList = new List<TicketFeedback>();
+
+        while (await reader.ReadAsync())
+        {
+            ticketFeedbackList.Add(new TicketFeedback(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                reader.GetString(3),
+                reader.IsDBNull(4) ? null : reader.GetInt32(4),  // Handle nullable rating
+                reader.IsDBNull(5) ? null : reader.GetString(5), // Handle nullable comment
+                reader.IsDBNull(6) ? null : reader.GetDateTime(6) // Handle nullable date
+            ));
+        }
+        
+        return Results.Json(ticketFeedbackList);
+    }
 }
