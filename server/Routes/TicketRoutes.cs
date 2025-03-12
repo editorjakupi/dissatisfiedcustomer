@@ -59,9 +59,7 @@ public static class TicketRoutes
             return Results.Ok(result);
         }
 
-        Console.WriteLine("No Company Found");
-
-        return Results.BadRequest();
+        return result;
     }
 
     public static async Task<IResult> UpdateTicketStatus(int ticketId, NpgsqlDataSource db)
@@ -88,6 +86,7 @@ public static class TicketRoutes
             return Results.BadRequest(e.Message);
         }
     }
+
     public static async Task<Ticket?> GetTicket(int ticketId, NpgsqlDataSource db)
     {
         Ticket? result = null;
@@ -99,15 +98,15 @@ public static class TicketRoutes
         if (await reader.ReadAsync())
         {
             result = new Ticket(
-                reader.GetInt32(reader.GetOrdinal("id")),               // id
+                reader.GetInt32(reader.GetOrdinal("id")), // id
                 reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"), // date
-                reader.GetString(reader.GetOrdinal("title")),           // title
-                reader.GetString(reader.GetOrdinal("name")),   // categoryname
-                reader.GetString(reader.GetOrdinal("email")),           // email
-                reader.GetString(reader.GetOrdinal("status_name")),          // status
-                reader.GetString(reader.GetOrdinal("case_number")),      // caseNumber
-                reader.GetString(reader.GetOrdinal("title")),       // description
-                reader.GetInt32(reader.GetOrdinal("company_id"))     // company_id
+                reader.GetString(reader.GetOrdinal("title")), // title
+                reader.GetString(reader.GetOrdinal("name")), // categoryname
+                reader.GetString(reader.GetOrdinal("email")), // email
+                reader.GetString(reader.GetOrdinal("status_name")), // status
+                reader.GetString(reader.GetOrdinal("case_number")), // caseNumber
+                reader.GetString(reader.GetOrdinal("title")), // description
+                reader.GetInt32(reader.GetOrdinal("company_id")) // company_id
             );
         }
 
@@ -130,6 +129,7 @@ public static class TicketRoutes
             {
                 return Results.NotFound("Ticket not found or status unchanged.");
             }
+
             return Results.Ok("Ticket status updated successfully.");
         }
         catch (Exception e)
@@ -162,8 +162,8 @@ public static class TicketRoutes
         if (await reader.ReadAsync())
         {
             int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
-                                ? (int?)null  // Properly handle null values for company_id
-                                : reader.GetInt32(reader.GetOrdinal("company_id"));
+                ? (int?)null // Properly handle null values for company_id
+                : reader.GetInt32(reader.GetOrdinal("company_id"));
 
             result = new Ticket(
                 reader.GetInt32(reader.GetOrdinal("id")),
@@ -174,9 +174,10 @@ public static class TicketRoutes
                 reader.GetString(reader.GetOrdinal("status_name")),
                 reader.GetString(reader.GetOrdinal("case_number")),
                 reader.GetString(reader.GetOrdinal("description")),
-                companyId  // Use nullable company_id
+                companyId // Use nullable company_id
             );
         }
+
         return result;
     }
 
@@ -230,6 +231,7 @@ public static class TicketRoutes
             {
                 return Results.NotFound("Product not found or status unchanged.");
             }
+
             return Results.Ok("Product status updated successfully.");
         }
         catch (Exception ex)
@@ -237,43 +239,42 @@ public static class TicketRoutes
             return Results.BadRequest($"Error updating ticket product: {ex.Message}");
         }
     }
-    
-    public static async Task<IResult> Feedback(HttpContext context, NpgsqlDataSource db)
+
+    public static async Task<IResult> Feedback( NpgsqlDataSource db,HttpContext context)
     {
-        var companyId = context.Request.Query["companyId"];
-        if (!int.TryParse(companyId, out int parsedCompanyId))
+        if (context.Session.GetInt32("company") is int comapny_id)
         {
-            return Results.BadRequest("Invalid companyId.");
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = @"
+            SELECT t.id, t.title, t.user_email, u.name as employee_name,
+       f.rating, f.comment, f.date
+FROM tickets t
+         JOIN employees e ON t.employee_id = e.id
+         JOIN users u ON e.user_id = u.id
+         LEFT JOIN feedback f ON t.id = f.ticket_id
+WHERE t.company_id = @companyId";
+
+            cmd.Parameters.AddWithValue("companyId", comapny_id);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            var ticketFeedbackList = new List<TicketFeedback>();
+
+            while (await reader.ReadAsync())
+            {
+                ticketFeedbackList.Add(new TicketFeedback(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
+                    reader.IsDBNull(4) ? null : reader.GetInt32(4), // Handle nullable rating
+                    reader.IsDBNull(5) ? null : reader.GetString(5), // Handle nullable comment
+                    reader.IsDBNull(6) ? null : reader.GetDateTime(6) // Handle nullable date
+                ));
+            }
+
+            return Results.Ok(ticketFeedbackList);
         }
-
-        using var cmd = db.CreateCommand();
-        cmd.CommandText = @"
-            SELECT t.id, t.title, t.user_email, u.name as employee_name, 
-                   f.rating, f.comment, f.date
-            FROM tickets t
-            JOIN employees e ON t.employee_id = e.id
-            JOIN users u ON e.user_id = u.id
-            LEFT JOIN feedback f ON t.id = f.ticket_id
-            WHERE t.company_id = @companyId";
-
-        cmd.Parameters.AddWithValue("companyId", parsedCompanyId);
-
-        using var reader = await cmd.ExecuteReaderAsync();
-        var ticketFeedbackList = new List<TicketFeedback>();
-
-        while (await reader.ReadAsync())
-        {
-            ticketFeedbackList.Add(new TicketFeedback(
-                reader.GetInt32(0),
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetString(3),
-                reader.IsDBNull(4) ? null : reader.GetInt32(4),  // Handle nullable rating
-                reader.IsDBNull(5) ? null : reader.GetString(5), // Handle nullable comment
-                reader.IsDBNull(6) ? null : reader.GetDateTime(6) // Handle nullable date
-            ));
-        }
-        
-        return Results.Json(ticketFeedbackList);
+        Console.WriteLine("No Company Found");
+        return Results.BadRequest();
     }
 }

@@ -961,3 +961,65 @@ align-self: center;
   margin-bottom: 15px;
   color: #333;
 }
+
+/* Ticket Feedback */
+.table {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: contents;
+  font-weight: bold;
+  color: black;
+}
+
+.table-row {
+  display: contents;
+  cursor: pointer;
+}
+
+.table-row:hover {
+  background-color: #f1f1f1;
+}
+
+.table-cell {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+
+.table-header .table-cell {
+  background: whitesmoke;
+  border: 1px solid #ddd;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.table-row:last-child .table-cell {
+  border-bottom: none;
+}
+
+/* Clickable Sortable Header */
+.sortable {
+  cursor: pointer;
+}
+
+.sortable:hover {
+  background-color: #0056b3;
+}
+/* Comment Box */
+.comment-box {
+  grid-column: 1 / -1;
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-top: -1px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
