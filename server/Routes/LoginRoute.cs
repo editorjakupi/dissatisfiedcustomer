@@ -81,6 +81,7 @@ public class LoginRoute
            };
 
            context.Session.SetString("user", System.Text.Json.JsonSerializer.Serialize(sessionUser));
+           context.Session.SetInt32("company", user.companyId);
            Console.WriteLine($"Session set: {context.Session.GetString("user")}");
 
            // Return the user session data as a response

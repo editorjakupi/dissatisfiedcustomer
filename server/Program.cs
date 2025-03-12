@@ -64,7 +64,7 @@ app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 
 /* Employee */
 app.MapGet("/api/employees/{userId}", (int userId) => EmployeeRoute.GetEmployees(userId, db));
-app.MapGet("/api/employee/{user_id}", (int user_id) => EmployeeRoute.GetEmployee(user_id, db));
+app.MapGet("/api/employee/{comapnyId}", (int comapnyId) => EmployeeRoute.GetEmployee(comapnyId, db));
 app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
 app.MapDelete("/api/employees/{userId}", (int userId) => EmployeeRoute.DeleteEmployee(userId, db));
 

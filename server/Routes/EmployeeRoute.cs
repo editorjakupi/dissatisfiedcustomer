@@ -71,11 +71,11 @@ public static class EmployeeRoute
   }
 
   public static async Task<List<Users>>
-    GetEmployee(int userId, NpgsqlDataSource db)
+    GetEmployee(int comapnyId, NpgsqlDataSource db)
   {
     List<Users> result = new();
     using var cmd = db.CreateCommand("SELECT userxcompany.id, userxcompany.name, userxcompany.email, userxcompany.password, userxcompany.phonenumber, userxcompany.role_id, userxcompany.companyId FROM employees JOIN userxcompany ON employees.user_id = userxcompany.id WHERE userxcompany.companyId = $1");
-    cmd.Parameters.AddWithValue(userId);
+    cmd.Parameters.AddWithValue(comapnyId);
 
     using var reader = await cmd.ExecuteReaderAsync();
     while (await reader.ReadAsync())
