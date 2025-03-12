@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import "../../main.css";
-import EmployeeChat from "./EmployeeChat"; // Importera EmployeeChat-komponenten
+import EmployeeChat from "./EmployeeChat";
 
 const TicketHandler = () => {
   const { ticketId } = useParams();
@@ -15,16 +15,14 @@ const TicketHandler = () => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // Poll for new messages every 5 seconds
     const intervalId = setInterval(() => {
-      if (ticket && ticket.id && ticket.email) {
-        fetchMessages(ticket.id, ticket.email);
+      if (ticket && ticket.id) {
+        fetchMessages(ticket.id);
       }
     }, 5000);
     return () => clearInterval(intervalId);
   }, [ticket]);
 
-  // Hämta kategorier
   useEffect(() => {
     fetch(`/api/categories`)
       .then(response => response.json())
@@ -35,7 +33,6 @@ const TicketHandler = () => {
       .catch((error) => console.error("Error fetching categories", error));
   }, []);
 
-  // Hämta ticket status-lista
   useEffect(() => {
     fetch(`/api/ticketstatus`)
       .then(response => response.json())
@@ -46,10 +43,8 @@ const TicketHandler = () => {
       .catch((error) => console.error("Error fetching ticket status", error));
   }, []);
 
-  // Hämta ticket baserat på ticketId
   useEffect(() => {
     if (!ticketId) return;
-
     fetch(`/api/tickets/${ticketId}`)
       .then(response => {
         if (!response.ok) {
@@ -60,58 +55,59 @@ const TicketHandler = () => {
       .then(data => {
         console.log("Fetched ticket data:", data);
         setTicket(data);
-        // Hämta meddelanden för detta ärende
-        if (data && data.id && data.email) {
-          fetchMessages(data.id, data.email);
-        }
-        // Hämta produkter baserat på company_id, men endast om company_id är definierat
-        if (data.company_id) {
-          fetch(`/api/products/${data.company_id}`)
-            .then(response => response.json())
-            .then(productData => {
-              console.log("Fetched product data:", productData);
-              setProducts(productData);
-            })
-            .catch((error) => console.error("Error fetching products", error));
-        } else {
-          console.warn("Company ID is undefined");
-          setProducts([]); // Om company_id är undefined, sätt products till tom array
-        }
-
-        // Uppdatera vald kategori med hjälp av data (om kategorier redan är laddade)
-        if (data.categoryname && categories.length > 0) {
-          const matchingCategory = categories.find(category =>
-            category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase()
-          );
-          if (matchingCategory) {
-            setSelectedCategory(matchingCategory.id);
+        if (data && data.id) {
+          fetchMessages(data.id);
+          if (data.company_id) {
+            fetch(`/api/products/${data.company_id}`)
+              .then(response => response.json())
+              .then(productData => {
+                console.log("Fetched product data:", productData);
+                setProducts(productData);
+              })
+              .catch((error) => console.error("Error fetching products", error));
+          } else {
+            console.warn("Company ID is undefined");
+            setProducts([]);
           }
-        }
-
-        // Uppdatera vald status med hjälp av data (om ticketStatusList redan är laddad)
-        if (data.status && ticketStatusList.length > 0) {
-          const matchingStatus = ticketStatusList.find(status =>
-            status.statusName === data.status
-          );
-          if (matchingStatus) {
-            setSelectedStatus(matchingStatus.id);
+          if (data.categoryname && categories.length > 0) {
+            const matchingCategory = categories.find(category =>
+              category.name.trim().toLowerCase() === data.categoryname.trim().toLowerCase()
+            );
+            if (matchingCategory) {
+              setSelectedCategory(matchingCategory.id);
+            }
+          }
+          if (data.status && ticketStatusList.length > 0) {
+            const matchingStatus = ticketStatusList.find(status =>
+              status.statusName === data.status
+            );
+            if (matchingStatus) {
+              setSelectedStatus(matchingStatus.id);
+            }
           }
         }
       })
       .catch((error) => console.error("Error fetching ticket", error));
   }, [ticketId, categories, ticketStatusList]);
 
-  // Funktion för att hämta meddelanden
-  const fetchMessages = (ticketId, email) => {
-    fetch(`http://localhost:5000/api/user/${email}/cases/${ticketId}/messages`, {
+  useEffect(() => {
+    if (!ticket) return;
+    setTicket((prevTicket) => ({
+      ...prevTicket,
+      status: ticketStatusList.find((status) => status.id === selectedStatus)?.statusName || prevTicket.status
+    }));
+  }, [selectedStatus, ticketStatusList]);
+
+  const fetchMessages = (ticketId) => {
+    fetch(`/api/tickets/${ticketId}/messages`, {
       method: "GET",
       credentials: "include"
     })
       .then(response => {
-        if (!response.ok) {
-          return response.text().then(text => { throw new Error(text || "Error fetching messages"); });
+        if (response.status === 204) {
+          return [];
         }
-        return response.json();
+        return response.json().catch(() => []);
       })
       .then(data => {
         console.log("Fetched messages:", data);
@@ -121,13 +117,12 @@ const TicketHandler = () => {
         console.error("Error fetching messages:", err);
       });
   };
-  // Handlers för status, kategori och produkt ändringar
+
   const handleTicketStatusChange = async (e) => {
     const newStatusId = parseInt(e.target.value);
     setSelectedStatus(newStatusId);
-
     try {
-      const response = await fetch(`/api/ticketstatus?ticket_id=${ticket.id}&status=${newStatusId}`, {
+      const response = await fetch(`/api/ticketstatus?ticketId=${ticket.id}&status=${newStatusId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });
@@ -143,7 +138,6 @@ const TicketHandler = () => {
   const handleCategoryChange = async (e) => {
     const newCategoryId = e.target.value;
     setSelectedCategory(newCategoryId);
-
     try {
       const response = await fetch(`/api/ticketscategory?ticket_id=${ticket.id}&category_id=${newCategoryId}`, {
         method: "PUT",
@@ -161,7 +155,6 @@ const TicketHandler = () => {
   const handleProductChange = async (e) => {
     const newProductId = e.target.value;
     setSelectedProduct(newProductId);
-
     try {
       const response = await fetch(`/api/ticketsproduct?ticket_id=${ticket.id}&product_id=${newProductId}`, {
         method: "PUT",
@@ -237,7 +230,6 @@ const TicketHandler = () => {
             </div>
           </div>
         </div>
-        {/* Chat-delen med meddelandelista och EmployeeChat */}
         <div className="ticket-chat-div">
           <div className="chat-div">
             <label>Chat</label>
@@ -245,7 +237,8 @@ const TicketHandler = () => {
           <ul className="messages-list">
             {messages && messages.length > 0 ? (
               messages.map((msg, index) => {
-                const isCustomerMessage = (msg.email?.toLowerCase() === ticket.email?.toLowerCase());
+                const senderType = msg.senderType?.trim().toLowerCase() || "";
+                const isCustomerMessage = senderType === "customer";
                 const prefix = isCustomerMessage ? "Customer: " : "Customer Service: ";
                 const messageClass = isCustomerMessage ? "customer-message" : "employee-message";
                 return (
@@ -258,7 +251,6 @@ const TicketHandler = () => {
               <li className="message-item">No messages yet.</li>
             )}
           </ul>
-          {/* EmployeeChat-komponenten hanterar meddelandeinmatning för anställda */}
           <EmployeeChat ticket={ticket} fetchMessages={fetchMessages} />
         </div>
       </div>

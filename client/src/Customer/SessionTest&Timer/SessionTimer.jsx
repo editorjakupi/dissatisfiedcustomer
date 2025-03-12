@@ -1,5 +1,4 @@
-// src/SessionTimer.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const SessionTimer = ({ durationInSeconds }) => {
   const [timeLeft, setTimeLeft] = useState(durationInSeconds);
@@ -12,7 +11,6 @@ const SessionTimer = ({ durationInSeconds }) => {
     return () => clearInterval(intervalId);
   }, [timeLeft]);
 
-  // Konvertera tiden till mm:ss-format
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
   const seconds = String(timeLeft % 60).padStart(2, '0');
 
