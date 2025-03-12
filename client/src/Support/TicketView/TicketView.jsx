@@ -8,7 +8,7 @@ function BoxesContainer() {
 
     // Fetch ticket counts using view=all
     useEffect(() => {
-        fetch("/api/tickets?view=all")
+        fetch(`/api/tickets?view=all`)
             .then((response) => response.json())
             .then((data) => {
                 // Count the number of tickets with different statuses
@@ -50,51 +50,37 @@ export default function TicketView() {
     // Using 2 different states to keep track of the sorting order for title and category
     const [sortOrderTitle, setSortOrderTitle] = useState("default");
     const [sortOrderCategory, setSortOrderCategory] = useState("default");
+    const [sortOrderStatus, setSortOrderStatus] = useState("default");
     const [companyId, setCompanyId] = useState(null);
 
     // Get the view parameter from the URL
     const view = searchparams.get("view");
 
     useEffect(() => {
-        // Fetch the session to get the companyId
-        fetch("/api/session")
+        fetch(`/api/tickets?view=${view}`)
             .then((response) => response.json())
             .then((data) => {
-                const companyId = data?.companyId;
-                if (companyId) {
-                    setCompanyId(companyId);
-                    console.log("Company ID:", companyId);
-    
-                    // Now make the ticket request with the correct companyId
-                    fetch(`/api/tickets?view=${view}&companyId=${companyId}`)
-                        .then((response) => response.json())
-                        .then((data) => {
-                            setTickets(data);
-                            setSortedTickets(data);
-                            setDefaultOrder(data);
-                        })
-                        .catch((error) => console.error("Error fetching tickets:", error));
-                } else {
-                    console.error("No companyId found in the session.");
-                }
+                setTickets(data);
+                setSortedTickets(data);
+                setDefaultOrder(data);
             })
-            .catch((error) => console.error("Error fetching session:", error));
+            .catch((error) => console.error("Error fetching tickets:", error));
     }, [view]);  // This ensures the fetch happens again when `view` changes
-    
+
 
     // Function to mark a ticket as resolved by pressing a button
     function MarkAsResolved(ticket) {
         const originalStatus = ticket.status;
-    
+
         // Update the status of the ticket in the UI
         setTickets(prevTickets =>
             prevTickets.map(t => t.id === ticket.id ? { ...t, status: "Resolved" } : t)
         );
-    
+
         setSortedTickets(prevSorted =>
             prevSorted.map(t => t.id === ticket.id ? { ...t, status: "Resolved" } : t)
         );
-    
+
         fetch(`/api/tickets/${ticket.id}`, {
             method: "PUT",
             headers: {
@@ -115,7 +101,7 @@ export default function TicketView() {
                 setSortedTickets(prevSorted =>
                     prevSorted.map(t => t.id === ticket.id ? { ...t, status: originalStatus } : t)
                 );
-    
+
                 console.error("Error marking ticket as resolved:", error);
             });
     }
@@ -138,6 +124,7 @@ export default function TicketView() {
 
         // Reset the category sorting order
         setSortOrderCategory("default");
+        setSortOrderStatus("default")
         setSortedTickets(sorted);
     }
 
@@ -158,7 +145,27 @@ export default function TicketView() {
 
         // Reset the title sorting order
         setSortOrderTitle("default");
+        setSortOrderStatus("default")
         setSortedTickets(sorted);
+    }
+
+    function SortByStatus() {
+        let sorted;
+
+        if (sortOrderStatus === "default") {
+            sorted = [...tickets].sort((a, b) => a.statusName.localeCompare(b.statusName, "sv"));
+            setSortOrderStatus("asc");
+        } else if (sortOrderStatus === "asc") {
+            sorted = [...tickets].sort((a, b) => b.statusName.localecompare(a.statusName, "sv"));
+            setSortOrderStatus("desc");
+        } else {
+            sorted = [...defaultOrder];
+            setSortOrderStatus("default");
+        }
+
+        setSortOrderCategory("default")
+        setSortOrderTitle("default")
+        setSortedTickets(sorted)
     }
 
     // Table Item component to display each ticket
@@ -166,7 +173,7 @@ export default function TicketView() {
         return (
             <tr key={id}>
                 <td>{date}</td>
-                <td className="ticketname" onClick={ () => navigate(`/tickets/handle/${id}`)}>{title}</td>
+                <td className="ticketname" onClick={() => navigate(`/tickets/handle/${id}`)}>{title}</td>
                 <td>{categoryName}</td>
                 <td>{email}</td>
                 <td>{status}</td>
@@ -201,7 +208,9 @@ export default function TicketView() {
                                 Category {sortOrderCategory === "asc" ? "▲" : sortOrderCategory === "desc" ? "▼" : ""}
                             </th>
                             <th>E-Mail</th>
-                            <th>Status</th>
+                            <th onClick={SortByStatus} style={{ cursor: "pointer" }}>
+                                Status {sortOrderStatus === "asc" ? "▲" : sortOrderStatus === "desc" ? "▼" : ""}
+                            </th>
                             <th>Mark As Resolved</th>
                         </tr>
                     </thead>
