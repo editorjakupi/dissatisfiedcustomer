@@ -57,8 +57,8 @@ const TicketHandler = () => {
         setTicket(data);
         if (data && data.id) {
           fetchMessages(data.id);
-          if (data.company_id) {
-            fetch(`/api/products/${data.company_id}`)
+          if (data.companyId) {
+            fetch(`/api/products/${data.companyId}`)
               .then(response => response.json())
               .then(productData => {
                 console.log("Fetched product data:", productData);
