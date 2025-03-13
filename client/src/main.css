@@ -289,15 +289,12 @@ p {
   }
 }
 
-
-
-
 /* Admin product and employee */
 .user-container {
   display: flex;
   flex-direction: column;
   align-items: center; /* Center everything horizontally */
-  justify-content: center; /* Center everything vertically */
+  justify-content: center; /* Center everythingx vertically */
   height: 100%;
   /* padding: 1rem; */
   margin: 1%;
@@ -351,6 +348,7 @@ p {
 /* Text for user list and details */
 .users-list p, .user-details p {
   width: 100%;
+  margin-top: 0%;
 }
 
 
@@ -389,7 +387,7 @@ p {
   align-items: center;
   width: 100%;
   height: 100%;
-  margin: 3%;
+  margin: 0%;
   
   input {
     width: 90%;
@@ -418,6 +416,12 @@ p {
   
   button:hover {
     background-color: #548385;
+  }
+
+  h2 {
+    width: 100%;
+    height: 100%;
+    text-align: center;
   }
 }
 
@@ -727,7 +731,7 @@ textarea{
 }
 
 .user-item {
-  padding: 0.5rem;
+  padding: 5%;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
   overflow: hidden;
@@ -741,14 +745,13 @@ textarea{
 
 /* User Details */
 .user-details {
+  display: flex;
   flex-grow: 1;
   min-width: 40%;
   max-width: 60%;
   padding: 0%;
   padding-top: 0%;
 
-  
-  
   .promote-button {
     background-color: #75B9BE;
     color: black;
@@ -778,7 +781,7 @@ textarea{
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 0%;
+  margin: 100%;
 }
 
 .user-card > * {
@@ -789,21 +792,55 @@ textarea{
   color: gray;
 }
 
-.delete-button {
+/* Admin employee button container */
+.admin-emplyee-buttons-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+/* Clear Selection button */
+.clear-button {
+background-color: #007bff;
+color: white;
+border: none;
+cursor: pointer;
+font-size: 16px;
+border-radius: 5px;
+margin: 2%;
+width: 30%;
+height: 100%;
+align-self: center;
+
+  .clear-button:hover {
+    background-color: #0056b3;
+  }
+  
+}
+
+.admin-buttons-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+/* Demote admin button */
+.demote-button, .delete-button {
   background-color: #e74c3c;
   color: white;
   border: none;
-  padding: 4%;
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
-  margin: 5%;
-  width: 40%;
-  height: 10%;
+  margin: 2%;
+  width: 30%;
+  height: 100%;
   align-self: center;
 }
 
-.delete-button:hover {
+.delete-button:hover, .demote-button:hover {
   background-color: #c0392b;
 }
 
@@ -903,7 +940,13 @@ textarea{
   word-wrap: break-word;
 }
 
-/* Styling for customer messages (green background, left aligned) */
+.employee-message {
+  background-color: #007bff;
+  /* blå bakgrund för anställdsmeddelanden */
+  color: white;
+  align-self: flex-end;
+}
+
 .customer-message {
   background-color: #c2e7bf;
   color: #155724;
@@ -923,4 +966,142 @@ textarea{
   font-family: Arial, Helvetica, sans-serif;
   margin-bottom: 15px;
   color: #333;
+}
+
+/* Ticket Feedback */
+.table {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: contents;
+  font-weight: bold;
+  color: black;
+}
+
+.table-row {
+  display: contents;
+  cursor: pointer;
+}
+
+.table-row:hover {
+  background-color: #f1f1f1;
+}
+
+.table-cell {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+
+.table-header .table-cell {
+  background: whitesmoke;
+  border: 1px solid #ddd;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.table-row:last-child .table-cell {
+  border-bottom: none;
+}
+
+/* Clickable Sortable Header */
+.sortable {
+  cursor: pointer;
+}
+
+.sortable:hover {
+  background-color: #0056b3;
+}
+/* Comment Box */
+.comment-box {
+  grid-column: 1 / -1;
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-top: -1px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.message-item.customer-message {
+  background-color: #d4edda;
+  /* Grön bakgrund */
+}
+
+.message-item.employee-message {
+  background-color: #96d8d2;
+  /* Blå bakgrund */
+}
+
+/* Meddelanden från kunden */
+.customer-message {
+  background-color: #d4edda;
+  /* Grön bakgrund */
+  color: #155724;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+/* Meddelanden från kundtjänst */
+.employee-message {
+  background-color: #cce5ff;
+  /* Blå bakgrund */
+  color: #004085;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+/* Vanliga CSS-regler */
+.message-item {
+  list-style-type: none;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.message-item p {
+  margin: 0;
+}
+
+/* Ticket detaljer */
+.ticket-title-information-div,
+.ticket-description-information-div {
+  margin-bottom: 10px;
+}
+
+.ticket-notes textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.ticket-status-div,
+.ticket-category-div,
+.ticket-product-div {
+  margin-top: 10px;
+}
+
+.select-container select {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button.active {
+  background-color: green;
+  color: white;
+  font-weight: bold;
 }

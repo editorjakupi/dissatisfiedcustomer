@@ -12,7 +12,7 @@ const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, tic
     e.preventDefault();
     if (!isSessionActive) {
       const alertMessage =
-        ticketStatus === "Resolved"
+        ticketStatus.toLowerCase() === "resolved"
           ? "Ticket is resolved. You cannot add new messages."
           : "Ticket is closed. You cannot add new messages.";
       alert(alertMessage);
@@ -30,8 +30,8 @@ const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, tic
       credentials: "include"
     })
       .then(response => {
-        if (response.status === 204) {
-          return {};
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text || "Error adding message (Customer)"); });
         }
         return response.json().catch(() => ({}));
       })
@@ -54,7 +54,7 @@ const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, tic
         required
       />
       <div className="button-container">
-        <button type="submit" className="add-message-button" disabled={!isSessionActive}>
+        <button type="submit" className="add-message-button">
           Add Message
         </button>
       </div>

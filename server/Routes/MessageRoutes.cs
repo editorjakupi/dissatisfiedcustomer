@@ -11,7 +11,6 @@ namespace server
     {
         // Data Transfer Object (DTO) for incoming customer messages.
         // Customers provide their email, and we use that directly (no user account is created).
-       
 
         // Method to handle POST /api/messages for a customer message.
         // UPDATED: We no longer receive/create a user_id; instead, we use Email and generate a token for the customer session.
@@ -31,20 +30,17 @@ namespace server
 
             try
             {
-                // I PostMessage-metoden, efter att vi har skapat ticketen:
+                // Create ticket for customer.
                 int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, conn, transaction);
 
-                // Hämtar nu aktuell status (status_id) — enligt er databasschema: 
-                // status_id 3 = Resolved, status_id 4 = Closed.
+                // Retrieve current status of the ticket (status_id) to ensure no new messages are added if the ticket is resolved or closed.
                 int currentStatus = await GetTicketStatus(ticketId, conn, transaction);
                 if (currentStatus == 3 || currentStatus == 4)
                 {
-                    // Om status är Resolved eller Closed, returneras ett fel.
                     return TypedResults.BadRequest("Cannot add message to closed or resolved ticket.");
                 }
 
-
-                // Insert the customer’s message into the database.
+                // Insert the customer's message into the database.
                 await using var cmd = conn.CreateCommand();
                 cmd.Transaction = transaction;
                 cmd.CommandText = "INSERT INTO messages (ticket_id, message, email) VALUES ($1, $2, $3)";
@@ -130,7 +126,6 @@ namespace server
 
         // Retrieves the status of a ticket given its ticketId.
         // This method ensures that no new messages can be added if the status is "Closed" or "Resolved".
-        // Ny metod för att hämta ticketstatus (status_id) baserat på ticketId.
         private static async Task<int> GetTicketStatus(int ticketId, NpgsqlConnection conn, NpgsqlTransaction transaction)
         {
             await using var cmd = conn.CreateCommand();
@@ -144,7 +139,6 @@ namespace server
             }
             return Convert.ToInt32(result);
         }
-
 
         // Generates a random password. (Exposed for external use.)
         public static string GenerateRandomPassword()
