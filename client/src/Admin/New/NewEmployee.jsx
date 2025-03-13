@@ -105,7 +105,9 @@ const NewEmployee = ({ user, setUser }) => {
 
                 const userId = await userResponse.json();
 
-                const employeeData = {userId, companyId: parseInt(user.companyId, 10)};
+                const employeeData = {
+                    userId
+                };
 
                 const employeeResponse = await fetch("/api/employees", {
                     method: "POST",
@@ -176,12 +178,14 @@ const NewEmployee = ({ user, setUser }) => {
                                     <p><strong>Email:</strong> {selectedEmployee.email}</p>
                                     <p><strong>Phone Number:</strong> {selectedEmployee.phonenumber}</p>
 
-                                    <button onClick={handleDelete} className="delete-button">
-                                        Delete Employee
-                                    </button>
-                                    <button onClick={handleClearSelection} className="clear-button">
-                                        Clear Selection
-                                    </button>
+                                    <div className="admin-emplyee-buttons-container">
+                                        <button onClick={handleDelete} className="delete-button">
+                                            Delete Employee
+                                        </button>
+                                        <button onClick={handleClearSelection} className="clear-button">
+                                            Clear Selection
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 <p className="user-placeholder">Select an Employee to see details</p>

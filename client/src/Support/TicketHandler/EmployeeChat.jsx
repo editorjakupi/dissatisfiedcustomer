@@ -1,32 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../../main.css";
 
-const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, ticketStatus }) => {
+const EmployeeChat = ({ ticket, fetchMessages }) => {
   const [messageContent, setMessageContent] = useState("");
-
-  useEffect(() => {
-    console.log("Ticket Status in Component:", ticketStatus);
-  }, [ticketStatus]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isSessionActive) {
+    if (ticket.status.toLowerCase() === "closed" || ticket.status.toLowerCase() === "resolved") {
       const alertMessage =
-        ticketStatus === "Resolved"
+        ticket.status.toLowerCase() === "resolved"
           ? "Ticket is resolved. You cannot add new messages."
           : "Ticket is closed. You cannot add new messages.";
       alert(alertMessage);
       return;
     }
 
-    const url = `http://localhost:5000/api/tickets/view/${token}/messages`;
-    console.log("POST URL (Customer):", url);
+    const url = `http://localhost:5000/api/tickets/handle/${ticket.id}/messages`;
+    console.log("POST URL (Employee):", url);
     fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email: userEmail, content: messageContent }),
+      body: JSON.stringify({ content: messageContent }),
       credentials: "include"
     })
       .then(response => {
@@ -37,16 +33,16 @@ const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, tic
       })
       .then(() => {
         setMessageContent("");
-        onMessageAdded();
+        fetchMessages(ticket.id);
       })
       .catch(error => {
         alert(error.message);
-        console.error("Error adding message (Customer):", error);
+        console.error("Error adding message (Employee):", error);
       });
   };
 
   return (
-    <form className="add-message-form" onSubmit={handleSubmit}>
+    <form className="employee-chat-form" onSubmit={handleSubmit}>
       <textarea
         value={messageContent}
         onChange={(e) => setMessageContent(e.target.value)}
@@ -54,7 +50,7 @@ const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, tic
         required
       />
       <div className="button-container">
-        <button type="submit" className="add-message-button" disabled={!isSessionActive}>
+        <button type="submit" className="add-message-button">
           Add Message
         </button>
       </div>
@@ -62,4 +58,4 @@ const AddMessageForm = ({ token, userEmail, onMessageAdded, isSessionActive, tic
   );
 };
 
-export default AddMessageForm;
+export default EmployeeChat;

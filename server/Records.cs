@@ -1,8 +1,8 @@
 namespace server;
 
+
+
 #region Message Records
-// UPPDATERAD: Använd UserEmail (string) istället för UserId (int)
-// Tidigare: public record Message(int UserId, string Content);
 public record Message(string UserEmail, string Content);
 
 // MessageDTO har redan rätt struktur
@@ -20,6 +20,10 @@ public record CatAndProd(
 // Tidigare: public record MessageDetails(int MessageId, int UserId, string Content);
 public record MessageDetails(int MessageId, string UserEmail, string Content);
 #endregion
+
+
+
+
 
 #region Case Records
 public record CaseDetails(
@@ -61,8 +65,7 @@ public record Products(
 
 public record PostProductDTO(
   string Name,
-  string Description,
-  int companyId);
+  string Description);
 
 public record PutProductDTO(
   int id,
@@ -105,8 +108,8 @@ public record LoginRequest(
 
 public record Employees(
   int id,
-  int userId,
-  int companyId);
+  int userId);
+
 #endregion
 
 #region Ticket Records
