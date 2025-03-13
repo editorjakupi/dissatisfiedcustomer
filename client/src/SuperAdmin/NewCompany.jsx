@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import "../main.css";
+import { data } from "react-router";
 
 const NewCompany = ({}) => {
     const [formData, setFormData] = useState({
@@ -14,12 +15,12 @@ const NewCompany = ({}) => {
 
     const handleChange = (event) => {
         setFormData({...formData, [event.target.name]: event.target.value}); 
-        setAdmin(event.target.admin);
+        setAdmins(event.target.admin);
 };
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
-    const [admin, setAdmin] = useState([])
+    const [admins, setAdmins] = useState([])
 
     //Company search
     const handleSearch = () => {
@@ -58,6 +59,16 @@ const NewCompany = ({}) => {
         })
         .catch((error) => console.error("company fetch failed: ", error));
     };
+
+    //Admin list in edit/create form
+    const handleShowAdmins = () => {
+        fetch('/api/company/admins')
+        .then((response) => response.json())
+        .then((data) => {
+            setAdmins(data);
+        })
+        .catch((error) => console.error("admin fetch failed: ",error));
+    }
 
     //Company delete
     const handleDelete = () => {
@@ -215,9 +226,9 @@ const NewCompany = ({}) => {
                                     onClick={handleChange} required/>
                             <label>
                                 Admin
-                            <select value={formData.admin || "NA"} onClick={handleChange}>
-                                <option value="admin1">Admin 1</option>
-                                <option value="admin2">Admin 2</option>
+                            <select value={value} onClick={handleChange}>
+                            <option value="admin1">Admin 1</option>
+                            <option value="admin2">Admin 2</option>
                             </select>
                             </label>
                             <button type="submit">{selectedCompany ? "Update Company" : "Create Company"}</button>
@@ -238,5 +249,15 @@ export default NewCompany;
 
 //update company
 /*
+                                {admins.length > 0 ? (
+                                    admins.map((admin) => (
+                                    <option value={admin.name}>{admin.name}</option>
+                                    ))
+                                ) : (
+                                    <p>No admins found</p>
+                                )}
 
+
+                                <option value="admin1">Admin 1</option>
+                                <option value="admin2">Admin 2</option>
 */

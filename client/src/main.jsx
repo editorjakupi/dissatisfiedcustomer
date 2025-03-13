@@ -83,6 +83,7 @@ const App = () => {
                         <Route path="/session-test" element={<SessionTest />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
                         <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />
+                        <Route path="/companies/admins" element={user ? <NewCompany user={user}/> : <login setUser={user}/>} />
                     </Routes>
                 </div>
             </div>
