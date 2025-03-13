@@ -25,7 +25,7 @@ export function Feedback({ caseId })
     <ul className='rating'>
       {GetRating()}
     </ul>
-    <textarea className='comment'></textarea>
+    <textarea className='comment' placeholder='Write your feedback here'></textarea>
     <div><button class="cancel button">Cancel</button><button class="send button" onClick={() => SendFeedback(caseId, rating)}>Send</button></div>
   </div>
 }
