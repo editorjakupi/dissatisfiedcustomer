@@ -946,6 +946,8 @@ textarea {
   color: #333;
 }
 
+/* Styling for feedback window */
+
 #feedbackWindow {
   .rating {
     display: flex;
@@ -954,6 +956,7 @@ textarea {
   .star {
     cursor: pointer;
     font-size: 75px;
+    color: rgb(196, 196, 196);
   }
 
   .star:hover {

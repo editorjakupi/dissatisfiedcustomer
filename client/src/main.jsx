@@ -85,8 +85,8 @@ const App = () => {
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user} />} />
                         <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
 
-
-                        <Route path="/givefeedback" element={<Feedback />} />
+                        {/* Temporary for testing */}
+                        <Route path="/givefeedback/:token" element={<Feedback />} />
                     </Routes>
                 </div>
             </div>

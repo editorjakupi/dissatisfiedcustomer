@@ -4,16 +4,19 @@ import { useParams } from 'react-router';
 import '../../main.css';
 
 export function Feedback() {
+  const { token } = useParams();
 
   const [rating, setRating] = useState(3);
 
+  //☆
   function GetRating() {
     const ratings = [];
+    console.log("lmao");
     for (let index = 1; index <= 5; index++) {
       if (index <= rating) {
         ratings.push(<div className="star selected" id={index} onClick={(e) => setRating(e.target.id)}>★</div>);
       } else {
-        ratings.push(<div className="star" id={index} onClick={(e) => setRating(e.target.id)}>☆</div>);
+        ratings.push(<div className="star" id={index} onClick={(e) => setRating(e.target.id)}>★</div>);
       }
     }
     return ratings;
