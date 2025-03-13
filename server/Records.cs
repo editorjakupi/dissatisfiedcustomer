@@ -18,7 +18,7 @@ public record CatAndProd(
 
 // UPPDATERAD: Ändrat UserId till UserEmail i MessageDetails
 // Tidigare: public record MessageDetails(int MessageId, int UserId, string Content);
-public record MessageDetails(int MessageId, string UserEmail, string Content);
+public record MessageDetails(int MessageId, string UserEmail, string Content, string SenderType);
 #endregion
 
 
