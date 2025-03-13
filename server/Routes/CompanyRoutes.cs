@@ -117,15 +117,20 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.admin);
         cmd.Parameters.AddWithValue(id);
 
-        using var cmd2 = db.CreateCommand("UPDATE employees SET user_id = $2 company_id =$2");
+        using var cmd2 = db.CreateCommand("UPDATE employees SET user_id = $1 WHERE company_id = $2");
         cmd2.Parameters.AddWithValue(company.admin);
         cmd2.Parameters.AddWithValue(company.id);
 
-        await cmd.ExecuteNonQueryAsync();
-        await cmd2.ExecuteNonQueryAsync();
+        try{
+            await cmd.ExecuteNonQueryAsync();
+            await cmd2.ExecuteNonQueryAsync();
 
-        return Results.Ok("Company and admin updated successfully");
-
+            return Results.Ok("Company and admin updated successfully");
+        }
+        catch
+        {
+            return TypedResults.BadRequest("Failed to update company: " + company);
+        }
     }
 
     public static async Task<Results<Ok<List<Admin>>, NotFound>>
