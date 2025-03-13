@@ -1,8 +1,7 @@
 import React, {useState} from "react";
 import "../main.css";
-import { data } from "react-router";
 
-const NewCompany = ({}) => {
+const NewCompany = ({user, setUser}) => {
     const [formData, setFormData] = useState({
         id: null,
         name: "",
@@ -15,12 +14,13 @@ const NewCompany = ({}) => {
 
     const handleChange = (event) => {
         setFormData({...formData, [event.target.name]: event.target.value}); 
-        setAdmins(event.target.admin);
+       setAdmins(event.target.admin);
 };
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
-    const [admins, setAdmins] = useState([])
+    const [admins, setAdmins] = useState([]);
+    const [selectedAdmin, setSelectedAdmin] = useState([]);
 
     //Company search
     const handleSearch = () => {
@@ -215,27 +215,28 @@ const NewCompany = ({}) => {
                             )}
                         </div>
                         <div className="form-container">
-                        <form onSubmit={handleSubmit} className="form">
-                            <h2>{selectedCompany ? "Update Company" : "Create New Company"}</h2>
-                            <input type="text" name="name" value={formData.name || ""} placeholder="Name"
-                                   onChange={handleChange}
-                                   required/>
-                            <input type="text" name="phone" value={formData.phone || ""} placeholder="Phone"
-                                   onChange={handleChange} required/>
-                            <input type="text" name="email" value={formData.email || ""} placeholder="Email"
+                            <form onSubmit={handleSubmit} className="form">
+                                <h2>{selectedCompany ? "Update Company" : "Create New Company"}</h2>
+                                <input type="text" name="name" value={formData.name || ""} placeholder="Name"
+                                    onChange={handleChange}
+                                    required/>
+                                <input type="text" name="phone" value={formData.phone || ""} placeholder="Phone"
+                                    onChange={handleChange} required/>
+                                <input type="text" name="email" value={formData.email || ""} placeholder="Email"
                                     onClick={handleChange} required/>
-                            <label>
-                                Admin
-                            <select value={value} onClick={handleChange}>
-                            <option value="admin1">Admin 1</option>
-                            <option value="admin2">Admin 2</option>
-                            </select>
-                            </label>
-                            <button type="submit">{selectedCompany ? "Update Company" : "Create Company"}</button>
-                        </form>
-                        {message && <p>{message}</p>}
-                    </div>
-
+                                <label>
+                                    Admin
+                                <select onClick={handleShowAdmins}>
+                                    <option value="current">{formData.admin}</option>
+                                    {admins.map((admin) => (
+                                        <option value={admin.id}>{admin.name}</option>
+                                    ))}
+                                </select>
+                                </label>
+                                <button type="submit">{selectedCompany ? "Update Company" : "Create Company"}</button>
+                            </form>
+                            {message && <p>{message}</p>}
+                        </div>
                     </div>
                 </div>
             </div>
