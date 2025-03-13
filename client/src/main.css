@@ -940,7 +940,13 @@ align-self: center;
   word-wrap: break-word;
 }
 
-/* Styling for customer messages (green background, left aligned) */
+.employee-message {
+  background-color: #007bff;
+  /* blå bakgrund för anställdsmeddelanden */
+  color: white;
+  align-self: flex-end;
+}
+
 .customer-message {
   background-color: #c2e7bf;
   color: #155724;
@@ -1020,6 +1026,76 @@ align-self: center;
   background-color: #f9f9f9;
   padding: 10px;
   margin-top: -1px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.message-item.customer-message {
+  background-color: #d4edda;
+  /* Grön bakgrund */
+}
+
+.message-item.employee-message {
+  background-color: #96d8d2;
+  /* Blå bakgrund */
+}
+
+/* Meddelanden från kunden */
+.customer-message {
+  background-color: #d4edda;
+  /* Grön bakgrund */
+  color: #155724;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+/* Meddelanden från kundtjänst */
+.employee-message {
+  background-color: #cce5ff;
+  /* Blå bakgrund */
+  color: #004085;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+/* Vanliga CSS-regler */
+.message-item {
+  list-style-type: none;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.message-item p {
+  margin: 0;
+}
+
+/* Ticket detaljer */
+.ticket-title-information-div,
+.ticket-description-information-div {
+  margin-bottom: 10px;
+}
+
+.ticket-notes textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.ticket-status-div,
+.ticket-category-div,
+.ticket-product-div {
+  margin-top: 10px;
+}
+
+.select-container select {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }

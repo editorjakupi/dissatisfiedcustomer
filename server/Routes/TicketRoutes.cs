@@ -1,10 +1,8 @@
 using Npgsql;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Builder.Extensions;
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.StaticAssets;
-
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace server;
 
@@ -59,163 +57,118 @@ public static class TicketRoutes
             return Results.Ok(result);
         }
 
-        return result;
+        Console.WriteLine("No Company Found");
+
+        return Results.BadRequest();
     }
 
-    public static async Task<IResult> UpdateTicketStatus(int ticketId, NpgsqlDataSource db)
-    {
-        try
+        public static async Task<Ticket?> GetTicket(int id, NpgsqlDataSource db)
         {
-            using var cmd = db.CreateCommand("UPDATE tickets SET status_id = 3 WHERE id = @id");
-            cmd.Parameters.AddWithValue("@id", ticketId);
-
-            int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-            if (rowsAffected == 1)
+            Ticket? result = null;
+            using var cmd = db.CreateCommand(@"
+                SELECT id, date, title, email, status_name, case_number, description, company_id
+                FROM public.tickets_with_status 
+                WHERE id = $1");
+            cmd.Parameters.AddWithValue(id);
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
             {
-                return Results.Ok();
+                int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
+                    ? (int?)null
+                    : reader.GetInt32(reader.GetOrdinal("company_id"));
+
+                result = new Ticket(
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                    reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
+                    reader.GetString(reader.GetOrdinal("title")),
+                    "", // category placeholder
+                    reader.GetString(reader.GetOrdinal("email")),
+                    reader.GetString(reader.GetOrdinal("status_name")),
+                    reader.GetString(reader.GetOrdinal("case_number")),
+                    reader.GetString(reader.GetOrdinal("description")),
+                    companyId
+                );
             }
-            else
+            return result;
+        }
+
+        public static async Task<IResult> PutTicketCategory(int ticketId, string categoryName, NpgsqlDataSource db)
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET category_name = $2 WHERE id = $1");
+            cmd.Parameters.AddWithValue(ticketId);
+            cmd.Parameters.AddWithValue(categoryName);
+            await cmd.ExecuteNonQueryAsync();
+            return Results.Ok();
+        }
+
+        public static async Task<IResult> PutTicketStatus(int ticketId, int status, NpgsqlDataSource db)
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET status_id = $2 WHERE id = $1");
+            cmd.Parameters.AddWithValue(ticketId);
+            cmd.Parameters.AddWithValue(status);
+            await cmd.ExecuteNonQueryAsync();
+            return Results.Ok();
+        }
+
+        public static async Task<IResult> PutTicketProduct(int ticketId, string productName, NpgsqlDataSource db)
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET product_name = $2 WHERE id = $1");
+            cmd.Parameters.AddWithValue(ticketId);
+            cmd.Parameters.AddWithValue(productName);
+            await cmd.ExecuteNonQueryAsync();
+            return Results.Ok();
+        }
+
+        public static async Task<IResult> UpdateTicketStatus(int id, NpgsqlDataSource db)
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET status_id = $2 WHERE id = $1");
+            cmd.Parameters.AddWithValue(id);
+            cmd.Parameters.AddWithValue(1); // exempelvis status_id = 1 (unread)
+            await cmd.ExecuteNonQueryAsync();
+            return Results.Ok();
+        }
+
+        public static async Task<IResult> Feedback(int ticketId, NpgsqlDataSource db)
+        {
+            using var cmd = db.CreateCommand("SELECT feedback FROM tickets WHERE id = $1");
+            cmd.Parameters.AddWithValue(ticketId);
+            var result = await cmd.ExecuteScalarAsync();
+            return result != null ? Results.Ok(result.ToString()) : Results.NotFound();
+        }
+
+        public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
+        {
+            Ticket? result = null;
+            using var cmd = db.CreateCommand(@"
+                SELECT id, date, title, email, status_name, case_number, description, company_id
+                FROM public.tickets_with_status 
+                WHERE case_number = $1");
+            cmd.Parameters.AddWithValue(token);
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
             {
-                return Results.NotFound();
+                int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
+                    ? (int?)null
+                    : reader.GetInt32(reader.GetOrdinal("company_id"));
+                result = new Ticket(
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                    reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
+                    reader.GetString(reader.GetOrdinal("title")),
+                    "", // category placeholder
+                    reader.GetString(reader.GetOrdinal("email")),
+                    reader.GetString(reader.GetOrdinal("status_name")),
+                    reader.GetString(reader.GetOrdinal("case_number")),
+                    reader.GetString(reader.GetOrdinal("description")),
+                    companyId
+                );
             }
-
+            return result;
         }
-        catch (Exception e)
-        {
-            return Results.BadRequest(e.Message);
-        }
-    }
-
-    public static async Task<Ticket?> GetTicket(int ticketId, NpgsqlDataSource db)
-    {
-        Ticket? result = null;
-
-        var query = db.CreateCommand("SELECT * FROM tickets_all WHERE id = @ticketId");
-        query.Parameters.AddWithValue("ticketId", ticketId);
-
-        using var reader = await query.ExecuteReaderAsync();
-        if (await reader.ReadAsync())
-        {
-            result = new Ticket(
-                reader.GetInt32(reader.GetOrdinal("id")), // id
-                reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"), // date
-                reader.GetString(reader.GetOrdinal("title")), // title
-                reader.GetString(reader.GetOrdinal("name")), // categoryname
-                reader.GetString(reader.GetOrdinal("email")), // email
-                reader.GetString(reader.GetOrdinal("status_name")), // status
-                reader.GetString(reader.GetOrdinal("case_number")), // caseNumber
-                reader.GetString(reader.GetOrdinal("title")), // description
-                reader.GetInt32(reader.GetOrdinal("company_id")) // company_id
-            );
-        }
-
-        return result; // Return the single ticket or null if not found
-    }
-
+    
 
 
     public static async Task<IResult>
-        PutTicketStatus(int status, int ticket_id, NpgsqlDataSource db)
-    {
-        await using var cmd = db.CreateCommand("UPDATE tickets SET status_id = @status WHERE id = @ticket_id");
-        cmd.Parameters.AddWithValue("@status", status);
-        cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
-
-        try
-        {
-            int rowsAffected = await cmd.ExecuteNonQueryAsync();
-            if (rowsAffected == 0)
-            {
-                return Results.NotFound("Ticket not found or status unchanged.");
-            }
-
-            return Results.Ok("Ticket status updated successfully.");
-        }
-        catch (Exception e)
-        {
-            return Results.BadRequest($"Failed to update ticket status: {e.Message}");
-        }
-    }
-
-
-    //Skapa backend-endpoint för kundens chatt via token
-    // Exempelmetod för att hämta ett ärende baserat på det genererade token (case_number)
-    public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
-    {
-        Ticket? result = null;
-        // Use the view "tickets_with_status" which includes: id, date, title, email, status_name, case_number, description, company_id
-        using var cmd = db.CreateCommand(@"
-        SELECT id, 
-               date, 
-               title, 
-               email, 
-               status_name, 
-               case_number,
-               description,
-               company_id
-        FROM public.tickets_with_status 
-        WHERE case_number = $1");
-        cmd.Parameters.AddWithValue(token);
-
-        using var reader = await cmd.ExecuteReaderAsync();
-        if (await reader.ReadAsync())
-        {
-            int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
-                ? (int?)null // Properly handle null values for company_id
-                : reader.GetInt32(reader.GetOrdinal("company_id"));
-
-            result = new Ticket(
-                reader.GetInt32(reader.GetOrdinal("id")),
-                reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
-                reader.GetString(reader.GetOrdinal("title")),
-                "", // Placeholder for category, if needed
-                reader.GetString(reader.GetOrdinal("email")),
-                reader.GetString(reader.GetOrdinal("status_name")),
-                reader.GetString(reader.GetOrdinal("case_number")),
-                reader.GetString(reader.GetOrdinal("description")),
-                companyId // Use nullable company_id
-            );
-        }
-
-        return result;
-    }
-
-
-
-
-
-
-
-
-
-    public static async Task<IResult>
-        PutTicketCategory(int ticket_id, int category_id, NpgsqlDataSource db)
-    {
-        await using var conn = await db.OpenConnectionAsync();
-        await using var cmd = conn.CreateCommand();
-
-        cmd.CommandText = "UPDATE tickets SET category_id = @category_id WHERE id = @ticket_id";
-        cmd.Parameters.AddWithValue("@category_id", category_id);
-        cmd.Parameters.AddWithValue("@ticket_id", ticket_id);
-
-        try
-        {
-            int rowsAffected = await cmd.ExecuteNonQueryAsync();
-            if (rowsAffected == 0)
-            {
-                return Results.NotFound("Category not found or status unchanged.");
-            }
-            return Results.Ok("Category status updated successfully.");
-        }
-        catch (Exception ex)
-        {
-            return Results.BadRequest($"Error updating ticket category: {ex.Message}");
-        }
-    }
-
-    public static async Task<IResult>
-        PutTicketProduct(int ticket_id, int product_id, NpgsqlDataSource db)
+        PutTicketProducts(int ticket_id, int product_id, NpgsqlDataSource db)
     {
         await using var conn = await db.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
@@ -240,7 +193,7 @@ public static class TicketRoutes
         }
     }
 
-    public static async Task<IResult> Feedback( NpgsqlDataSource db,HttpContext context)
+    public static async Task<IResult> Feedbacks( NpgsqlDataSource db,HttpContext context)
     {
         if (context.Session.GetInt32("company") is int comapny_id)
         {
@@ -276,5 +229,6 @@ WHERE t.company_id = @companyId";
         }
         Console.WriteLine("No Company Found");
         return Results.BadRequest();
+        
+        }
     }
-}
