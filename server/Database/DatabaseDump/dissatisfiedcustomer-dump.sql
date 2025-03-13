@@ -163,7 +163,8 @@ CREATE TABLE public.messages (
     id integer NOT NULL,
     ticket_id integer,
     message text NOT NULL,
-    email text NOT NULL
+    email text NOT NULL,
+    sender_type character varying(50)
 );
 
 
@@ -268,14 +269,14 @@ CREATE VIEW public.tickets_all AS
  SELECT t.id,
     t.date,
     t.title,
-    c.name,
+    COALESCE(c.name, 'No Category'::character varying) AS name,
     t.user_email AS email,
     ts.status_name,
     t.case_number,
     t.description,
     t.company_id
    FROM ((public.tickets t
-     JOIN public.category c ON ((t.category_id = c.id)))
+     LEFT JOIN public.category c ON ((t.category_id = c.id)))
      JOIN public.ticketstatus ts ON ((t.status_id = ts.id)));
 
 
@@ -624,15 +625,18 @@ COPY public.feedback (ticket_id, rating, comment, date) FROM stdin;
 -- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.messages (id, ticket_id, message, email) FROM stdin;
-3	2	Hur uppdaterar jag produkten?	cecilia@exempel.se
-5	3	Jag förstår inte fakturan.	erik@exempel.se
-6	3	Låt oss gå igenom fakturan tillsammans.	gustav@exempel.se
-7	4	Vad erbjuder ni för tjänster?	frida@exempel.se
-8	4	Här är en lista över våra tjänster.	ivan@exempel.se
-9	5	Kan jag returnera produkten?	helena@exempel.se
-10	5	Självklart, här är returinstruktioner.	linda@exempel.se
-15	8	Kan jag få mer information om produkten?	martin@exempel.se
+COPY public.messages (id, ticket_id, message, email, sender_type) FROM stdin;
+3	2	Hur uppdaterar jag produkten?	cecilia@exempel.se	\N
+5	3	Jag förstår inte fakturan.	erik@exempel.se	\N
+6	3	Låt oss gå igenom fakturan tillsammans.	gustav@exempel.se	\N
+7	4	Vad erbjuder ni för tjänster?	frida@exempel.se	\N
+8	4	Här är en lista över våra tjänster.	ivan@exempel.se	\N
+9	5	Kan jag returnera produkten?	helena@exempel.se	\N
+10	5	Självklart, här är returinstruktioner.	linda@exempel.se	\N
+15	8	Kan jag få mer information om produkten?	martin@exempel.se	\N
+126	32	This is a test message to validate MailKit SMTP sending.	dissatisfiedcustomer2025@gmail.com	\N
+127	32	hejsan jag är kundtjänst	customerservice@company.com	employee
+128	32	hej jag är kund	dissatisfiedcustomer2025@gmail.com	customer
 \.
 
 
@@ -673,6 +677,7 @@ COPY public.tickets (id, company_id, user_email, employee_id, product_id, catego
 15	15	oskar@exempel.se	7	15	15	2025-02-06 20:45:05.494515	Övriga frågor	Övriga frågor från kund	2	CASE000009
 3	3	erik@exempel.se	7	3	3	2025-02-06 20:45:05.494515	Faktura för Produkt C1	Detaljer om fakturafrågan	3	CASE000002
 14	15	oskar@exempel.se	4	14	14	2025-02-06 20:45:05.494515	Förslag på förbättring	Kundens förslag	3	CASE000008
+32	1	dissatisfiedcustomer2025@gmail.com	\N	\N	\N	2025-03-12 23:20:12.210013	Test Customer	This is a test message to validate MailKit SMTP sending.	1	CASE-28ACBC84
 \.
 
 
@@ -749,7 +754,7 @@ SELECT pg_catalog.setval('public.employees_id_seq', 15, true);
 -- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.messages_id_seq', 28, true);
+SELECT pg_catalog.setval('public.messages_id_seq', 128, true);
 
 
 --
@@ -763,7 +768,7 @@ SELECT pg_catalog.setval('public.product_id_seq', 15, true);
 -- Name: tickets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tickets_id_seq', 24, true);
+SELECT pg_catalog.setval('public.tickets_id_seq', 32, true);
 
 
 --

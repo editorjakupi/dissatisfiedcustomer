@@ -8,7 +8,7 @@ function BoxesContainer() {
 
     // Fetch ticket counts using view=all
     useEffect(() => {
-        fetch("/api/tickets?view=all")
+        fetch(`/api/tickets?view=all`)
             .then((response) => response.json())
             .then((data) => {
                 // Count the number of tickets with different statuses
@@ -50,23 +50,37 @@ export default function TicketView() {
     // Using 2 different states to keep track of the sorting order for title and category
     const [sortOrderTitle, setSortOrderTitle] = useState("default");
     const [sortOrderCategory, setSortOrderCategory] = useState("default");
+    const [sortOrderStatus, setSortOrderStatus] = useState("default");
+    const [companyId, setCompanyId] = useState(null);
 
     // Get the view parameter from the URL
     const view = searchparams.get("view");
 
+    useEffect(() => {
+        fetch(`/api/tickets?view=${view}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setTickets(data);
+                setSortedTickets(data);
+                setDefaultOrder(data);
+            })
+            .catch((error) => console.error("Error fetching tickets:", error));
+    }, [view]);  // This ensures the fetch happens again when `view` changes
+
+
     // Function to mark a ticket as resolved by pressing a button
     function MarkAsResolved(ticket) {
         const originalStatus = ticket.status;
-    
+
         // Update the status of the ticket in the UI
         setTickets(prevTickets =>
             prevTickets.map(t => t.id === ticket.id ? { ...t, status: "Resolved" } : t)
         );
-    
+
         setSortedTickets(prevSorted =>
             prevSorted.map(t => t.id === ticket.id ? { ...t, status: "Resolved" } : t)
         );
-    
+
         fetch(`/api/tickets/${ticket.id}`, {
             method: "PUT",
             headers: {
@@ -87,10 +101,12 @@ export default function TicketView() {
                 setSortedTickets(prevSorted =>
                     prevSorted.map(t => t.id === ticket.id ? { ...t, status: originalStatus } : t)
                 );
-    
+
                 console.error("Error marking ticket as resolved:", error);
             });
     }
+
+    console.log("Tickets data:", tickets);
 
 
     // Function to sort the tickets by title
@@ -110,6 +126,7 @@ export default function TicketView() {
 
         // Reset the category sorting order
         setSortOrderCategory("default");
+        setSortOrderStatus("default")
         setSortedTickets(sorted);
     }
 
@@ -118,10 +135,10 @@ export default function TicketView() {
         let sorted;
 
         if (sortOrderCategory === "default") {
-            sorted = [...tickets].sort((a, b) => a.categoryname.localeCompare(b.categoryname, "sv"));
+            sorted = [...tickets].sort((a, b) => a.categoryName.localeCompare(b.categoryName, "sv"));
             setSortOrderCategory("asc");
         } else if (sortOrderCategory === "asc") {
-            sorted = [...tickets].sort((a, b) => b.categoryname.localeCompare(a.categoryname, "sv"));
+            sorted = [...tickets].sort((a, b) => b.categoryName.localeCompare(a.categoryName, "sv"));
             setSortOrderCategory("desc");
         } else {
             sorted = [...defaultOrder];
@@ -130,34 +147,41 @@ export default function TicketView() {
 
         // Reset the title sorting order
         setSortOrderTitle("default");
+        setSortOrderStatus("default")
         setSortedTickets(sorted);
     }
 
+    function SortByStatus() {
+        let sorted;
 
-    // Fetch tickets based on the view
-    useEffect(() => {
-        fetch("/api/tickets?view=" + view)
-            .then((response) => response.json())
-            .then((data) => {
-                setTickets(data);
-                setSortedTickets(data);
-                setDefaultOrder(data);
-            })
-            .catch((error) => console.error("Error fetching tickets:", error));
-    },[view]);
+        if (sortOrderStatus === "default") {
+            sorted = [...tickets].sort((a, b) => a.status.localeCompare(b.status, "sv"));
+            setSortOrderStatus("asc");
+        } else if (sortOrderStatus === "asc") {
+            sorted = [...tickets].sort((a, b) => b.status.localeCompare(a.status, "sv"));
+            setSortOrderStatus("desc");
+        } else {
+            sorted = [...defaultOrder];
+            setSortOrderStatus("default");
+        }
+
+        setSortOrderCategory("default")
+        setSortOrderTitle("default")
+        setSortedTickets(sorted)
+    }
 
     // Table Item component to display each ticket
-    function TableItem({ id, date, title, categoryname, email, status }) {
+    function TableItem({ id, date, title, categoryName, email, status }) {
         return (
             <tr key={id}>
                 <td>{date}</td>
-                <td className="ticketname" onClick={ () => navigate(`/tickets/handle/${id}`)}>{title}</td>
-                <td>{categoryname}</td>
+                <td className="ticketname" onClick={() => navigate(`/tickets/handle/${id}`)}>{title}</td>
+                <td>{categoryName}</td>
                 <td>{email}</td>
                 <td>{status}</td>
                 <td>
                     {status !== "Resolved" ? (
-                        <button className="resolve-button" onClick={() => MarkAsResolved({ id, date, title, categoryname, email, status })}>
+                        <button className="resolve-button" onClick={() => MarkAsResolved({ id, date, title, categoryName, email, status })}>
                             Mark as Resolved
                         </button>
                     ) : (
@@ -186,7 +210,9 @@ export default function TicketView() {
                                 Category {sortOrderCategory === "asc" ? "▲" : sortOrderCategory === "desc" ? "▼" : ""}
                             </th>
                             <th>E-Mail</th>
-                            <th>Status</th>
+                            <th onClick={SortByStatus} style={{ cursor: "pointer" }}>
+                                Status {sortOrderStatus === "asc" ? "▲" : sortOrderStatus === "desc" ? "▼" : ""}
+                            </th>
                             <th>Mark As Resolved</th>
                         </tr>
                     </thead>
