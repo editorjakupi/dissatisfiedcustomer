@@ -2,7 +2,7 @@
   import React from "react";
   // Vi använder endast "react-router" om det krävs, men här importeras den vanligaste standarden från "react-router-dom"
   // (För webbaserad app är detta vanligtatt använda)
-  import { useNavigate, useLocation } from "react-router";
+  import { useNavigate, useLocation } from "react-router"; // Vi importar useLocation to get Admins...
   import "../../main.css";
   import logo from "../../assets/logo.png";
   

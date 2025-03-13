@@ -227,7 +227,7 @@ WHERE t.company_id = @companyId";
 
             return Results.Ok(ticketFeedbackList);
         }
-        Console.WriteLine("No Company Found");
+        Console.WriteLine("No Feedback Found");
         return Results.BadRequest();
         
         }

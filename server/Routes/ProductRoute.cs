@@ -28,26 +28,31 @@ public static class ProductRoute
     }
 
 
-    public static async Task<Results<Created, BadRequest<string>>>
-        PostProduct(PostProductDTO product, NpgsqlDataSource db)
+    public static async Task<IResult>
+        PostProduct(PostProductDTO product, NpgsqlDataSource db, HttpContext context)
     {
-
-        Console.WriteLine($"Received request: {product.Name}, {product.Description}, {product.companyId}");
-
-        using var cmd = db.CreateCommand("INSERT INTO product (name, description, company_id) VALUES($1, $2, $3)");
-        cmd.Parameters.AddWithValue(product.Name);
-        cmd.Parameters.AddWithValue(product.Description);
-        cmd.Parameters.AddWithValue(product.companyId);
-
-        try
+        if (context.Session.GetInt32("company") is int comapny_id)
         {
-            await cmd.ExecuteNonQueryAsync();
-            return TypedResults.Created();
+            Console.WriteLine($"Received request: {product.Name}, {product.Description}, {comapny_id}");
+
+            using var cmd = db.CreateCommand("INSERT INTO product (name, description, company_id) VALUES($1, $2, $3)");
+            cmd.Parameters.AddWithValue(product.Name);
+            cmd.Parameters.AddWithValue(product.Description);
+            cmd.Parameters.AddWithValue(comapny_id);
+
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+                return TypedResults.Created();
+            }
+            catch
+            {
+                return TypedResults.BadRequest("Failed to create product " + product);
+            }
         }
-        catch
-        {
-            return TypedResults.BadRequest("Failed to create product " + product);
-        }
+        
+        Console.WriteLine("No Product Found");
+        return Results.BadRequest();
     }
 
     public static async Task<Results<NoContent, NotFound>>

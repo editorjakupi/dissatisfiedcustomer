@@ -105,7 +105,9 @@ const NewEmployee = ({ user, setUser }) => {
 
                 const userId = await userResponse.json();
 
-                const employeeData = {userId, companyId: parseInt(user.companyId, 10)};
+                const employeeData = {
+                    userId
+                };
 
                 const employeeResponse = await fetch("/api/employees", {
                     method: "POST",
