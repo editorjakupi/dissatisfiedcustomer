@@ -1099,3 +1099,9 @@ align-self: center;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+button.active {
+  background-color: green;
+  color: white;
+  font-weight: bold;
+}
