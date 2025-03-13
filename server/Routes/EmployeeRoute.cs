@@ -17,57 +17,65 @@ public static class EmployeeRoute
     using var reader = await cmd.ExecuteReaderAsync();
     while (await reader.ReadAsync())
     {
-      result.Add(new(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2)));
+      result.Add(new(
+        reader.GetInt32(0),
+        reader.GetInt32(1)));
     }
     return result;
   }
 
-  public static async Task<Results<Created, BadRequest<string>>> 
-    PostEmployee(Employees employee, NpgsqlDataSource db)
+  public static async Task<IResult> 
+    PostEmployee(Employees employee, NpgsqlDataSource db, HttpContext context)
   {
-    Console.WriteLine($"Received request: UserId={employee.userId}, CompanyId={employee.companyId}");
-
-    await using var conn = await db.OpenConnectionAsync();
-    await using var transaction = await conn.BeginTransactionAsync();
-
-    try
+    if (context.Session.GetInt32("company") is int comapny_id)
     {
-      // Insert employee
-      await using var insertCmd = conn.CreateCommand();
-      insertCmd.CommandText = "INSERT INTO employees (user_id, company_id) VALUES ($1, $2)";
-      insertCmd.Parameters.AddWithValue(employee.userId);
-      insertCmd.Parameters.AddWithValue(employee.companyId);
-      insertCmd.Transaction = transaction;
+      Console.WriteLine($"Received request: UserId={employee.userId}, CompanyId={comapny_id}");
 
-      int inserted = await insertCmd.ExecuteNonQueryAsync();
-      if (inserted == 0)
+      await using var conn = await db.OpenConnectionAsync();
+      await using var transaction = await conn.BeginTransactionAsync();
+
+      try
+      {
+        // Insert employee
+        await using var insertCmd = conn.CreateCommand();
+        insertCmd.CommandText = "INSERT INTO employees (user_id, company_id) VALUES ($1, $2)";
+        insertCmd.Parameters.AddWithValue(employee.userId);
+        insertCmd.Parameters.AddWithValue(comapny_id);
+        insertCmd.Transaction = transaction;
+
+        int inserted = await insertCmd.ExecuteNonQueryAsync();
+        if (inserted == 0)
+        {
+          await transaction.RollbackAsync();
+          return TypedResults.BadRequest("Failed to add employee!");
+        }
+
+        // Update user role
+        await using var updateCmd = conn.CreateCommand();
+        updateCmd.CommandText = "UPDATE users SET role_id = 2 WHERE id = $1";
+        updateCmd.Parameters.AddWithValue(employee.userId);
+        updateCmd.Transaction = transaction;
+
+        int updated = await updateCmd.ExecuteNonQueryAsync();
+        if (updated == 0)
+        {
+          await transaction.RollbackAsync();
+          return TypedResults.BadRequest("Failed to update user role!");
+        }
+
+        await transaction.CommitAsync();
+        return TypedResults.Created();
+      }
+      catch (Exception ex)
       {
         await transaction.RollbackAsync();
+        Console.WriteLine($"Error inserting employee: {ex.Message}");
         return TypedResults.BadRequest("Failed to add employee!");
       }
-
-      // Update user role
-      await using var updateCmd = conn.CreateCommand();
-      updateCmd.CommandText = "UPDATE users SET role_id = 2 WHERE id = $1";
-      updateCmd.Parameters.AddWithValue(employee.userId);
-      updateCmd.Transaction = transaction;
-
-      int updated = await updateCmd.ExecuteNonQueryAsync();
-      if (updated == 0)
-      {
-        await transaction.RollbackAsync();
-        return TypedResults.BadRequest("Failed to update user role!");
-      }
-
-      await transaction.CommitAsync();
-      return TypedResults.Created();
     }
-    catch (Exception ex)
-    {
-      await transaction.RollbackAsync();
-      Console.WriteLine($"Error inserting employee: {ex.Message}");
-      return TypedResults.BadRequest("Failed to add employee!");
-    }
+    
+    Console.WriteLine("No Employee Found");
+    return Results.BadRequest();
   }
 
   public static async Task<List<Users>>

@@ -53,8 +53,7 @@ public record Products(
 
 public record PostProductDTO(
   string Name,
-  string Description,
-  int companyId);
+  string Description);
 
 public record PutProductDTO(
   int id,
@@ -97,8 +96,8 @@ public record LoginRequest(
 
 public record Employees(
   int id,
-  int userId,
-  int companyId);
+  int userId);
+
 #endregion
 
 #region Ticket Records
