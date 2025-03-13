@@ -38,7 +38,7 @@ app.UseSession();
 
 app.MapGet("/", () => "Hello World!");
 
-// --- Användar endpoints ---
+// Användar endpoints (för employees, admin, superadmin)
 app.MapGet("api/users/{id}", (int id) => LoginRoute.GetUser(id, db));
 app.MapGet("/api/usersfromcompany", UserRoutes.GetUsersFromCompanys);
 app.MapGet("/api/users", UserRoutes.GetUsers);
@@ -47,7 +47,7 @@ app.MapDelete("/api/users/{id}", UserRoutes.DeleteUser);
 app.MapPut("/api/users/{userId}", UserRoutes.PutUsers);
 app.MapPut("/api/promoteuser/{userId}", UserRoutes.PutPromoteAdmin);
 
-// --- Ticket endpoints ---
+/* Tickets */
 app.MapGet("/api/tickets", TicketRoutes.GetTickets);
 app.MapGet("/api/tickets/{id}", (int id) => TicketRoutes.GetTicket(id, db));
 app.MapPut("/api/ticketscategory", TicketRoutes.PutTicketCategory);
@@ -55,46 +55,48 @@ app.MapPut("/api/ticketstatus", async (int ticketId, int status, NpgsqlDataSourc
 {
     return await TicketRoutes.PutTicketStatus(ticketId, status, db);
 });
-app.MapPut("/api/ticketsproduct", TicketRoutes.PutTicketProduct);
+app.MapPut("/api/ticketsproduct", TicketRoutes.PutTicketProducts);
 app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus);
 app.MapPut("/api/tickets/{id}", (int id) => TicketRoutes.UpdateTicketStatus(id, db));
 
-// --- Produkt endpoints ---
+// Produkt endpoints
 app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db));
 app.MapGet("/api/product/{product_id}", (int product_id) => ProductRoute.GetProduct(product_id, db));
 app.MapPost("/api/products", ProductRoute.PostProduct);
 app.MapDelete("/api/products/{id}", ProductRoute.DeleteProduct);
 app.MapPut("/api/products/{id}", ProductRoute.UpdateProduct);
 
-// --- Employee endpoints ---
+/* Employee */
 app.MapGet("/api/employees/{userId}", (int userId) => EmployeeRoute.GetEmployees(userId, db));
-app.MapGet("/api/employee/{user_id}", (int user_id) => EmployeeRoute.GetEmployee(user_id, db));
+app.MapGet("/api/employee/{comapnyId}", (int comapnyId) => EmployeeRoute.GetEmployee(comapnyId, db));
 app.MapPost("/api/employees", EmployeeRoute.PostEmployee);
 app.MapDelete("/api/employees/{userId}", (int userId) => EmployeeRoute.DeleteEmployee(userId, db));
 
-// --- Company endpoints ---
+/* Login / Session endpoints */
+
+//Company Endpoints
 app.MapPost("/api/company", CompanyRoutes.PostCompany);
 app.MapDelete("/api/company/{id}", CompanyRoutes.DeleteCompany);
 app.MapGet("/api/company/{id}", CompanyRoutes.GetCompany);
 app.MapGet("/api/company/", CompanyRoutes.GetCompanies);
 app.MapPut("/api/company/{id}", CompanyRoutes.PutCompany);
 
-// --- Login / Session endpoints ---
+/* Login */
 app.MapPost("/api/login", LoginRoute.LoginUser);
 app.MapGet("/api/session", LoginRoute.GetSessionUser);
 app.MapPost("/api/logout", LoginRoute.LogoutUser);
 
-// --- Message endpoints ---
+/* Message endpoints */
 app.MapPost("/api/messages", async (MessageDTO message, HttpContext context, NpgsqlDataSource db) =>
 {
     return await MessageRoutes.PostMessage(message, context, db);
 }).AllowAnonymous();
 
-// --- Ticket Form endpoints ---
+/* Ticket Form endpoints */
 app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm);
 app.MapGet("/api/ticketform", (string caseNumber) => TicketFormRoutes.GetTicketForm(caseNumber, db));
 
-// --- Category endpoints ---
+/* Category endpoints */
 app.MapGet("/api/categories", CategoryRoutes.GetCategories);
 
 // --- CASE ENDPOINTS ---
@@ -135,12 +137,17 @@ app.MapGet("/api/tickets/view/{token}", async (string token, NpgsqlDataSource db
     return ticket != null ? Ok(ticket) : NotFound();
 });
 
-// --- Super-Admin endpoints ---
+//Super-Admin API calls
 app.MapGet("/api/adminlist", SuperAdminRoutes.GetAdmins);
 app.MapGet("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.GetAdmin(userId, db));
 app.MapPut("/api/adminlist/{userId}", (int userId) => SuperAdminRoutes.PutAdmin(userId, db));
+app.MapDelete("/api/company/admins/{userId}", (int userId) => SuperAdminRoutes.DeleteAdmin(userId, db));
 
-app.MapGet("/api/tickets/feedback", TicketRoutes.Feedback);
+
+app.MapPut("/api/putuser/{userId}", UserRoutes.PutUserForSAdmin);
+
+app.MapGet("/api/tickets/feedback", TicketRoutes.Feedbacks);
+
 app.MapPost("/api/password/hash", LoginRoute.HashPassword);
 
 app.Run();

@@ -85,7 +85,7 @@ const NewCompany = ({user, setUser}) => {
                 body: JSON.stringify({
                     name: formData.name,
                     phone: formData.phone,
-                    email: formData.email,
+                    email: formData.email
                 }),
             });
             const responseText = await companyResponse.text();
@@ -97,6 +97,8 @@ const NewCompany = ({user, setUser}) => {
             setMessage(error.message);
         }
     };
+
+
 
     return(
         <main>
@@ -149,6 +151,9 @@ const NewCompany = ({user, setUser}) => {
                                     </p>
                                     <p>
                                         <strong>Email</strong> {selectedCompany.email}
+                                    </p>
+                                    <p>
+                                        <strong>Admin</strong> {selectedCompany.admin}
                                     </p>
                                     <button onClick={handleDelete} className="delete-button">
                                         Delete company

@@ -176,8 +176,26 @@ namespace server
 
             await updateCmd.ExecuteNonQueryAsync();
 
-            return Results.Ok("User updated successfully");
-        }
+        return Results.Ok("User updated successfully");
+    }
+    
+    public static async Task<IResult> PutUserForSAdmin(PutUserDTO postUser, NpgsqlDataSource db)
+    {
+        await using var connection = await db.OpenConnectionAsync();
+        
+        await using var updateCmd = new NpgsqlCommand(
+            "UPDATE users SET name = @name, email = @email, phonenumber = @phonenumber WHERE id = @id",
+            connection);
+        updateCmd.Parameters.AddWithValue("@name", postUser.name);
+        updateCmd.Parameters.AddWithValue("@email", postUser.email);
+        updateCmd.Parameters.AddWithValue("@phonenumber", postUser.phonenumber);
+        updateCmd.Parameters.AddWithValue("@id", postUser.id); // ID should be last
+        
+        await updateCmd.ExecuteNonQueryAsync();
+        return Results.Ok("User updated successfully");
+    }
+    
+    
 
         public static async Task<IResult> PutPromoteAdmin(int userId, NpgsqlDataSource db)
         {

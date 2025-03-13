@@ -65,6 +65,30 @@ const AdminList = ({ user, setUser }) => {
             });
     };
 
+    function handleDelete() {
+        if (!selectedAdmin) return;
+        
+        console.log(selectedAdmin.id);
+        fetch(`/api/company/admins/${selectedAdmin.id}`, {
+            method: 'DELETE',
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setAdmin((prevAdmin) => prevAdmin.filter((admin) => admin.id !== selectedAdmin.userId));
+                    setSelectedAdmin(null);
+                    alert("User deleted successfully!");
+                }
+                else {
+                    console.error("Error deleting admin.");
+                    alert("Error deleting user!");
+                }
+            })
+            .catch((error) => {
+                alert("Error deleting user!");
+                console.error("Delete error", error);
+            });
+    };
+
     console.log("Admin state:", Admin); // Log the Admin state
     console.log("Selected Admin state:", selectedAdmin); // Log the selected admin state
     
@@ -120,9 +144,14 @@ const AdminList = ({ user, setUser }) => {
                                     <p>
                                         <strong>Company ID:</strong> {selectedAdmin.companyId}
                                     </p>
-                                    <button onClick={handleDemote} className="demote-button">
-                                        Demote admin
-                                    </button>
+                                    <div className="admin-buttons-container"> 
+                                        <button onClick={handleDemote} className="demote-button">
+                                            Demote admin
+                                        </button>
+                                        <button onClick={handleDelete} className="delete-button">
+                                            Delete Admin
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 <p className="user-placeholder">Select a Admin to see details</p>
