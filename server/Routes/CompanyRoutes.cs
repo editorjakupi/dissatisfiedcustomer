@@ -5,6 +5,7 @@ using System.Data.SqlTypes;
 using System.Data;
 using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Tls;
+using Microsoft.VisualBasic;
 
 namespace server;
 
@@ -19,25 +20,16 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.phone);
         cmd.Parameters.AddWithValue(company.email);
 
+        using var cmd2 = db.CreateCommand("INSERT INTO employees (company_id, user_id) VALUES($1, $2)");
+        cmd.Parameters.AddWithValue(company.id);
+        cmd.Parameters.AddWithValue(company.admin);
+
         try
         {
             await cmd.ExecuteNonQueryAsync();
-
-            
-            using var cmd2 = db.CreateCommand("INSERT INTO employees(company_id, user_id) VALUES($1, $2)");
-            cmd.Parameters.AddWithValue(company.id);
-            cmd.Parameters.AddWithValue(company.admin);
-                  try
-        {
             await cmd.ExecuteNonQueryAsync();
-
+            
             return TypedResults.Created();
-        }
-        catch
-        {
-            return TypedResults.BadRequest("Failed to add company: " + company);
-        }
-
         }
         catch
         {
@@ -125,8 +117,15 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.admin);
         cmd.Parameters.AddWithValue(id);
 
+        using var cmd2 = db.CreateCommand("UPDATE employees SET user_id = $2 company_id =$2");
+        cmd2.Parameters.AddWithValue(company.admin);
+        cmd2.Parameters.AddWithValue(company.id);
+
         await cmd.ExecuteNonQueryAsync();
-        return Results.Ok("Company updated successfully");
+        await cmd2.ExecuteNonQueryAsync();
+
+        return Results.Ok("Company and admin updated successfully");
+
     }
 
     public static async Task<Results<Ok<List<Admin>>, NotFound>>

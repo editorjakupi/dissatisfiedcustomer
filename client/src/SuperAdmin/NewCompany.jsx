@@ -20,7 +20,6 @@ const NewCompany = ({user, setUser}) => {
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
     const [admins, setAdmins] = useState([]);
-    const [selectedAdmin, setSelectedAdmin] = useState([]);
 
     //Company search
     const handleSearch = () => {
@@ -94,11 +93,11 @@ const NewCompany = ({user, setUser}) => {
         e.preventDefualt();
         setMessage("");
 
-    //Company create
-    if (selectedCompany) {
-        // Update existing Company
-        try {
-            const response = await fetch(`/api/company/`, {
+        //Company create
+        if (selectedCompany) {
+            // Update existing Company
+            try {
+            const response = await fetch(`/api/company/${selectedCompany.id}`, {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -106,7 +105,7 @@ const NewCompany = ({user, setUser}) => {
                     name: formData.name,
                     phone: formData.phone,
                     email: formData.email,
-                    admin: formData.admin
+                    admin: admins.id  //new admin id
                 }),
             });
 
@@ -114,39 +113,38 @@ const NewCompany = ({user, setUser}) => {
 
             setMessage("Company updated successfully");
             setCompanies((prev) => prev.map(emp => emp.id === selectedCompany.id ? {...emp, ...formData} : emp));
-        } catch (error) {
+            } catch (error) {
             setMessage(error.message);
-        }
-    } else {
-        try {
-            // Create the company
-            const companyResponse = await fetch("/api/company/", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    id: formData.id,
-                    name: formData.name,
-                    phone: formData.phone,
-                    email: formData.email,
-                    admin: formData.admin
-                }),
-            });
+            }
+        } else {
+            try {
+                // Create the company
+                const companyResponse = await fetch("/api/company/", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        id: formData.id,
+                        name: formData.name,
+                        phone: formData.phone,
+                        email: formData.email,
+                        admin: formData.admin
+                    }),
+                });
 
-            // Debugging: Log full response
-            const responseText = await companyResponse.text();
-            console.log("Company API full response:", responseText);
-            console.log("Company API response status:", companyResponse.status);
+                // Debugging: Log full response
+                const responseText = await companyResponse.text();
+                console.log("Company API full response:", responseText);
+                console.log("Company API response status:", companyResponse.status);
 
-            if (!companyResponse.ok) throw new Error(responseText || "Failed to create company");
+                if (!companyResponse.ok) throw new Error(responseText || "Failed to create company");
 
-            setMessage("Company created successfully!");
-        } catch (error) {
-            console.error(error);
-            setMessage(error.message);
-        }
+                setMessage("Company created successfully!");
+            } catch (error) {
+                console.error(error);
+                setMessage(error.message);
+            }
         }
     };
-
 
     return(
         <main>
@@ -226,10 +224,10 @@ const NewCompany = ({user, setUser}) => {
                                     onClick={handleChange} required/>
                                 <label>
                                     Admin
-                                <select onClick={handleShowAdmins}>
-                                    <option value="current">{formData.admin}</option>
+                                <select onClick={handleShowAdmins} onChange={handleChange}>
+                                    <option value="current">{formData.admin || "select an admin"}</option>
                                     {admins.map((admin) => (
-                                        <option value={admin.id}>{admin.name}</option>
+                                        <option key={admin.id} value={admin.id}>{admin.name}</option>
                                     ))}
                                 </select>
                                 </label>
