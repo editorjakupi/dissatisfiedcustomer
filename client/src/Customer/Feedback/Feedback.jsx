@@ -3,15 +3,13 @@ import { createRoot } from 'react-dom/client';
 import { useParams } from 'react-router';
 import '../../main.css';
 
-export function Feedback() {
-  const { token } = useParams();
-
+export function Feedback({ caseId }) 
+{
   const [rating, setRating] = useState(3);
 
   //☆
   function GetRating() {
     const ratings = [];
-    console.log("lmao");
     for (let index = 1; index <= 5; index++) {
       if (index <= rating) {
         ratings.push(<div className="star selected" id={index} onClick={(e) => setRating(e.target.id)}>★</div>);
@@ -27,7 +25,27 @@ export function Feedback() {
     <ul className='rating'>
       {GetRating()}
     </ul>
-    <textarea></textarea>
-    <div><button class="cancel button">Cancel</button><button class="send button" onClick={() => xdxdxd}>Send</button></div>
+    <textarea className='comment'></textarea>
+    <div><button class="cancel button">Cancel</button><button class="send button" onClick={() => SendFeedback(caseId, rating)}>Send</button></div>
   </div>
+}
+
+function SendFeedback(id, rating)
+{
+  console.log("Sending feedback to caseId: " + id);
+
+  fetch("/api/feedback", {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: "POST",
+    body: JSON.stringify({
+      "ticket_id": id,
+      "rating": rating,
+      "comment": document.querySelector(".comment").value
+    })
+  })
+    .then(response => response.json())  // Parsa JSON responsen från backenden
+    .then(data => console.log(data));     // Logga responsen
 }

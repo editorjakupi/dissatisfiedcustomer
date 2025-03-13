@@ -67,7 +67,6 @@ const App = () => {
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/account" element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
-                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/employee" element={user ? <NewEmployee user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
@@ -86,7 +85,8 @@ const App = () => {
                         <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
 
                         {/* Temporary for testing */}
-                        <Route path="/givefeedback/:token" element={<Feedback />} />
+                        <Route path="/givefeedback" element={<Feedback caseId={10}/>} />
+                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                     </Routes>
                 </div>
             </div>

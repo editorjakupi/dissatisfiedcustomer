@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
-
 using Npgsql;
-using Org.BouncyCastle.Asn1.Cms;
 
 namespace server;
 
@@ -19,7 +17,7 @@ public class FeedbackRoutes
             await cmd.ExecuteNonQueryAsync();
             return TypedResults.Created();
         }catch{
-            return TypedResults.BadRequest("Failed to send feedback " + feedback);
+            return TypedResults.BadRequest("Failed to send feedback " + cmd.CommandText + " " + feedback);
         }
     }
 }
