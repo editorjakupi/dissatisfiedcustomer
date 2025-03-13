@@ -33,7 +33,7 @@ if(params.id == 1){
       <div className={company + ' topbar'}>
       <img className={company + ' logo'}/>
       </div>
-      <ul>
+      <ul className={company + " entries"}>
         <div><h3>Title</h3><input className={company + " title"} placeholder='Title for your problem' /></div>
         <div><h3>Email</h3><input className={company + " email"} placeholder='example@mail.com' /></div>
         <div><h3>Category</h3><select class={company + " category"} defaultValue={null}>
@@ -47,7 +47,7 @@ if(params.id == 1){
           <option key={product.id} value={product.id}>{product.name}</option>)}
       </select></div>
         <div><h3>Message</h3><textarea className={company + " message"} placeholder='Write your problem in detail here' /></div>
-        <div><button className={company + " cancel button"}>Cancel</button><button className={company + " submit button"} onClick={() => submitMessage(params.id)}>Submit</button></div>
+        <div className={company + " buttons"}><button className={company + " cancel button"}>Cancel</button><button className={company + " submit button"} onClick={() => submitMessage(params.id)}>Submit</button></div>
       </ul>
     </main>
   );

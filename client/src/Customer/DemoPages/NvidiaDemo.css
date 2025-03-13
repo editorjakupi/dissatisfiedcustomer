@@ -2,7 +2,9 @@
 {
     background-color: black;
     color: white;
-
+    display: grid;
+    align-content: center;
+    justify-content: center;
     font-family: Helvetica;
 }
 
@@ -82,6 +84,24 @@ textarea.nvidia:focus{
     width: 100vw;
     display: flex;
     justify-content: center;
+}
+
+.nvidia.buttons{
+    display: flex;
+}
+
+button.nvidia{
+    border-radius: 80px;
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  border: none;
+  font-size: 25px;
+}
+
+.button.nvidia:active
+{
+  box-shadow: inset 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .nvidia.submit {
