@@ -88,6 +88,7 @@ app.MapGet("/api/session", LoginRoute.GetSessionUser);
 app.MapPost("/api/logout", LoginRoute.LogoutUser);
 
 /* Message endpoints */
+app.MapGet("/api/demoinfo/{company_id}", (int company_id) => MessageRoutes.GetCatAndProd(company_id, db));
 app.MapPost("/api/messages", async (MessageDTO message, HttpContext context, NpgsqlDataSource db) =>
 {
     return await MessageRoutes.PostMessage(message, context, db);
