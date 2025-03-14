@@ -4,23 +4,34 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using MailKit.Security;
 using System;
+using System.Data.Common;
+using Microsoft.AspNetCore.StaticAssets;
 
-namespace server
+namespace server;
+
+public static class MessageRoutes
 {
-    public static class MessageRoutes
+    public static async Task<CatAndProd>
+    GetCatAndProd(int company_id, NpgsqlDataSource db)
     {
-        // Data Transfer Object (DTO) for incoming customer messages.
-        // Customers provide their email, and we use that directly (no user account is created).
+        return new CatAndProd(
+                
+            CategoryRoutes.GetCategories(db).Result,
+            ProductRoute.GetProducts(company_id, db).Result);
+    }
+    
 
-        // Method to handle POST /api/messages for a customer message.
-        // UPDATED: We no longer receive/create a user_id; instead, we use Email and generate a token for the customer session.
-        public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, HttpContext context, NpgsqlDataSource db)
+    // Method to handle POST /api/messages for a customer message.
+    // UPDATED: We no longer receive/create a user_id; instead, we use Email and generate a token for the customer session.
+    public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, HttpContext context, NpgsqlDataSource db)
+    {
+        Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}, CategoryID: {message.CategoryID}, ProductID: {message.ProductID}");
+
+        // Validera inkommande data.
+        if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content) || message.CategoryID == null)
         {
-            Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}");
-
-            // Validate required data.
-            if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
-                return TypedResults.BadRequest("Email, Name, and Content are required.");
+            return TypedResults.BadRequest("Email, Name, Content, and Category are required.");
+        }
 
             using var conn = db.CreateConnection();
             await conn.OpenAsync();
@@ -28,10 +39,10 @@ namespace server
             // Start a transaction to ensure data integrity.
             await using var transaction = await conn.BeginTransactionAsync();
 
-            try
-            {
-                // Create ticket for customer.
-                int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, conn, transaction);
+        try
+        {
+            // Create ticket for customer.
+            int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, message.CategoryID, message.ProductID, conn, transaction);
 
                 // Retrieve current status of the ticket (status_id) to ensure no new messages are added if the ticket is resolved or closed.
                 int currentStatus = await GetTicketStatus(ticketId, conn, transaction);
@@ -87,22 +98,24 @@ namespace server
             }
         }
 
-        // Creates a new ticket (case) for the customer.
-        // UPDATED: Uses email instead of user_id and generates a token stored in case_number.
-        private static async Task<int> CreateTicketForCustomerAsync(string email, string title, string description, int company_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
-        {
-            await using var cmd = conn.CreateCommand();
-            cmd.Transaction = transaction;
-            // Generate a unique token using GenerateUniqueCaseNumber() and use it as the case_number.
-            string token = GenerateUniqueCaseNumber();
-            cmd.CommandText = "INSERT INTO tickets (user_email, title, description, case_number, company_id, date, status_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
-            cmd.Parameters.AddWithValue(email);
-            cmd.Parameters.AddWithValue(title);
-            cmd.Parameters.AddWithValue(description);
-            cmd.Parameters.AddWithValue(token);   // Save token as case_number.
-            cmd.Parameters.AddWithValue(company_id);
-            cmd.Parameters.AddWithValue(DateTime.UtcNow);
-            cmd.Parameters.AddWithValue(1);         // Default status_id is 1 (Unread)
+    // Creates a new ticket (case) for the customer.
+    // UPDATED: Uses email instead of user_id and generates a token stored in case_number.
+    private static async Task<int> CreateTicketForCustomerAsync(string email, string title, string description, int company_id, int? category_id, int? product_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    {
+        await using var cmd = conn.CreateCommand();
+        cmd.Transaction = transaction;
+        // Generate a unique token using GenerateUniqueCaseNumber() and use it as the case_number.
+        string token = GenerateUniqueCaseNumber();
+        cmd.CommandText = "INSERT INTO tickets (user_email, title, description, case_number, company_id, date, status_id, category_id, product_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id";
+        cmd.Parameters.AddWithValue(email);
+        cmd.Parameters.AddWithValue(title);
+        cmd.Parameters.AddWithValue(description);
+        cmd.Parameters.AddWithValue(token); // Save token as case_number.
+        cmd.Parameters.AddWithValue(company_id);
+        cmd.Parameters.AddWithValue(DateTime.UtcNow);
+        cmd.Parameters.AddWithValue(1); // Default status_id is 1 (Unread)
+        cmd.Parameters.AddWithValue(category_id);
+        cmd.Parameters.AddWithValue(product_id);
 
             var scalar = await cmd.ExecuteScalarAsync();
             if (scalar == null)
@@ -188,4 +201,3 @@ namespace server
             }
         }
     }
-}

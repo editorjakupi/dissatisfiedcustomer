@@ -4,8 +4,20 @@ namespace server;
 
 #region Message Records
 public record Message(string UserEmail, string Content);
-public record MessageDTO(string Email, string Name, string Content, int CompanyID);
-// Läs in MessageDetails, som innehåller SenderType:
+
+// MessageDTO har redan rätt struktur
+// Dataöverföringsobjekt för inkommande meddelanden från kund.
+// Kunden fyller i sin e-post, men får inget konto – vi använder e-posten direkt.
+public record MessageDTO(string Email, string Name, string Content, int CompanyID, int? CategoryID, int? ProductID);
+
+
+public record CatAndProd(
+    List<Category> categories,
+    List<Products> products
+  );
+
+// UPPDATERAD: Ändrat UserId till UserEmail i MessageDetails
+// Tidigare: public record MessageDetails(int MessageId, int UserId, string Content);
 public record MessageDetails(int MessageId, string UserEmail, string Content, string SenderType);
 #endregion
 

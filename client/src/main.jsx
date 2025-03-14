@@ -12,6 +12,7 @@ import UsersList from "./Admin/UsersList/UsersList.jsx";
 import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
 import AdminList from "./SuperAdmin/AdminList.jsx";
+import { DemoPage } from "./Customer/DemoPages/DemoPage.jsx";
 
 import "./main.css";
 import { Message } from "./Customer/Message/message.jsx";
@@ -80,6 +81,7 @@ const App = () => {
 
                         {/* Endast en inloggad kund har inte längre ett konto, så vi tar bort /message/:id från kundens vy */}
                         <Route path="/message/:id" element={<Message />} />
+                        <Route path="/demopage/:id" element={<DemoPage />} />
                         <Route path="/session-test" element={<SessionTest />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
                         <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />

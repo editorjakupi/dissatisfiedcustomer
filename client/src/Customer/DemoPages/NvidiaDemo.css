@@ -1,0 +1,121 @@
+.nvidia
+{
+    background-color: black;
+    color: white;
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    font-family: Helvetica;
+}
+
+input.nvidia
+{
+    border: solid;
+    border-color: #cbd2d9;
+    background-color: white;
+    height: 40px;
+    width: 400px;
+    font-size: 22px;
+    border-radius: 80px;
+}
+input.nvidia:hover{
+    border-color: #76B900;
+}
+
+input.nvidia:focus{
+    outline-color: #639c00;
+}
+
+input.nvidia:hover::placeholder{
+    color: #76B900;
+}
+
+select.nvidia
+{
+    border: solid;
+    border-color: #cbd2d9;
+    background-color: white;
+    color: black;
+    height: 40px;
+    width: 400px;
+    font-size: 22px;
+    border-radius: 80px;
+}
+select.nvidia:hover{
+    border-color: #76B900;
+}
+
+select.nvidia:focus{
+    outline-color: #639c00;
+}
+
+
+textarea.nvidia{
+    height: 250px;
+    border-radius: 12px;
+    background-color: #fff;
+    color: black;
+    border: solid;
+    border-color: #cbd2d9;
+    width: 400px;
+    font-size: 22px;
+  }
+
+textarea.nvidia:hover{
+    border-color: #76B900;
+}
+
+textarea.nvidia:hover::placeholder{
+    color: #76B900;
+}
+
+textarea.nvidia:focus{
+    outline-color: #639c00;
+}
+
+.nvidia.logo{
+    content:url(https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/NVIDIA_logo.svg/731px-NVIDIA_logo.svg.png);
+    width: 300px;
+    background-color: white;
+}
+
+.nvidia.topbar{
+    background-color: white;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+}
+
+.nvidia.buttons{
+    display: flex;
+}
+
+button.nvidia{
+    border-radius: 80px;
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  border: none;
+  font-size: 25px;
+}
+
+.button.nvidia:active
+{
+  box-shadow: inset 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.nvidia.submit {
+    background-color: #76B900;
+  }
+  
+  .nvidia.submit:hover {
+    background-color: #639c00;
+  }
+  
+  .nvidia.cancel {
+    background-color: #DC0632;
+  }
+  
+  .nvidia.cancel:hover {
+    background-color: #be0d31;
+  }
