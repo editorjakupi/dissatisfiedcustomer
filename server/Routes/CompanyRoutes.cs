@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Cms;
 using System.Data.SqlTypes;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
+using Org.BouncyCastle.Tls;
+using Microsoft.VisualBasic;
 
 namespace server;
 
@@ -17,15 +20,22 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.phone);
         cmd.Parameters.AddWithValue(company.email);
 
+        using var cmd2 = db.CreateCommand("INSERT INTO employees (company_id, user_id) VALUES($1, $2)");
+        cmd.Parameters.AddWithValue(company.id);
+        cmd.Parameters.AddWithValue(company.admin);
+
         try
         {
             await cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync();
+            
             return TypedResults.Created();
         }
         catch
         {
             return TypedResults.BadRequest("Failed to add company: " + company);
         }
+        
     }
 
     public static async Task<Results<NoContent, NotFound>>
@@ -69,7 +79,7 @@ public class CompanyRoutes
 
     public static async Task<Results<Ok<List<Company>>, NotFound>>
     GetCompanies(NpgsqlDataSource db)
-    {// AND users.role_id = 3 
+    {
         int? adm = null;
         var result = new List<Company>();
         try
@@ -98,9 +108,57 @@ public class CompanyRoutes
 
     }
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>>
+    public static async Task<IResult>
     PutCompany(int id, CompanyDTO company, NpgsqlDataSource db){
-        string nameQuery = "company_name";
+        using var cmd = db.CreateCommand("UPDATE company SET name = $1, phone = $2, email = $3, admin = $4 WHERE id = $5");
+        cmd.Parameters.AddWithValue(company.name); 
+        cmd.Parameters.AddWithValue(company.phone);
+        cmd.Parameters.AddWithValue(company.email);
+        cmd.Parameters.AddWithValue(company.admin);
+        cmd.Parameters.AddWithValue(id);
+
+        using var cmd2 = db.CreateCommand("UPDATE employees SET user_id = $1 WHERE company_id = $2");
+        cmd2.Parameters.AddWithValue(company.admin);
+        cmd2.Parameters.AddWithValue(company.id);
+
+        try{
+            await cmd.ExecuteNonQueryAsync();
+            await cmd2.ExecuteNonQueryAsync();
+
+            return Results.Ok("Company and admin updated successfully");
+        }
+        catch
+        {
+            return TypedResults.BadRequest("Failed to update company: " + company);
+        }
+    }
+
+    public static async Task<Results<Ok<List<Admin>>, NotFound>>
+    GetAdmins(NpgsqlDataSource db)
+    {
+        var result = new List<Admin>();
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT users.id, users.name FROM users " +
+                                             "WHERE NOT EXISTS( " +
+                                            "SELECT * FROM employees WHERE users.id = employees.user_id");
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+
+            result.Add(new Admin(
+                reader.GetInt32(0),
+                reader.GetString(1)
+            ));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error feching Admins: {ex.Message}");
+        }
+        return TypedResults.Ok(result);
+    }
+     
+       /* string nameQuery = "company_name";
         string phoneQuery = "company_phone";
         string emailQuery = "company_email";
         string query;
@@ -145,7 +203,7 @@ public class CompanyRoutes
         {
             return TypedResults.BadRequest("Company failed to update, " + ex);
         }
-    }
+    }*/
 
 
 }

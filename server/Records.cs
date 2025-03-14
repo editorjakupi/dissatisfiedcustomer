@@ -45,10 +45,17 @@ public record Company(
 );
 
 public record CompanyDTO(
+  int id, 
   string name,
   string phone,
-  string email);
+  string email,
+  int admin);
 #endregion
+
+public record Admin(
+  int id,
+  string name
+);
 
 #region Category Records
 public record Category(
