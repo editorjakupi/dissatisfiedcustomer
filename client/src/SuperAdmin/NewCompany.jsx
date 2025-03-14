@@ -9,17 +9,22 @@ const NewCompany = ({user, setUser}) => {
         email: "",
         admin: null,
     });
-
+    const [adminData, setAdminData] = useState({
+        id: null,
+        name: "",
+    });
+    
     const [message, setMessage] = useState("");
 
     const handleChange = (event) => {
         setFormData({...formData, [event.target.name]: event.target.value}); 
-       setAdmins(event.target.admin);
+       setAdminData({...adminData, [event.target.name]: event.target.value});
 };
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
     const [admins, setAdmins] = useState([]);
+
 
     //Company search
     const handleSearch = () => {
@@ -65,6 +70,7 @@ const NewCompany = ({user, setUser}) => {
         .then((response) => response.json())
         .then((data) => {
             setAdmins(data);
+            setAdminData(data);
         })
         .catch((error) => console.error("admin fetch failed: ",error));
     }
@@ -105,7 +111,7 @@ const NewCompany = ({user, setUser}) => {
                     name: formData.name,
                     phone: formData.phone,
                     email: formData.email,
-                    admin: admins.id  //new admin id
+                    admin: formData.admin  //new admin id
                 }),
             });
 
@@ -221,7 +227,7 @@ const NewCompany = ({user, setUser}) => {
                                 <input type="text" name="phone" value={formData.phone || ""} placeholder="Phone"
                                     onChange={handleChange} required/>
                                 <input type="text" name="email" value={formData.email || ""} placeholder="Email"
-                                    onClick={handleChange} required/>
+                                    onChange={handleChange} required/>
                                 <label>
                                     Admin
                                 <select id="admin-select" onClick={handleShowAdmins} onChange={handleChange}>

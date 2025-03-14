@@ -28,6 +28,7 @@ public class CompanyRoutes
         {
             await cmd.ExecuteNonQueryAsync();
             await cmd.ExecuteNonQueryAsync();
+            await UserRoutes.PutPromoteAdmin(company.admin, db);
             
             return TypedResults.Created();
         }
@@ -124,6 +125,7 @@ public class CompanyRoutes
         try{
             await cmd.ExecuteNonQueryAsync();
             await cmd2.ExecuteNonQueryAsync();
+            await UserRoutes.PutPromoteAdmin(company.admin, db);
 
             return Results.Ok("Company and admin updated successfully");
         }
@@ -141,7 +143,7 @@ public class CompanyRoutes
         {
             using var cmd = db.CreateCommand("SELECT users.id, users.name FROM users " +
                                              "WHERE NOT EXISTS( " +
-                                            "SELECT * FROM employees WHERE users.id = employees.user_id");
+                                               "SELECT * FROM employees WHERE users.id = employees.user_id)");
 
             await using var reader = await cmd.ExecuteReaderAsync();
             while(await reader.ReadAsync())
