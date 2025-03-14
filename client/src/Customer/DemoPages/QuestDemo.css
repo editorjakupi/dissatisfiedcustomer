@@ -4,6 +4,7 @@
     display: grid;
     align-content: center;
     justify-content: center;
+    place-items: center;
     font-family: Helvetica;
 }
 
@@ -13,12 +14,13 @@ main.quest{
 
 input.quest
 {
-    border: solid;
+    border: 2px solid;
     border-color: #cbd2d9;
     height: 40px;
-    width: 400px;
+    width: 600px;
     font-size: 22px;
     border-radius: 80px;
+    outline: 3px solid transparent;
 }
 input.quest:hover{
     border-color: #0082fb;
@@ -34,13 +36,15 @@ input.quest:hover::placeholder{
 
 select.quest
 {
-    border: solid;
+    border: 2px solid;
     border-color: #cbd2d9;
     height: 40px;
     width: 400px;
-    font-size: 22px;
+    font-size: 20px;
     border-radius: 80px;
+    outline: 3px solid transparent;
 }
+
 select.quest:hover{
     border-color: #0082fb;
 }
@@ -51,10 +55,11 @@ select.quest:focus{
 
 
 textarea.quest{
+    outline: 3px solid transparent;
     height: 250px;
     border-radius: 12px;
     background-color: #fff;
-    border: solid;
+    border: 2px solid;
     border-color: #cbd2d9;
     width: 400px;
     font-size: 22px;
@@ -79,6 +84,8 @@ textarea.quest:focus{
 
 .quest.buttons{
     display: flex;
+    padding-top: 2%;
+    gap: 5%;
 }
 
 button.quest{
@@ -104,9 +111,9 @@ button.quest{
   }
   
   .quest.cancel {
-    background-color: #DC0632;
+    background-color: #bf1537;
   }
   
   .quest.cancel:hover {
-    background-color: #be0d31;
+    background-color: #a30d2b;
   }
