@@ -141,7 +141,7 @@ public class CompanyRoutes
         {
             using var cmd = db.CreateCommand("SELECT users.id, users.name FROM users " +
                                              "WHERE NOT EXISTS( " +
-                                            "SELECT * FROM employees WHERE users.id = employees.user_id)");
+                                            "SELECT * FROM employees WHERE users.id = employees.user_id");
 
             await using var reader = await cmd.ExecuteReaderAsync();
             while(await reader.ReadAsync())

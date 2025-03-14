@@ -224,7 +224,7 @@ const NewCompany = ({user, setUser}) => {
                                     onClick={handleChange} required/>
                                 <label>
                                     Admin
-                                <select onClick={handleShowAdmins} onChange={handleChange}>
+                                <select id="admin-select" onClick={handleShowAdmins} onChange={handleChange}>
                                     <option value="current">{formData.admin || "select an admin"}</option>
                                     {admins.map((admin) => (
                                         <option key={admin.id} value={admin.id}>{admin.name}</option>
