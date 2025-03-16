@@ -175,34 +175,35 @@ public static class MessageRoutes // Klass som hanterar kundmeddelanden och rela
         string baseUrl = "http://localhost:5173"; // Frontend-URL för att komma åt ärendet.
 
         // Innehåll i e-postmeddelandet.
-        string messageBody = $"Hej {name ?? "Kund"},\n\nVi har mottagit ditt meddelande:\n\n\"{content}\"\n\n" +
-                                                         $"För att komma åt din chatt med kundsupport, vänligen klicka på länken nedan inom den närmaste timmen:\n" +
+        string messageBody = $"Dear {name ?? "Customer"},\n\nWe have received your message:\n\n\"{content}\"\n\n" +
+                             $"To access your chat with customer support, please click the link below within the next hour:\n" +
                              $"{baseUrl}/tickets/view/{token}\n\n" +
-                             $"Tack för att du kontaktade oss.\n\nMed vänliga hälsningar,\nDitt App-team";
+                             $"Thank you for contacting us.\n\nBest regards,\nYour App Team";
 
         // Skapa e-postmeddelandet.
         var mimeMessage = new MimeMessage();
-        mimeMessage.From.Add(new MailboxAddress("Ditt Appnamn", "dissatisfiedcustomer2025@gmail.com")); // Avsändare av e-post.
-        mimeMessage.To.Add(new MailboxAddress(name ?? "Kund", email)); // Mottagare av e-post.
-        mimeMessage.Subject = "Bekräftelse på din kontakt med kundsupport"; // Ämnesrad.
-        mimeMessage.Body = new TextPart("plain") { Text = messageBody }; // Meddelandets innehåll.
+        mimeMessage.From.Add(new MailboxAddress("Your App Name", "dissatisfiedcustomer2025@gmail.com")); // Avsändare av e-post.
+        mimeMessage.To.Add(new MailboxAddress(name ?? "Customer", email)); // Mottagare av e-post.
+        mimeMessage.Subject = "Chat Access Confirmation"; // E-posttitel.
+        mimeMessage.Body = new TextPart("plain") { Text = messageBody }; // Innehåll i e-postmeddelandet.
 
         try
         {
             using var smtpClient = new SmtpClient();
             // För teständamål, inaktivera certifikatvalidering.
             smtpClient.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-            smtpClient.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls); // Anslut till SMTP-server med TLS.
-            smtpClient.Authenticate("dissatisfiedcustomer2025@gmail.com", "yxel egbr xehm wdrt"); // Autentisering.
+            smtpClient.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls); // Anslut till SMTP-servern.
+            smtpClient.Authenticate("dissatisfiedcustomer2025@gmail.com", "yxel egbr xehm wdrt"); // Autentisera med e-post och lösenord.
             await smtpClient.SendAsync(mimeMessage); // Skicka e-postmeddelandet.
-            await smtpClient.DisconnectAsync(true); // Koppla från SMTP-servern.
-            Console.WriteLine("Bekräftelsemeddelande skickades framgångsrikt!");
+            await smtpClient.DisconnectAsync(true); // Avsluta SMTP-klienten.
+            Console.WriteLine("Confirmation email sent successfully!");
         }
         catch (Exception ex)
-        {
-            // Hantera eventuella fel som uppstår vid e-postsändning.
-            Console.WriteLine($"E-postsändning misslyckades: {ex.Message}");
+        {   // Hantera eventuella fel som uppstår vid e-postsändning.
+            Console.WriteLine($"Email sending failed: {ex.Message}");
+            Console.WriteLine($"Email sending Stack Trace: {ex.StackTrace}");
             throw; // Vidarebefordrar undantaget för vidare hantering.
         }
     }
 }
+

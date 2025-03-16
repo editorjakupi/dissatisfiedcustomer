@@ -79,12 +79,6 @@ app.MapPost("/api/login", LoginRoute.LoginUser); // Hanterar inloggning.
 app.MapGet("/api/session", LoginRoute.GetSessionUser); // Hämtar sessionens användarinformation.
 app.MapPost("/api/logout", LoginRoute.LogoutUser); // Hanterar utloggning.
 
-/* Message endpoints */
-app.MapGet("/api/demoinfo/{company_id}", (int company_id) => MessageRoutes.GetCatAndProd(company_id, db)); // Hämtar kategorier och produkter för demo.
-app.MapPost("/api/messages", async (MessageDTO message, HttpContext context, NpgsqlDataSource db) =>
-{
-    return await MessageRoutes.PostMessage(message, context, db); // Lägger till nytt meddelande.
-}).AllowAnonymous(); // Endast anonym åtkomst.
 
 /* Ticket Form endpoints */
 app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm); // Skapar nytt ärende från formulär.
@@ -103,6 +97,15 @@ app.MapPost("/api/tickets/handle/{ticketId}/messages", async (int ticketId, Mess
     var result = await CaseRoutes.AddCaseMessageByEmail(employeeEmail, ticketId, message, senderType, db);
     return result;
 });
+
+
+/* Message endpoints */
+app.MapGet("/api/demoinfo/{company_id}", (int company_id) => MessageRoutes.GetCatAndProd(company_id, db)); // Hämtar kategorier och produkter för demo.
+app.MapPost("/api/messages", async (MessageDTO message, HttpContext context, NpgsqlDataSource db) =>
+{
+    return await MessageRoutes.PostMessage(message, context, db); // Lägger till nytt meddelande.
+}).AllowAnonymous(); // Endast anonym åtkomst.
+
 
 // Kund skickar meddelanden via token.
 app.MapPost("/api/tickets/view/{token}/messages", async (string token, Message message, HttpContext context, NpgsqlDataSource db) =>
