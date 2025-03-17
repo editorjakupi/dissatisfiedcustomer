@@ -1145,11 +1145,11 @@ align-self: center;
 
   .button {
     border-radius: 80px;
-    width: 300px;
-    height: 50px;
+    width: 100px;
+    height: 30px;
     cursor: pointer;
     border: none;
-    font-size: 25px;
+    font-size: 20px;
   }
   
   .button:active

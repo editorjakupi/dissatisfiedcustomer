@@ -5,7 +5,7 @@ import '../../main.css';
 
 export function Feedback({ caseId }) 
 {
-  const [rating, setRating] = useState(3);
+  const [rating, setRating] = useState(0);
 
   //☆
   function GetRating() {

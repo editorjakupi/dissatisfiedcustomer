@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import AddMessageForm from '../Message/AddMessageForm';
 import SessionTimer from '../SessionTest&Timer/SessionTimer';
 import '../../main.css';
+import { Feedback } from '../Feedback/Feedback';
 
 const CustomerCases = () => {
   const { token } = useParams();
