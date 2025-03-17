@@ -70,13 +70,14 @@ public static class TicketRoutes
                 FROM public.tickets_with_status 
                 WHERE id = $1");
             cmd.Parameters.AddWithValue(id);
-            using var reader = await cmd.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            using var reader = await cmd.ExecuteReaderAsync(); // Kör SQL-frågan och hämtar resultatet.
+            if (await reader.ReadAsync()) // kollar om data finns
             {
                 int? companyId = reader.IsDBNull(reader.GetOrdinal("company_id"))
                     ? (int?)null
                     : reader.GetInt32(reader.GetOrdinal("company_id"));
 
+                // Skapar ticket-objektet med data från resultatet.
                 result = new Ticket(
                     reader.GetInt32(reader.GetOrdinal("id")),
                     reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd"),
