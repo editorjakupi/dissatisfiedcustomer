@@ -8,11 +8,11 @@ namespace server;
 
 public static class TicketRoutes
 {
-    // Hämtar biljetter baserat på en vyparameter (all, open, closed, pending).
+    // Hämtar tickets baserat på en vyparameter (all, open, closed, pending).
     public static async Task<IResult> GetTickets(string? view, NpgsqlDataSource db, HttpContext context)
     {
 
-        // Gets tickets based on view and company_id
+        // Hämtar tickets baserat på view + company_id
         List<Ticket> result = new();
         NpgsqlCommand query;
 
@@ -55,7 +55,7 @@ public static class TicketRoutes
                     reader.GetInt32(8)  // Företags-ID
                 ));
             }
-            return Results.Ok(result); // Returnerar listan över biljetter.
+            return Results.Ok(result); // Returnerar listan över tickets.
         }
 
         Console.WriteLine("No Company Found"); // Loggar om inget företag hittas i sessionen.
@@ -88,11 +88,11 @@ public static class TicketRoutes
                     reader.GetString(reader.GetOrdinal("description")),
                     companyId
                 );
-            }   // Returns the ticket object
+            }   // Returnerar ticket-objektet
             return result;
         }
 
-    // Uppdaterar kategorin för en biljett.
+    // Uppdaterar kategorin för en ticket.
     public static async Task<IResult> PutTicketCategory(int ticketId, string categoryName, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand("UPDATE tickets SET category_name = $2 WHERE id = $1");
@@ -102,7 +102,7 @@ public static class TicketRoutes
         return Results.Ok();
     }
 
-    // Uppdaterar statusen för en biljett.
+    // Uppdaterar statusen för en ticket.
     public static async Task<IResult> PutTicketStatus(int ticketId, int status, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand("UPDATE tickets SET status_id = $2 WHERE id = $1");
@@ -112,7 +112,7 @@ public static class TicketRoutes
         return Results.Ok();
     }
 
-    // Uppdaterar produkten kopplad till en biljett.
+    // Uppdaterar produkten kopplad till en ticket.
     public static async Task<IResult> PutTicketProduct(int ticketId, string productName, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand("UPDATE tickets SET product_name = $2 WHERE id = $1");
@@ -122,7 +122,7 @@ public static class TicketRoutes
         return Results.Ok();
     }
 
-    // Uppdaterar statusen för en biljett till ett standardvärde (exempelvis oläst).
+    // Uppdaterar statusen för en ticket till ett standardvärde (exempelvis oläst).
     public static async Task<IResult> UpdateTicketStatus(int id, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand("UPDATE tickets SET status_id = $2 WHERE id = $1");
@@ -132,7 +132,7 @@ public static class TicketRoutes
         return Results.Ok();
     }
 
-    // Hämtar feedback för en specifik biljett.
+    // Hämtar feedback för en specifik ticket.
     public static async Task<IResult> Feedback(int ticketId, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand("SELECT feedback FROM tickets WHERE id = $1");
@@ -141,7 +141,7 @@ public static class TicketRoutes
         return result != null ? Results.Ok(result.ToString()) : Results.NotFound();
     }
 
-    // Hämtar en biljett baserat på dess token (case_number).
+    // Hämtar en ticket baserat på dess token (case_number).
     public static async Task<Ticket?> GetTicketByToken(string token, NpgsqlDataSource db)
     {
         Ticket? result = null;
@@ -174,7 +174,7 @@ public static class TicketRoutes
         return result;
     }
 
-    // Uppdaterar produkten kopplad till en biljett baserat på produkt-ID.
+    // Uppdaterar produkten kopplad till en ticket baserat på produkt-ID.
     public static async Task<IResult> PutTicketProducts(int ticket_id, int product_id, NpgsqlDataSource db)
     {
         await using var conn = await db.OpenConnectionAsync();
@@ -198,7 +198,7 @@ public static class TicketRoutes
         }
     }
 
-    // Hämtar feedback för biljetter kopplade till företaget i den aktuella sessionen.
+    // Hämtar feedback för tickets kopplade till företaget i den aktuella sessionen.
     public static async Task<IResult> Feedbacks(NpgsqlDataSource db, HttpContext context)
     {
         if (context.Session.GetInt32("company") is int company_id)
