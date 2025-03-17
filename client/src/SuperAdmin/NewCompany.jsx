@@ -106,23 +106,30 @@ const NewCompany = () => {
 
         if (selectedCompany) {  // Se till att selectedCompany inte är null
             try {
-                const response = await fetch(`/api/company/${selectedCompany.id}`, {
+                const response = await fetch("/api/company/", {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        id: formData.id,
                         name: formData.name,
                         phone: formData.phone,
                         email: formData.email,
-                        admin: formData.admin  // New admin id
+                        admin: formData.admin  
                     }),
                 });
+                console.log(selectedCompany.id);
+                console.log("Sending data:", JSON.stringify(formData, null, 2));
 
-                if (!response.ok) throw new Error("Failed to update company");
+                const responseText = await response.text();
+                console.log("Company API full response:", responseText);
+                console.log("Company API response status:", response.status);
+
+                if (!response.ok) throw new Error(responseText || "Failed to update company");
 
                 setMessage("Company updated successfully");
-                setCompanies((prev) =>
-                    prev.map(emp => emp.id === selectedCompany.id ? { ...emp, ...formData } : emp)
-                );
+                // setCompanies((prev) =>
+                //    prev.map(emp => emp.id === selectedCompany.id ? { ...emp, ...formData } : emp)
+                // );
             } catch (error) {
                 setMessage(error.message);
             }
@@ -150,7 +157,7 @@ const NewCompany = () => {
                 setMessage("Company created successfully!");
             } catch (error) {
                 console.error(error);
-                setMessage(error.message);
+                setMessage("Please chose an admin");
             }
         }
     };
@@ -237,7 +244,7 @@ const NewCompany = () => {
                                             onChange={handleChange}>
                                         <option value="">Select an admin</option>
                                         {admins.map((admin) => (
-                                            <option key={admin.id} value={admin.id}>{admin.name}</option>
+                                            <option key={admin.id} name="admin" value={admin.id}>{admin.name}</option>
                                         ))}
                                     </select>
 

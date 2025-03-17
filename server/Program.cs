@@ -79,7 +79,7 @@ app.MapPost("/api/company", CompanyRoutes.PostCompany);
 app.MapDelete("/api/company/{id}", CompanyRoutes.DeleteCompany);
 app.MapGet("/api/company/{id}", CompanyRoutes.GetCompany);
 app.MapGet("/api/company/", CompanyRoutes.GetCompanies);
-app.MapPut("/api/company/{id}", CompanyRoutes.PutCompany);
+app.MapPut("/api/company/", CompanyRoutes.PutCompany);
 app.MapGet("/api/company/admins",CompanyRoutes.GetAdmins);
 
 /* Login */

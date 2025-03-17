@@ -20,29 +20,27 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.phone);
         cmd.Parameters.AddWithValue(company.email);
 
-     /*   using var cmd2 = db.CreateCommand("INSERT INTO employees (company_id, user_id) SELECT id, $1 FROM company " + 
+        using var cmd2 = db.CreateCommand("INSERT INTO employees (company_id, user_id) SELECT id, $1 FROM company " + 
                                         "WHERE company_name = $2 AND company_phone = $3 AND company_email = $4");
         cmd2.Parameters.AddWithValue(company.admin);
         cmd2.Parameters.AddWithValue(company.name);
         cmd2.Parameters.AddWithValue(company.phone);
         cmd2.Parameters.AddWithValue(company.email);
-*/
+
         try
         {
             await cmd.ExecuteNonQueryAsync();
 
-           /* try{
+            try{
 
-              //  await cmd2.ExecuteNonQueryAsync();
+                await cmd2.ExecuteNonQueryAsync();
                 await UserRoutes.PutPromoteAdmin(company.admin, db);
-
-                return TypedResults.Created();
             }
             catch
             {
                 return TypedResults.BadRequest("Failed to add admin: " + company.admin);
 
-            }*/
+            }
             return TypedResults.Created();
         }
         catch
@@ -123,12 +121,12 @@ public class CompanyRoutes
     }
 
     public static async Task<IResult>
-    PutCompany(int id, CompanyDTO company, NpgsqlDataSource db){
+    PutCompany(CompanyDTO company, NpgsqlDataSource db){
         using var cmd = db.CreateCommand("UPDATE company SET name = $1, phone = $2, email = $3, admin = $4 WHERE id = $5");
         cmd.Parameters.AddWithValue(company.name); 
         cmd.Parameters.AddWithValue(company.phone);
         cmd.Parameters.AddWithValue(company.email);
-        cmd.Parameters.AddWithValue(id);
+        cmd.Parameters.AddWithValue(company.id);
 
         using var cmd2 = db.CreateCommand("UPDATE employees SET user_id = $1 WHERE company_id = $2");
         cmd2.Parameters.AddWithValue(company.admin);
@@ -137,7 +135,7 @@ public class CompanyRoutes
         try{
             await cmd.ExecuteNonQueryAsync();
             await cmd2.ExecuteNonQueryAsync();
-            //await UserRoutes.PutPromoteAdmin(company.admin, db);
+            await UserRoutes.PutPromoteAdmin(company.admin, db);
 
             return Results.Ok("Company and admin updated successfully");
         }

@@ -49,7 +49,7 @@ public record CompanyDTO(
   string name,
   string phone,
   string email,
-  int? admin);
+  int admin);
 #endregion
 
 public record Admin(
