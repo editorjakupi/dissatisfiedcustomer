@@ -1,5 +1,6 @@
 /* Applies to all */
-body, html {
+body,
+html {
   background-color: #fef7ff;
   color: black;
   margin: 0;
@@ -12,7 +13,8 @@ body, html {
   width: 80vw;
 }
 
-.app-container, main {
+.app-container,
+main {
   display: flex;
   justify-content: center;
   width: 100%;
@@ -37,7 +39,8 @@ p {
   flex-direction: column;
 }
 
-#input-div text, p {
+#input-div text,
+p {
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -55,6 +58,7 @@ p {
   justify-content: center;
   flex-direction: column;
   width: 100%;
+
   input {
     background-color: #75B9BE;
     width: 20vh;
@@ -115,12 +119,12 @@ p {
 
 .input-type-div {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
 }
 
 /* Sidebar Styling */
 .sidebar {
-  width: 20vw; 
+  width: 20vw;
   height: 100vh;
   background-color: white;
   color: black;
@@ -131,8 +135,8 @@ p {
   padding: 0;
   box-sizing: border-box;
 
-  > * {
-      margin: 5%;
+  >* {
+    margin: 5%;
   }
 }
 
@@ -142,24 +146,25 @@ p {
   flex-direction: column;
   height: 60%;
   gap: 2%;
-  
+
   button {
-      width: 100%;
-      height: 6vh;
-      padding: 0;
-      margin: 0;
-      color: black;
-      border: none;
-      border-radius: 40px;
-      justify-content: center;
-      cursor: pointer;
-      text-align: center;
-      font-size: 1em;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      background: #ABCCC8;
+    width: 100%;
+    height: 6vh;
+    padding: 0;
+    margin: 0;
+    color: black;
+    border: none;
+    border-radius: 40px;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1em;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    background: #ABCCC8;
   }
+
   button:hover {
     background: #444;
   }
@@ -199,14 +204,14 @@ p {
   align-items: center;
 
   button {
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  width: 50%;
-  cursor: pointer;
-  height: 50%;
-  padding: 0;
-  border-radius: 40px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    width: 50%;
+    cursor: pointer;
+    height: 50%;
+    padding: 0;
+    border-radius: 40px;
   }
 
   button:hover {
@@ -266,8 +271,9 @@ p {
   height: 100%;
   flex-direction: column;
   align-items: center;
-  gap: 3%; /* Gap between information */
-  justify-content: center; 
+  gap: 3%;
+  /* Gap between information */
+  justify-content: center;
 
   button {
     border-radius: 5px;
@@ -281,7 +287,7 @@ p {
     font-size: 1em;
     margin: 1%;
   }
-  
+
   button:hover {
     cursor: pointer;
     background-color: gray;
@@ -304,10 +310,12 @@ p {
 /* Search bar stays on top, spreads input left and buttons right */
 .search-container {
   display: flex;
-  justify-content: space-between; /* Push input left, buttons right */
+  justify-content: space-between;
+  /* Push input left, buttons right */
   align-items: center;
   width: 50%;
-  margin-bottom: 1rem; /* Space between search and main-container */
+  margin-bottom: 1rem;
+  /* Space between search and main-container */
 }
 
 /* Buttons stay together */
@@ -319,7 +327,8 @@ p {
 /* Content + Form layout below search */
 .main-container {
   display: flex;
-  gap: 1%; /* Space between content and form */
+  gap: 1%;
+  /* Space between content and form */
   align-items: flex-start;
   width: 100%;
 }
@@ -327,7 +336,8 @@ p {
 /* Content Wrapper: Holds user list and details */
 .content-wrapper {
   display: flex;
-  width: 70%; /* Unsure if this affects anything */
+  width: 70%;
+  /* Unsure if this affects anything */
   justify-content: center;
   align-items: flex-start;
   gap: 1rem;
@@ -335,7 +345,8 @@ p {
   margin: 0.1%;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  flex: 1; /* Takes up remaining space */
+  flex: 1;
+  /* Takes up remaining space */
   min-width: 60%;
 }
 
@@ -346,7 +357,8 @@ p {
 }
 
 /* Text for user list and details */
-.users-list p, .user-details p {
+.users-list p,
+.user-details p {
   width: 100%;
   margin-top: 0%;
 }
@@ -361,7 +373,7 @@ p {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  
+
   h2 {
     margin-top: 0%;
   }
@@ -413,7 +425,7 @@ p {
     height: 10%;
     align-self: center;
   }
-  
+
   button:hover {
     background-color: #548385;
   }
@@ -486,22 +498,22 @@ p {
   overflow: auto;
 
   thead {
-      /* position: sticky; */
-      top: 0;
+    /* position: sticky; */
+    top: 0;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
   }
-  
+
   th,
   td {
     padding: 1%;
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
-  
+
   th {
     background-color: #f4f4f4;
   }
@@ -527,8 +539,7 @@ p {
   background-color: #45a049;
 }
 
-.info-boxes-div
-{
+.info-boxes-div {
   display: flex;
   justify-content: center;
   height: 25%;
@@ -596,12 +607,14 @@ p {
 }
 
 /* Ticket title and description */
-.ticket-title-information-div, .ticket-description-information-div {
-  display:flex;
+.ticket-title-information-div,
+.ticket-description-information-div {
+  display: flex;
   flex-direction: column;
 }
 
-.ticket-title-label, .ticket-description-label {
+.ticket-title-label,
+.ticket-description-label {
   background-color: #D9D9D9;
   width: 30vw;
   height: 5vh;
@@ -620,7 +633,7 @@ select {
 
 
 /* Text areas */
-textarea{
+textarea {
   background-color: #D9D9D9;
   border-radius: 14px;
   border: none;
@@ -651,9 +664,12 @@ textarea{
 .users-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centering horizontally */
-  justify-content: center; /* Centering vertically */
-  height: 100%; /* Full screen height */
+  align-items: center;
+  /* Centering horizontally */
+  justify-content: center;
+  /* Centering vertically */
+  height: 100%;
+  /* Full screen height */
   width: 100%;
   padding: 0;
 }
@@ -661,7 +677,8 @@ textarea{
 .search-container {
   display: flex;
   gap: 0.5rem;
-  margin: 1%; /* Space between search and list */
+  margin: 1%;
+  /* Space between search and list */
   width: 100%;
   justify-content: center;
 }
@@ -708,8 +725,10 @@ textarea{
 /* Centering the user list and details */
 .content-wrapper {
   display: flex;
-  justify-content: center; /* Centers horizontally */
-  align-items: flex-start; /* Aligns content to the top */
+  justify-content: center;
+  /* Centers horizontally */
+  align-items: flex-start;
+  /* Aligns content to the top */
   gap: 1rem;
   background: #ffffff;
   /* padding: 5%; */
@@ -765,7 +784,7 @@ textarea{
     height: 10%;
     align-self: center;
   }
-  
+
   .promote-button:hover {
     background-color: #548385;
   }
@@ -784,7 +803,7 @@ textarea{
   margin: 100%;
 }
 
-.user-card > * {
+.user-card>* {
   margin: 4%;
 }
 
@@ -907,8 +926,8 @@ align-self: center;
 
 @media (max-width: 768px) {
   .cases-container {
-      margin-left: 0;
-      width: 100%;
+    margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -1104,4 +1123,92 @@ button.active {
   background-color: green;
   color: white;
   font-weight: bold;
+}
+/* Styling for feedback window */
+
+.Resolved{
+  display: none;
+}
+
+.Closed{
+  display: none;
+}
+
+.add-feedback-button {
+  background-color: #75B9BE;
+  border: none;
+  width: 10vw;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  color: white;
+  white-space: nowrap;
+}
+
+.add-feedback-button:hover {
+  background-color: #7ecdd3;
+}
+
+.feedback-dialog{
+  border-color: rgb(200, 200, 200);
+  border-radius: 25px;
+}
+
+.feedback-dialog::backdrop{
+    backdrop-filter: blur(3px) grayscale(60%);
+}
+
+#feedbackWindow {
+  .rating {
+    display: flex;
+  }
+
+  .star {
+    cursor: pointer;
+    font-size: 75px;
+    color: rgb(196, 196, 196);
+  }
+
+  .star:hover {
+    color: gray;
+  }
+
+  .selected {
+    color: yellow;
+  }
+
+  .selected:hover {
+    color: rgb(237, 237, 0);
+  }
+
+  .button {
+    border-radius: 80px;
+    width: 100px;
+    height: 30px;
+    cursor: pointer;
+    border: none;
+    font-size: 20px;
+  }
+  
+  .button:active
+  {
+    box-shadow: inset 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+  
+  .send {
+    background-color: #75B9BE;
+  }
+  
+  .send:hover {
+    background-color: #7ecdd3;
+  }
+  
+  .cancel {
+    background-color: #DC0632;
+  }
+  
+  .cancel:hover {
+    background-color: #be0d31;
+  }
 }

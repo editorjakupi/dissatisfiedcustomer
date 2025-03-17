@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 // Vi använder BrowserRouter från react-router-dom om vi driver en webbaserad app
-import { BrowserRouter as Router, Routes, Route } from "react-router"; 
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./User/Login/Login.jsx";
 import Dashboard from "./User/Dashboard/dashboard.jsx";
 import AccountInformation from "./User/Account/account.jsx";
@@ -25,35 +25,38 @@ import SessionTest from './SessionTest'; // Importera komponenten
 
 // Importera eventuella CSS-filer
 import FeedbackView from "./Admin/Feedback/FeedbackView.jsx";
+import { Feedback } from "./Customer/Feedback/Feedback.jsx";
 
+// Huvudapplikationen som hanterar routing och användarsession.
 const App = () => {
-const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null); // Håller information om inloggad användare.
 
-    // Om du vill hämta sessionen när appen startar (för employees/admin/superadmin), så görs det här
+    // Hämtar sessionens användarinformation när applikationen startar.
     useEffect(() => {
         const fetchSessionUser = async () => {
             try {
                 const response = await fetch("/api/session", { method: "GET", headers: { "Content-Type": "application/json" } });
                 if (!response.ok) {
-                    setUser(null);
+                    setUser(null); // Om svaret inte är okej, sätt användare till null.
                     return;
                 }
                 const text = await response.text();
                 if (!text) {
-                    setUser(null);
+                    setUser(null); // Om ingen användardata returneras, sätt till null.
                     return;
                 }
-                const userData = JSON.parse(text);
-                setUser(userData || null);
+                const userData = JSON.parse(text); // Parsar användardata från JSON.
+                setUser(userData || null); // Sparar användardata i state.
             } catch (error) {
-                console.error("Error fetching session:", error);
-                setUser(null);
+                console.error("Error fetching session:", error); // Loggar fel om sessionen inte kan hämtas.
+                setUser(null); // Sätter användare till null vid fel.
             }
         };
 
-        fetchSessionUser();
+        fetchSessionUser(); // Anropar funktionen för att hämta sessionen.
     }, []);
 
+    // Returnerar applikationens innehåll och router-konfiguration.
     return (
         <Router>
             <div className="app-container">
@@ -67,12 +70,11 @@ const [user, setUser] = useState(null);
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/account" element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
-                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/employee" element={user ? <NewEmployee user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/feedback" element={user ? <FeedbackView user={user} /> : <Login setUser={setUser} />} />
-                        
+
                         {/* Employee-endpoint för att hantera ärenden */}
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
 
@@ -83,9 +85,13 @@ const [user, setUser] = useState(null);
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/demopage/:id" element={<DemoPage />} />
                         <Route path="/session-test" element={<SessionTest />} />
+
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
                         <Route path="/companies" element={<NewCompany/>} />
                         <Route path="/companies/admins" element={<NewCompany />} />
+
+                        {/* Temporary for testing */}
+                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                     </Routes>
                 </div>
             </div>
@@ -93,6 +99,7 @@ const [user, setUser] = useState(null);
     );
 };
 
+// Startar applikationen genom att rendera den i root-elementet.
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <App />

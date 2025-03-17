@@ -16,6 +16,7 @@ function BoxesContainer() {
                 const inactiveCount = data.filter(ticket => ticket.status === "Closed").length;
                 const resolvedCount = data.filter(ticket => ticket.status === "Resolved").length;
 
+                // Set the ticket counts in the state
                 setTicketCounts({
                     active: activeCount,
                     inactive: inactiveCount,
@@ -39,7 +40,7 @@ function BoxesContainer() {
     );
 }
 
-
+// The whole main component that renders the ticket view
 export default function TicketView() {
     const [tickets, setTickets] = useState([]);
     const [searchparams] = useSearchParams();
@@ -47,7 +48,7 @@ export default function TicketView() {
     const [sortedTickets, setSortedTickets] = useState([]);
     const [defaultOrder, setDefaultOrder] = useState([]);
 
-    // Using 2 different states to keep track of the sorting order for title and category
+    // Using 3 different states to keep track of the sorting order for title, category and status
     const [sortOrderTitle, setSortOrderTitle] = useState("default");
     const [sortOrderCategory, setSortOrderCategory] = useState("default");
     const [sortOrderStatus, setSortOrderStatus] = useState("default");
@@ -151,6 +152,7 @@ export default function TicketView() {
         setSortedTickets(sorted);
     }
 
+    // Function to sort the tickets by status
     function SortByStatus() {
         let sorted;
 
@@ -165,6 +167,7 @@ export default function TicketView() {
             setSortOrderStatus("default");
         }
 
+        // Reset the title and category sorting order
         setSortOrderCategory("default")
         setSortOrderTitle("default")
         setSortedTickets(sorted)
