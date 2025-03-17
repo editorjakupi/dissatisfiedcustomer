@@ -45,11 +45,11 @@ public record Company(
 );
 
 public record CompanyDTO(
-  int id, 
+  int? id, 
   string name,
   string phone,
   string email,
-  int admin);
+  int? admin);
 #endregion
 
 public record Admin(

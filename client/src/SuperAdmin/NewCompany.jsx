@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "../main.css";
 
-const NewCompany = ({user, setUser}) => {
+const NewCompany = () => {
     const [formData, setFormData] = useState({
         id: null,
         name: "",
@@ -18,7 +18,7 @@ const NewCompany = ({user, setUser}) => {
 
     const handleChange = (event) => {
         setFormData({...formData, [event.target.name]: event.target.value}); 
-       setAdminData({...adminData, [event.target.name]: event.target.value});
+       //setAdminData({...adminData, [event.target.id]: event.target.value});
 };
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
@@ -45,7 +45,7 @@ const NewCompany = ({user, setUser}) => {
 
         })
         .catch((error) => {
-            console.error("company search failed: ", error);
+            console.error("company search failed: ", error.message);
             setCompanies([]);
             setSelectedCompany(null);
         });
@@ -100,7 +100,7 @@ const NewCompany = ({user, setUser}) => {
         setMessage("");
 
         //Company create
-        if (selectedCompany) {
+        if (!selectedCompany == null) {
             // Update existing Company
             try {
             const response = await fetch(`/api/company/${selectedCompany.id}`, {
@@ -121,11 +121,13 @@ const NewCompany = ({user, setUser}) => {
             setCompanies((prev) => prev.map(emp => emp.id === selectedCompany.id ? {...emp, ...formData} : emp));
             } catch (error) {
             setMessage(error.message);
+            preventDefualt();
             }
         } else {
             try {
                 // Create the company
-                const companyResponse = await fetch("/api/company/", {
+                console.log(formData.admin)
+                const companyResponse = await fetch("/api/company", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({
@@ -221,23 +223,23 @@ const NewCompany = ({user, setUser}) => {
                         <div className="form-container">
                             <form onSubmit={handleSubmit} className="form">
                                 <h2>{selectedCompany ? "Update Company" : "Create New Company"}</h2>
-                                <input type="text" name="name" value={formData.name || ""} placeholder="Name"
+                                <input type="text" name="name" value={formData.name} placeholder="Name"
                                     onChange={handleChange}
                                     required/>
-                                <input type="text" name="phone" value={formData.phone || ""} placeholder="Phone"
+                                <input type="text" name="phone" value={formData.phone} placeholder="Phone"
                                     onChange={handleChange} required/>
-                                <input type="text" name="email" value={formData.email || ""} placeholder="Email"
+                                <input type="text" name="email" value={formData.email} placeholder="Email"
                                     onChange={handleChange} required/>
                                 <label>
                                     Admin
                                 <select id="admin-select" onClick={handleShowAdmins} onChange={handleChange}>
-                                    <option value="current">{formData.admin || "select an admin"}</option>
+                                    <option value="current">{formData.admin}</option>
                                     {admins.map((admin) => (
                                         <option key={admin.id} value={admin.id}>{admin.name}</option>
                                     ))}
                                 </select>
                                 </label>
-                                <button type="submit">{selectedCompany ? "Update Company" : "Create Company"}</button>
+                                <button type="submit" onClick={console.log(formData.name)}>{selectedCompany ? "Update Company" : "Create Company"}</button>
                             </form>
                             {message && <p>{message}</p>}
                         </div>

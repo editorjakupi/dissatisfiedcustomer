@@ -20,16 +20,29 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.phone);
         cmd.Parameters.AddWithValue(company.email);
 
-        using var cmd2 = db.CreateCommand("INSERT INTO employees (company_id, user_id) VALUES($1, $2)");
-        cmd.Parameters.AddWithValue(company.id);
-        cmd.Parameters.AddWithValue(company.admin);
-
+     /*   using var cmd2 = db.CreateCommand("INSERT INTO employees (company_id, user_id) SELECT id, $1 FROM company " + 
+                                        "WHERE company_name = $2 AND company_phone = $3 AND company_email = $4");
+        cmd2.Parameters.AddWithValue(company.admin);
+        cmd2.Parameters.AddWithValue(company.name);
+        cmd2.Parameters.AddWithValue(company.phone);
+        cmd2.Parameters.AddWithValue(company.email);
+*/
         try
         {
             await cmd.ExecuteNonQueryAsync();
-            await cmd.ExecuteNonQueryAsync();
-            await UserRoutes.PutPromoteAdmin(company.admin, db);
-            
+
+           /* try{
+
+              //  await cmd2.ExecuteNonQueryAsync();
+                await UserRoutes.PutPromoteAdmin(company.admin, db);
+
+                return TypedResults.Created();
+            }
+            catch
+            {
+                return TypedResults.BadRequest("Failed to add admin: " + company.admin);
+
+            }*/
             return TypedResults.Created();
         }
         catch
@@ -125,7 +138,7 @@ public class CompanyRoutes
         try{
             await cmd.ExecuteNonQueryAsync();
             await cmd2.ExecuteNonQueryAsync();
-            await UserRoutes.PutPromoteAdmin(company.admin, db);
+            //await UserRoutes.PutPromoteAdmin(company.admin, db);
 
             return Results.Ok("Company and admin updated successfully");
         }

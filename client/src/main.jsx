@@ -27,7 +27,7 @@ import SessionTest from './SessionTest'; // Importera komponenten
 import FeedbackView from "./Admin/Feedback/FeedbackView.jsx";
 
 const App = () => {
-    const [user, setUser] = useState(null);
+const [user, setUser] = useState(null);
 
     // Om du vill hämta sessionen när appen startar (för employees/admin/superadmin), så görs det här
     useEffect(() => {
@@ -84,8 +84,8 @@ const App = () => {
                         <Route path="/demopage/:id" element={<DemoPage />} />
                         <Route path="/session-test" element={<SessionTest />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
-                        <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />
-                        <Route path="/companies/admins" element={user ? <NewCompany user={user} /> : <Login setUser={setUser} />} />
+                        <Route path="/companies" element={<NewCompany/>} />
+                        <Route path="/companies/admins" element={<NewCompany />} />
                     </Routes>
                 </div>
             </div>
