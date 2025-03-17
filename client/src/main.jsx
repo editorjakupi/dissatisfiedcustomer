@@ -12,6 +12,7 @@ import UsersList from "./Admin/UsersList/UsersList.jsx";
 import { TicketForm } from "./Customer/TicketForm/TicketForm.jsx";
 import NewEmployee from "./Admin/New/NewEmployee.jsx";
 import AdminList from "./SuperAdmin/AdminList.jsx";
+import { DemoPage } from "./Customer/DemoPages/DemoPage.jsx";
 
 import "./main.css";
 import { Message } from "./Customer/Message/message.jsx";
@@ -26,34 +27,36 @@ import SessionTest from './SessionTest'; // Importera komponenten
 import FeedbackView from "./Admin/Feedback/FeedbackView.jsx";
 import { Feedback } from "./Customer/Feedback/Feedback.jsx";
 
+// Huvudapplikationen som hanterar routing och användarsession.
 const App = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null); // Håller information om inloggad användare.
 
-    // Om du vill hämta sessionen när appen startar (för employees/admin/superadmin), så görs det här
+    // Hämtar sessionens användarinformation när applikationen startar.
     useEffect(() => {
         const fetchSessionUser = async () => {
             try {
                 const response = await fetch("/api/session", { method: "GET", headers: { "Content-Type": "application/json" } });
                 if (!response.ok) {
-                    setUser(null);
+                    setUser(null); // Om svaret inte är okej, sätt användare till null.
                     return;
                 }
                 const text = await response.text();
                 if (!text) {
-                    setUser(null);
+                    setUser(null); // Om ingen användardata returneras, sätt till null.
                     return;
                 }
-                const userData = JSON.parse(text);
-                setUser(userData || null);
+                const userData = JSON.parse(text); // Parsar användardata från JSON.
+                setUser(userData || null); // Sparar användardata i state.
             } catch (error) {
-                console.error("Error fetching session:", error);
-                setUser(null);
+                console.error("Error fetching session:", error); // Loggar fel om sessionen inte kan hämtas.
+                setUser(null); // Sätter användare till null vid fel.
             }
         };
 
-        fetchSessionUser();
+        fetchSessionUser(); // Anropar funktionen för att hämta sessionen.
     }, []);
 
+    // Returnerar applikationens innehåll och router-konfiguration.
     return (
         <Router>
             <div className="app-container">
@@ -80,6 +83,7 @@ const App = () => {
 
                         {/* Endast en inloggad kund har inte längre ett konto, så vi tar bort /message/:id från kundens vy */}
                         <Route path="/message/:id" element={<Message />} />
+                        <Route path="/demopage/:id" element={<DemoPage />} />
                         <Route path="/session-test" element={<SessionTest />} />
                         <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user} />} />
                         <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
@@ -93,6 +97,7 @@ const App = () => {
     );
 };
 
+// Startar applikationen genom att rendera den i root-elementet.
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <App />

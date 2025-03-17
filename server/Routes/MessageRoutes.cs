@@ -1,191 +1,209 @@
-using Npgsql;
-using Microsoft.AspNetCore.Http.HttpResults;
-using MailKit.Net.Smtp;
-using MimeKit;
-using MailKit.Security;
-using System;
+using Npgsql; // För att hantera databasoperationer med PostgreSQL.
+using Microsoft.AspNetCore.Http.HttpResults; // Ger standardiserade HTTP-svar som Created och BadRequest.
+using MailKit.Net.Smtp; // SMTP-klient för att skicka e-postmeddelanden.
+using MimeKit; // För att skapa och hantera e-postinnehåll.
+using MailKit.Security; // För säker e-postkommunikation, som TLS.
+using System; // Standardfunktioner som undantagshantering och GUID-generering.
+using System.Data.Common; // Generiska databasoperationer och anslutningar.
+using Microsoft.AspNetCore.StaticAssets; // Hanterar statiska resurser 
 
-namespace server
+namespace server; 
+
+public static class MessageRoutes // Klass som hanterar kundmeddelanden och relaterad logik.
 {
-    public static class MessageRoutes
+    // Hämtar kategorier och produkter för ett specifikt företag.
+    // Kombinerar två datakällor: kategorier och produkter, till ett objekt.
+    public static async Task<CatAndProd> GetCatAndProd(int company_id, NpgsqlDataSource db)
     {
-        // Data Transfer Object (DTO) for incoming customer messages.
-        // Customers provide their email, and we use that directly (no user account is created).
+        return new CatAndProd(
+            CategoryRoutes.GetCategories(db).Result, // Hämtar kategorier från databasen.
+            ProductRoute.GetProducts(company_id, db).Result // Hämtar produkter kopplade till det angivna företaget.
+        );
+    }
 
-        // Method to handle POST /api/messages for a customer message.
-        // UPDATED: We no longer receive/create a user_id; instead, we use Email and generate a token for the customer session.
-        public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, HttpContext context, NpgsqlDataSource db)
+    // Hanterar inkommande meddelanden från kunder och tilldelar dem ett ärende.
+    // Validerar data, garanterar dataintegritet med transaktioner och skickar en bekräftelse via e-post.
+    public static async Task<Results<Created, BadRequest<string>>> PostMessage(MessageDTO message, HttpContext context, NpgsqlDataSource db)
+    {
+        // Loggar inkommande meddelandedetaljer.
+        Console.WriteLine($"Meddelande mottaget - E-post: {message.Email}, Namn: {message.Name}, Innehåll: {message.Content}, Företags-ID: {message.CompanyID}, Kategori-ID: {message.CategoryID}, Produkt-ID: {message.ProductID}");
+
+        // Validerar att alla obligatoriska fält är korrekt ifyllda.
+        if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content) || message.CategoryID == null)
         {
-            Console.WriteLine($"Received Message - Email: {message.Email}, Name: {message.Name}, Content: {message.Content}, CompanyID: {message.CompanyID}");
-
-            // Validate required data.
-            if (string.IsNullOrEmpty(message.Email) || string.IsNullOrEmpty(message.Name) || string.IsNullOrEmpty(message.Content))
-                return TypedResults.BadRequest("Email, Name, and Content are required.");
-
-            using var conn = db.CreateConnection();
-            await conn.OpenAsync();
-
-            // Start a transaction to ensure data integrity.
-            await using var transaction = await conn.BeginTransactionAsync();
-
-            try
-            {
-                // Create ticket for customer.
-                int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, conn, transaction);
-
-                // Retrieve current status of the ticket (status_id) to ensure no new messages are added if the ticket is resolved or closed.
-                int currentStatus = await GetTicketStatus(ticketId, conn, transaction);
-                if (currentStatus == 3 || currentStatus == 4)
-                {
-                    return TypedResults.BadRequest("Cannot add message to closed or resolved ticket.");
-                }
-
-                // Insert the customer's message into the database.
-                await using var cmd = conn.CreateCommand();
-                cmd.Transaction = transaction;
-                cmd.CommandText = "INSERT INTO messages (ticket_id, message, email) VALUES ($1, $2, $3)";
-                cmd.Parameters.AddWithValue(ticketId);
-                cmd.Parameters.AddWithValue(message.Content);
-                cmd.Parameters.AddWithValue(message.Email);
-                await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine("Message inserted successfully!");
-
-                // Commit the transaction.
-                await transaction.CommitAsync();
-
-                // Retrieve the generated token (recorded as case_number) from the ticket.
-                string token = GetTicketToken(ticketId, conn, transaction);
-
-                // Create a session by storing the token.
-                context.Session.SetString("UserSession", token);
-                Console.WriteLine($"Session created with token: {token}");
-
-                // Send a confirmation email to the customer using MailKit with Gmail SMTP.
-                await SendConfirmationEmailAsync(message.Email, message.Name, message.Content, token);
-
-                return TypedResults.Created();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                if (transaction != null && transaction.Connection != null)
-                {
-                    try { await transaction.RollbackAsync(); }
-                    catch (Exception rollbackEx)
-                    {
-                        Console.WriteLine($"Rollback Exception: {rollbackEx.Message}");
-                        Console.WriteLine($"Rollback Stack Trace: {rollbackEx.StackTrace}");
-                    }
-                }
-                return TypedResults.BadRequest($"An error occurred: {ex.Message}");
-            }
-            finally
-            {
-                if (conn.State == System.Data.ConnectionState.Open)
-                    await conn.CloseAsync();
-            }
+            return TypedResults.BadRequest("E-post, Namn, Innehåll och Kategori krävs.");
         }
 
-        // Creates a new ticket (case) for the customer.
-        // UPDATED: Uses email instead of user_id and generates a token stored in case_number.
-        private static async Task<int> CreateTicketForCustomerAsync(string email, string title, string description, int company_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
+        using var conn = db.CreateConnection(); // Skapar en databasanslutning.
+        await conn.OpenAsync(); // Öppnar anslutningen.
+
+        // Påbörjar en transaktion för att säkerställa säkerhet och atomära operationer.
+        await using var transaction = await conn.BeginTransactionAsync();
+
+        try
         {
-            await using var cmd = conn.CreateCommand();
-            cmd.Transaction = transaction;
-            // Generate a unique token using GenerateUniqueCaseNumber() and use it as the case_number.
-            string token = GenerateUniqueCaseNumber();
-            cmd.CommandText = "INSERT INTO tickets (user_email, title, description, case_number, company_id, date, status_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
-            cmd.Parameters.AddWithValue(email);
-            cmd.Parameters.AddWithValue(title);
-            cmd.Parameters.AddWithValue(description);
-            cmd.Parameters.AddWithValue(token);   // Save token as case_number.
-            cmd.Parameters.AddWithValue(company_id);
-            cmd.Parameters.AddWithValue(DateTime.UtcNow);
-            cmd.Parameters.AddWithValue(1);         // Default status_id is 1 (Unread)
+            // Skapar ett nytt ärende eller hämtar ett befintligt kopplat till kundens meddelande.
+            int ticketId = await CreateTicketForCustomerAsync(message.Email, message.Name, message.Content, message.CompanyID, message.CategoryID, message.ProductID, conn, transaction);
 
-            var scalar = await cmd.ExecuteScalarAsync();
-            if (scalar == null)
-                throw new InvalidOperationException("Failed to create ticket; returned ID is null.");
+            // Kontrollerar att ärendet inte är stängt eller löst.
+            int currentStatus = await GetTicketStatus(ticketId, conn, transaction);
+            if (currentStatus == 3 || currentStatus == 4) // Status 3 = Resolved, 4 = Closed.
+            {
+                return TypedResults.BadRequest("Kan inte lägga till meddelande till ett stängt eller löst ärende.");
+            }
 
-            int ticketId = (int)scalar;
-            Console.WriteLine($"Ticket created with token (case_number): {token}");
-            return ticketId;
-        }
-
-        // Retrieves the token (case_number) for a given ticketId.
-        private static string GetTicketToken(int ticketId, NpgsqlConnection conn, NpgsqlTransaction transaction)
-        {
+            // Lägger till meddelandet i databasen.
             using var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
-            cmd.CommandText = "SELECT case_number FROM tickets WHERE id = $1";
+            cmd.CommandText = "INSERT INTO messages (ticket_id, message, email) VALUES ($1, $2, $3)";
             cmd.Parameters.AddWithValue(ticketId);
-            var result = cmd.ExecuteScalar();
-            return result?.ToString() ?? "";
-        }
+            cmd.Parameters.AddWithValue(message.Content);
+            cmd.Parameters.AddWithValue(message.Email);
+            await cmd.ExecuteNonQueryAsync(); // Kör insättningen i databasen.
 
-        // Retrieves the status of a ticket given its ticketId.
-        // This method ensures that no new messages can be added if the status is "Closed" or "Resolved".
-        private static async Task<int> GetTicketStatus(int ticketId, NpgsqlConnection conn, NpgsqlTransaction transaction)
+            // Bekräftar transaktionen om alla operationer lyckas.
+            await transaction.CommitAsync();
+
+            // Hämtar den unika token (case_number) kopplad till ärendet.
+            string token = GetTicketToken(ticketId, conn, transaction);
+
+            // Lagrar token i användarens session för framtida referens.
+            context.Session.SetString("UserSession", token);
+            Console.WriteLine($"Session skapad med token: {token}");
+
+            // Skickar en bekräftelse via e-post till kunden.
+            await SendConfirmationEmailAsync(message.Email, message.Name, message.Content, token);
+
+            return TypedResults.Created();
+        }
+        catch (Exception ex) // Hanterar fel och loggar dem.
         {
-            await using var cmd = conn.CreateCommand();
-            cmd.Transaction = transaction;
-            cmd.CommandText = "SELECT status_id FROM tickets WHERE id = $1";
-            cmd.Parameters.AddWithValue(ticketId);
-            var result = await cmd.ExecuteScalarAsync();
-            if (result == null)
+            Console.WriteLine($"Undantag: {ex.Message}");
+            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+            // Rullar tillbaka transaktionen vid fel.
+            if (transaction != null && transaction.Connection != null)
             {
-                throw new InvalidOperationException("No status found for ticket.");
+                try { await transaction.RollbackAsync(); }
+                catch (Exception rollbackEx)
+                {
+                    Console.WriteLine($"Återställningsundantag: {rollbackEx.Message}");
+                    Console.WriteLine($"Stack Trace: {rollbackEx.StackTrace}");
+                }
             }
-            return Convert.ToInt32(result);
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
-
-        // Generates a random password. (Exposed for external use.)
-        public static string GenerateRandomPassword()
+        finally
         {
-            return Guid.NewGuid().ToString().Substring(0, 8);
+            // Stänger databasanslutningen när allt är klart.
+            if (conn.State == System.Data.ConnectionState.Open)
+                await conn.CloseAsync();
         }
+    }
 
-        // Generates a unique token/case number.
-        private static string GenerateUniqueCaseNumber()
+    // Skapar ett nytt ärende för kunden och returnerar det genererade ärende-ID:t.
+    private static async Task<int> CreateTicketForCustomerAsync(string email, string title, string description, int company_id, int? category_id, int? product_id, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    {
+        await using var cmd = conn.CreateCommand();
+        cmd.Transaction = transaction;
+
+        string token = GenerateUniqueCaseNumber(); // Genererar ett unikt identifieringsnummer för ärendet.
+
+        // Lägger till ett nytt ärende i databasen.
+        cmd.CommandText = "INSERT INTO tickets (user_email, title, description, case_number, company_id, date, status_id, category_id, product_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id";
+        cmd.Parameters.AddWithValue(email);
+        cmd.Parameters.AddWithValue(title);
+        cmd.Parameters.AddWithValue(description);
+        cmd.Parameters.AddWithValue(token);
+        cmd.Parameters.AddWithValue(company_id);
+        cmd.Parameters.AddWithValue(DateTime.UtcNow); // Sätter skapelsedatumet.
+        cmd.Parameters.AddWithValue(1); // Standardstatus är "Unread".
+        cmd.Parameters.AddWithValue(category_id);
+        cmd.Parameters.AddWithValue(product_id);
+
+        var scalar = await cmd.ExecuteScalarAsync(); // Hämtar det nya ärende-ID:t från databasen.
+        if (scalar == null)
         {
-            return $"CASE-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+            throw new InvalidOperationException("Misslyckades med att skapa ärende; returnerat ID är null.");
         }
+        return (int)scalar;
+    }
 
-        // Sends a confirmation email using MailKit with Gmail SMTP.
-        // UPDATED: Uses baseUrl set to the frontend (http://localhost:5173).
-        private static async Task SendConfirmationEmailAsync(string email, string name, string content, string token)
+    // Hämtar den unika token (case_number) för ett angivet ärende-ID.
+    private static string GetTicketToken(int ticketId, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.Transaction = transaction;
+        cmd.CommandText = "SELECT case_number FROM tickets WHERE id = $1";
+        cmd.Parameters.AddWithValue(ticketId);
+
+        var result = cmd.ExecuteScalar();
+        return result?.ToString() ?? "";
+    }
+
+    // Hämtar aktuell status för ett ärende med hjälp av dess ID.
+    private static async Task<int> GetTicketStatus(int ticketId, NpgsqlConnection conn, NpgsqlTransaction transaction)
+    {
+        await using var cmd = conn.CreateCommand();
+        cmd.Transaction = transaction;
+        cmd.CommandText = "SELECT status_id FROM tickets WHERE id = $1";
+        cmd.Parameters.AddWithValue(ticketId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null)
         {
-            string baseUrl = "http://localhost:5173"; // Frontend base URL
+            throw new InvalidOperationException("Ingen status hittades för ärendet.");
+        }
+        return Convert.ToInt32(result);
+    }
 
-            string messageBody = $"Dear {name ?? "Customer"},\n\nWe have received your message:\n\n\"{content}\"\n\n" +
-                                 $"To access your chat with customer support, please click the link below within the next hour:\n" +
-                                 $"{baseUrl}/tickets/view/{token}\n\n" +
-                                 $"Thank you for contacting us.\n\nBest regards,\nYour App Team";
+    // Genererar ett slumpmässigt lösenord.
+    public static string GenerateRandomPassword()
+    {
+        return Guid.NewGuid().ToString().Substring(0, 8); // Returnerar de första 8 tecknen i en GUID som lösenord.
+    }
 
-            var mimeMessage = new MimeMessage();
-            mimeMessage.From.Add(new MailboxAddress("Your App Name", "dissatisfiedcustomer2025@gmail.com"));
-            mimeMessage.To.Add(new MailboxAddress(name ?? "Customer", email));
-            mimeMessage.Subject = "Chat Access Confirmation";
-            mimeMessage.Body = new TextPart("plain") { Text = messageBody };
+    // Genererar ett unikt token för ett ärende.
+    private static string GenerateUniqueCaseNumber()
+    {
+        return $"CASE-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}"; // Skapar ett identifieringsnummer i formatet CASE-XXXX.
+    }
 
-            try
-            {
-                using var smtpClient = new SmtpClient();
-                // For testing purposes, disable certificate validation.
-                smtpClient.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-                smtpClient.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                smtpClient.Authenticate("dissatisfiedcustomer2025@gmail.com", "yxel egbr xehm wdrt");
-                await smtpClient.SendAsync(mimeMessage);
-                await smtpClient.DisconnectAsync(true);
-                Console.WriteLine("Confirmation email sent successfully!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Email sending failed: {ex.Message}");
-                Console.WriteLine($"Email sending Stack Trace: {ex.StackTrace}");
-                throw;
-            }
+    // Skickar en bekräftelse via e-post till kunden med detaljer om ärendet och en länk för att komma åt det.
+    private static async Task SendConfirmationEmailAsync(string email, string name, string content, string token)
+    {
+        string baseUrl = "http://localhost:5173"; // Frontend-URL för att komma åt ärendet.
+
+        // Innehåll i e-postmeddelandet.
+        string messageBody = $"Dear {name ?? "Customer"},\n\nWe have received your message:\n\n\"{content}\"\n\n" +
+                             $"To access your chat with customer support, please click the link below within the next hour:\n" +
+                             $"{baseUrl}/tickets/view/{token}\n\n" +
+                             $"Thank you for contacting us.\n\nBest regards,\nYour App Team";
+
+        // Skapa e-postmeddelandet.
+        var mimeMessage = new MimeMessage();
+        mimeMessage.From.Add(new MailboxAddress("Your App Name", "dissatisfiedcustomer2025@gmail.com")); // Avsändare av e-post.
+        mimeMessage.To.Add(new MailboxAddress(name ?? "Customer", email)); // Mottagare av e-post.
+        mimeMessage.Subject = "Chat Access Confirmation"; // E-posttitel.
+        mimeMessage.Body = new TextPart("plain") { Text = messageBody }; // Innehåll i e-postmeddelandet.
+
+        try
+        {
+            using var smtpClient = new SmtpClient();
+            // För teständamål, inaktivera certifikatvalidering.
+            smtpClient.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            smtpClient.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls); // Anslut till SMTP-servern.
+            smtpClient.Authenticate("dissatisfiedcustomer2025@gmail.com", "yxel egbr xehm wdrt"); // Autentisera med e-post och lösenord.
+            await smtpClient.SendAsync(mimeMessage); // Skicka e-postmeddelandet.
+            await smtpClient.DisconnectAsync(true); // Avsluta SMTP-klienten.
+            Console.WriteLine("Confirmation email sent successfully!");
+        }
+        catch (Exception ex)
+        {   // Hantera eventuella fel som uppstår vid e-postsändning.
+            Console.WriteLine($"Email sending failed: {ex.Message}");
+            Console.WriteLine($"Email sending Stack Trace: {ex.StackTrace}");
+            throw; // Vidarebefordrar undantaget för vidare hantering.
         }
     }
 }
+

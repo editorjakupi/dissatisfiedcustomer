@@ -1,0 +1,124 @@
+.nvidia
+{
+    background-color: #fff;
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    place-items: center;
+    font-family: Helvetica;
+}
+
+input.nvidia
+{
+    border: 2px solid;
+    border-color: #cbd2d9;
+    height: 40px;
+    width: 600px;
+    font-size: 22px;
+    border-radius: 80px;
+    outline: 3px solid transparent;
+}
+
+input.nvidia:hover{
+    border-color:rgb(132, 255, 66);
+}
+
+input.nvidia:focus{
+    outline-color: rgb(132, 255, 66);
+}
+
+input.nvidia:hover::placeholder{
+    color: rgb(132, 255, 66);
+}
+
+select.nvidia
+{
+    border: 2px solid;
+    border: solid;
+    border-color: #cbd2d9;
+    height: 40px;
+    width: 400px;
+    font-size: 22px;
+    border-radius: 80px;
+    outline: 3px solid transparent;
+}
+
+select.nvidia:hover{
+    border-color:rgb(132, 255, 66);
+}
+
+select.nvidia:focus{
+    outline-color: rgb(132, 255, 66);
+}
+
+textarea.nvidia{
+    outline: 3px solid transparent;
+    height: 250px;
+    border-radius: 12px;
+    background-color: #fff;
+    border: 2px solid;
+    border-color: #cbd2d9;
+    width: 400px;
+    font-size: 20px;
+}
+
+textarea.nvidia:hover{
+    border-color:rgb(132, 255, 66);
+}
+
+textarea.nvidia:hover::placeholder{
+    color: rgb(132, 255, 66);
+}
+
+textarea.nvidia:focus{
+    outline-color: rgb(132, 255, 66);
+}
+
+.nvidia.logo{
+    content:url(https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/NVIDIA_logo.svg/731px-NVIDIA_logo.svg.png);
+    width: 300px;
+    background-color: white;
+}
+
+.nvidia.topbar{
+    background-color: white;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+}
+
+.nvidia.buttons{
+    display: flex;
+    padding-top: 2%;
+    gap: 5%;
+}
+
+button.nvidia{
+    border-radius: 80px;
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    font-size: 25px;
+}
+
+.button.nvidia:active
+{
+  box-shadow: inset 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.nvidia.submit {
+    background-color: #76B900;
+  }
+  
+  .nvidia.submit:hover {
+    background-color: #639c00;
+  }
+  
+  .nvidia.cancel {
+    background-color: #bf1537;
+  }
+  
+  .nvidia.cancel:hover {
+    background-color: #a30d2b;
+  }

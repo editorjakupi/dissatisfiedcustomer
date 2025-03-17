@@ -108,8 +108,7 @@ const NewProduct = ({user}) => {
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({
                         name: formData.name,
-                        description: formData.description,
-                        companyId: user.companyId,
+                        description: formData.description
                     }),
                 });
 
