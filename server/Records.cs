@@ -155,3 +155,14 @@ public record TicketStatus(
   int id,
   string statusName);
 #endregion
+
+#region Feedback Records
+
+public record FeedbackDTO(
+  int ticket_id,
+  int rating,
+  string comment,
+  DateTime? date
+);
+
+#endregion

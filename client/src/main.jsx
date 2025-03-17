@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 // Vi använder BrowserRouter från react-router-dom om vi driver en webbaserad app
-import { BrowserRouter as Router, Routes, Route } from "react-router"; 
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./User/Login/Login.jsx";
 import Dashboard from "./User/Dashboard/dashboard.jsx";
 import AccountInformation from "./User/Account/account.jsx";
@@ -25,6 +25,7 @@ import SessionTest from './SessionTest'; // Importera komponenten
 
 // Importera eventuella CSS-filer
 import FeedbackView from "./Admin/Feedback/FeedbackView.jsx";
+import { Feedback } from "./Customer/Feedback/Feedback.jsx";
 
 // Huvudapplikationen som hanterar routing och användarsession.
 const App = () => {
@@ -69,12 +70,11 @@ const App = () => {
                         <Route path="/tickets" element={user ? <TicketView user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/account" element={user ? <AccountInformation user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
                         <Route path="/forgot-password" element={<PasswordForget />} />
-                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                         <Route path="/users" element={user ? <UsersList user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/employee" element={user ? <NewEmployee user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/products" element={user ? <NewProduct user={user} /> : <Login setUser={setUser} />} />
                         <Route path="/feedback" element={user ? <FeedbackView user={user} /> : <Login setUser={setUser} />} />
-                        
+
                         {/* Employee-endpoint för att hantera ärenden */}
                         <Route path="/tickets/handle/:ticketId" element={<TicketHandler />} />
 
@@ -85,8 +85,11 @@ const App = () => {
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/demopage/:id" element={<DemoPage />} />
                         <Route path="/session-test" element={<SessionTest />} />
-                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
-                        <Route path="/companies" element={user ? <NewCompany user={user}/> : <Login setUser={user}/>} />
+                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user} />} />
+                        <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
+
+                        {/* Temporary for testing */}
+                        <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                     </Routes>
                 </div>
             </div>

@@ -61,6 +61,8 @@ app.MapPut("/api/ticketsproduct", TicketRoutes.PutTicketProducts); // Uppdaterar
 app.MapGet("/api/ticketstatus", TicketStatusRoutes.GetTicketStatus); // Hämtar alla biljettstatusar.
 app.MapPut("/api/tickets/{id}", (int id) => TicketRoutes.UpdateTicketStatus(id, db)); // Återställer biljettens status (till exempel till oläst).
 
+app.MapPost("/api/feedback", FeedbackRoutes.PostFeedback);
+
 // --- Produktendpoints ---
 app.MapGet("/api/products/{company_id}", (int company_id) => ProductRoute.GetProducts(company_id, db)); // Hämtar produkter kopplade till företag.
 app.MapGet("/api/product/{product_id}", (int product_id) => ProductRoute.GetProduct(product_id, db)); // Hämtar en specifik produkt.

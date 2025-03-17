@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import AddMessageForm from '../Message/AddMessageForm';
 import SessionTimer from '../SessionTest&Timer/SessionTimer';
 import '../../main.css';
+import { Feedback } from '../Feedback/Feedback';
 
 // Komponent för att hantera kundärenden och meddelanden i en chatt-session.
 const CustomerCases = () => {
@@ -99,6 +100,27 @@ const CustomerCases = () => {
     return <p>Loading chat session...</p>;
   }
 
+  function CustomerCaseStatus()
+  {
+    if(ticket.status == "Resolved" || ticket.status == "Closed")
+    {
+      return <button className="add-feedback-button" onClick={() => {
+        document.querySelector(".feedback-dialog").showModal();
+      }}>
+          Add Feedback
+        </button>
+    }else{
+      return <AddMessageForm 
+      token={token} // Skickar token för att identifiera aktuell session.
+        userEmail={ticket.email} // Kundens e-post kopplad till ärendet.
+        onMessageAdded={handleMessageAdded} // Callback som triggas när ett meddelande läggs till.
+        isSessionActive={isSessionActive} // Kontrollerar om sessionen är aktiv.
+        ticketStatus={ticket.status} // Skickar ärendets status.
+    />
+    }
+  }
+
+
   // Renderar ärendedetaljer, meddelanden och formulär för att lägga till nya meddelanden.
   return (
     <div className="cases-container">
@@ -131,13 +153,10 @@ const CustomerCases = () => {
         <div ref={messagesEndRef}></div> {/* Referens för att scrolla till det senaste meddelandet */}
       </ul>
       <h4>Add a Message</h4>
-      <AddMessageForm 
-        token={token} // Skickar token för att identifiera aktuell session.
-        userEmail={ticket.email} // Kundens e-post kopplad till ärendet.
-        onMessageAdded={handleMessageAdded} // Callback som triggas när ett meddelande läggs till.
-        isSessionActive={isSessionActive} // Kontrollerar om sessionen är aktiv.
-        ticketStatus={ticket.status} // Skickar ärendets status.
-      />
+      <CustomerCaseStatus></CustomerCaseStatus>
+        <dialog className='feedback-dialog'>
+        <Feedback caseId={ticket.id}/>
+        </dialog>
     </div>
   );
 };
