@@ -100,7 +100,7 @@ const CustomerCases = () => {
     return <p>Loading chat session...</p>;
   }
 
-  function CustomerCaseStatus()
+  function FeedbackButton()
   {
     if(ticket.status == "Resolved" || ticket.status == "Closed")
     {
@@ -109,14 +109,6 @@ const CustomerCases = () => {
       }}>
           Add Feedback
         </button>
-    }else{
-      return <AddMessageForm 
-      token={token} // Skickar token för att identifiera aktuell session.
-        userEmail={ticket.email} // Kundens e-post kopplad till ärendet.
-        onMessageAdded={handleMessageAdded} // Callback som triggas när ett meddelande läggs till.
-        isSessionActive={isSessionActive} // Kontrollerar om sessionen är aktiv.
-        ticketStatus={ticket.status} // Skickar ärendets status.
-    />
     }
   }
 
@@ -153,7 +145,15 @@ const CustomerCases = () => {
         <div ref={messagesEndRef}></div> {/* Referens för att scrolla till det senaste meddelandet */}
       </ul>
       <h4>Add a Message</h4>
-      <CustomerCaseStatus></CustomerCaseStatus>
+      <div className={ticket.status}>
+      <AddMessageForm 
+      token={token} // Skickar token för att identifiera aktuell session.
+        userEmail={ticket.email} // Kundens e-post kopplad till ärendet.
+        onMessageAdded={handleMessageAdded} // Callback som triggas när ett meddelande läggs till.
+        isSessionActive={isSessionActive} // Kontrollerar om sessionen är aktiv.
+        ticketStatus={ticket.status} // Skickar ärendets status.
+    /></div>
+      <FeedbackButton/>
         <dialog className='feedback-dialog'>
         <Feedback caseId={ticket.id}/>
         </dialog>
