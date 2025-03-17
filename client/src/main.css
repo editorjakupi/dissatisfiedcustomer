@@ -1126,6 +1126,14 @@ button.active {
 }
 /* Styling for feedback window */
 
+.Resolved{
+  display: none;
+}
+
+.Closed{
+  display: none;
+}
+
 .add-feedback-button {
   background-color: #75B9BE;
   border: none;
