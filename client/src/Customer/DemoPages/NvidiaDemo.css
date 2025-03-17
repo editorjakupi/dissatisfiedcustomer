@@ -1,76 +1,77 @@
 .nvidia
 {
-    background-color: black;
-    color: white;
+    background-color: #fff;
     display: grid;
     align-content: center;
     justify-content: center;
+    place-items: center;
     font-family: Helvetica;
 }
 
 input.nvidia
 {
-    border: solid;
+    border: 2px solid;
     border-color: #cbd2d9;
-    background-color: white;
     height: 40px;
-    width: 400px;
+    width: 600px;
     font-size: 22px;
     border-radius: 80px;
+    outline: 3px solid transparent;
 }
+
 input.nvidia:hover{
-    border-color: #76B900;
+    border-color:rgb(132, 255, 66);
 }
 
 input.nvidia:focus{
-    outline-color: #639c00;
+    outline-color: rgb(132, 255, 66);
 }
 
 input.nvidia:hover::placeholder{
-    color: #76B900;
+    color: rgb(132, 255, 66);
 }
 
 select.nvidia
 {
+    border: 2px solid;
     border: solid;
     border-color: #cbd2d9;
-    background-color: white;
-    color: black;
     height: 40px;
     width: 400px;
     font-size: 22px;
     border-radius: 80px;
+    outline: 3px solid transparent;
 }
+
 select.nvidia:hover{
-    border-color: #76B900;
+    border-color:rgb(132, 255, 66);
 }
 
 select.nvidia:focus{
-    outline-color: #639c00;
+    outline-color: rgb(132, 255, 66);
 }
 
-
 textarea.nvidia{
+    outline: 3px solid transparent;
     height: 250px;
     border-radius: 12px;
     background-color: #fff;
-    color: black;
-    border: solid;
+    border: 2px solid;
     border-color: #cbd2d9;
     width: 400px;
-    font-size: 22px;
-  }
+    font-size: 20px;
+}
 
 textarea.nvidia:hover{
-    border-color: #76B900;
+    border-color:rgb(132, 255, 66);
 }
 
 textarea.nvidia:hover::placeholder{
-    color: #76B900;
+    color: rgb(132, 255, 66);
 }
 
 textarea.nvidia:focus{
-    outline-color: #639c00;
+    outline-color: rgb(132, 255, 66);
 }
 
 .nvidia.logo{
@@ -88,15 +89,17 @@ textarea.nvidia:focus{
 
 .nvidia.buttons{
     display: flex;
+    padding-top: 2%;
+    gap: 5%;
 }
 
 button.nvidia{
     border-radius: 80px;
-  width: 150px;
-  height: 50px;
-  cursor: pointer;
-  border: none;
-  font-size: 25px;
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    font-size: 25px;
 }
 
 .button.nvidia:active
@@ -113,9 +116,9 @@ button.nvidia{
   }
   
   .nvidia.cancel {
-    background-color: #DC0632;
+    background-color: #bf1537;
   }
   
   .nvidia.cancel:hover {
-    background-color: #be0d31;
+    background-color: #a30d2b;
   }
