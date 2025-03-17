@@ -128,7 +128,6 @@ public class CompanyRoutes
         cmd.Parameters.AddWithValue(company.name); 
         cmd.Parameters.AddWithValue(company.phone);
         cmd.Parameters.AddWithValue(company.email);
-        cmd.Parameters.AddWithValue(company.admin);
         cmd.Parameters.AddWithValue(id);
 
         using var cmd2 = db.CreateCommand("UPDATE employees SET user_id = $1 WHERE company_id = $2");

@@ -3,23 +3,28 @@ import "../main.css";
 
 const NewCompany = () => {
     const [formData, setFormData] = useState({
-        id: null,
+        id: "",
         name: "",
         phone: "",
         email: "",
-        admin: null,
+        admin: "",
     });
     const [adminData, setAdminData] = useState({
-        id: null,
+        id: "",
         name: "",
     });
     
     const [message, setMessage] = useState("");
 
     const handleChange = (event) => {
-        setFormData({...formData, [event.target.name]: event.target.value}); 
-       //setAdminData({...adminData, [event.target.id]: event.target.value});
-};
+        const { name, value } = event.target;
+
+        setFormData({
+            ...formData,
+            [name]: value === "" ? null : (name === "admin" || name === "id" ? parseInt(value) || null : value)
+        });
+    };
+
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [searchId, setSearchId] = useState("");
@@ -96,42 +101,37 @@ const NewCompany = () => {
         });
     };
     const handleSubmit = async (e) => {
-        e.preventDefualt();
+        e.preventDefault();
         setMessage("");
 
-        //Company create
-        if (!selectedCompany == null) {
-            // Update existing Company
+        if (selectedCompany) {  // Se till att selectedCompany inte är null
             try {
-            const response = await fetch(`/api/company/${selectedCompany.id}`, {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    id: formData.id,
-                    name: formData.name,
-                    phone: formData.phone,
-                    email: formData.email,
-                    admin: formData.admin  //new admin id
-                }),
-            });
+                const response = await fetch(`/api/company/${selectedCompany.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: formData.name,
+                        phone: formData.phone,
+                        email: formData.email,
+                        admin: formData.admin  // New admin id
+                    }),
+                });
 
-            if (!response.ok) throw new Error("Failed to update company");
+                if (!response.ok) throw new Error("Failed to update company");
 
-            setMessage("Company updated successfully");
-            setCompanies((prev) => prev.map(emp => emp.id === selectedCompany.id ? {...emp, ...formData} : emp));
+                setMessage("Company updated successfully");
+                setCompanies((prev) =>
+                    prev.map(emp => emp.id === selectedCompany.id ? { ...emp, ...formData } : emp)
+                );
             } catch (error) {
-            setMessage(error.message);
-            preventDefualt();
+                setMessage(error.message);
             }
-        } else {
+        } else {  // Om selectedCompany är null, skapa en ny
             try {
-                // Create the company
-                console.log(formData.admin)
                 const companyResponse = await fetch("/api/company", {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        id: formData.id,
                         name: formData.name,
                         phone: formData.phone,
                         email: formData.email,
@@ -139,7 +139,8 @@ const NewCompany = () => {
                     }),
                 });
 
-                // Debugging: Log full response
+                console.log("Sending data:", JSON.stringify(formData, null, 2));
+
                 const responseText = await companyResponse.text();
                 console.log("Company API full response:", responseText);
                 console.log("Company API response status:", companyResponse.status);
@@ -153,6 +154,7 @@ const NewCompany = () => {
             }
         }
     };
+
 
     return(
         <main>
@@ -224,22 +226,23 @@ const NewCompany = () => {
                             <form onSubmit={handleSubmit} className="form">
                                 <h2>{selectedCompany ? "Update Company" : "Create New Company"}</h2>
                                 <input type="text" name="name" value={formData.name} placeholder="Name"
-                                    onChange={handleChange}
-                                    required/>
+                                       onChange={handleChange} required/>
                                 <input type="text" name="phone" value={formData.phone} placeholder="Phone"
-                                    onChange={handleChange} required/>
+                                       onChange={handleChange} required/>
                                 <input type="text" name="email" value={formData.email} placeholder="Email"
-                                    onChange={handleChange} required/>
+                                       onChange={handleChange} required/>
                                 <label>
-                                    Admin
-                                <select id="admin-select" onClick={handleShowAdmins} onChange={handleChange}>
-                                    <option value="current">{formData.admin}</option>
-                                    {admins.map((admin) => (
-                                        <option key={admin.id} value={admin.id}>{admin.name}</option>
-                                    ))}
-                                </select>
+                                Admin
+                                    <select name="admin" id="admin-select" onClick={handleShowAdmins}
+                                            onChange={handleChange}>
+                                        <option value="">Select an admin</option>
+                                        {admins.map((admin) => (
+                                            <option key={admin.id} value={admin.id}>{admin.name}</option>
+                                        ))}
+                                    </select>
+
                                 </label>
-                                <button type="submit" onClick={console.log(formData.name)}>{selectedCompany ? "Update Company" : "Create Company"}</button>
+                                <button type="submit">{selectedCompany ? "Update Company" : "Create Company"}</button>
                             </form>
                             {message && <p>{message}</p>}
                         </div>
