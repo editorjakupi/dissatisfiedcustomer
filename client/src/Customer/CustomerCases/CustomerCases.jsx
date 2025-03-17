@@ -92,6 +92,27 @@ const CustomerCases = () => {
   if (!ticket) {
     return <p>Loading chat session...</p>;
   }
+
+  function CustomerCaseStatus()
+  {
+    if(ticket.status == "Resolved" || ticket.status == "Closed")
+    {
+      return <button className="add-feedback-button" onClick={() => {
+        document.querySelector(".feedback-dialog").showModal();
+      }}>
+          Add Feedback
+        </button>
+    }else{
+      return <AddMessageForm 
+      token={token}
+      userEmail={ticket.email}
+      onMessageAdded={handleMessageAdded}
+      isSessionActive={isSessionActive}
+      ticketStatus={ticket.status}
+    />
+    }
+  }
+
   return (
     <div className="cases-container">
       <h2>Chat Session</h2>
@@ -123,13 +144,10 @@ const CustomerCases = () => {
         <div ref={messagesEndRef}></div>
       </ul>
       <h4>Add a Message</h4>
-      <AddMessageForm 
-        token={token}
-        userEmail={ticket.email}
-        onMessageAdded={handleMessageAdded}
-        isSessionActive={isSessionActive}
-        ticketStatus={ticket.status}
-      />
+      <CustomerCaseStatus></CustomerCaseStatus>
+        <dialog className='feedback-dialog'>
+        <Feedback caseId={ticket.id}/>
+        </dialog>
     </div>
   );
 };

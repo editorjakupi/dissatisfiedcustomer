@@ -26,7 +26,10 @@ export function Feedback({ caseId })
       {GetRating()}
     </ul>
     <textarea className='comment' placeholder='Write your feedback here'></textarea>
-    <div><button class="cancel button">Cancel</button><button class="send button" onClick={() => SendFeedback(caseId, rating)}>Send</button></div>
+    <div><button onClick={() => {document.querySelector(".feedback-dialog").close();}} class="cancel button">Cancel</button><button class="send button" onClick={() => {
+      SendFeedback(caseId, rating)
+      document.querySelector(".feedback-dialog").close()
+      }}>Send</button></div>
   </div>
 }
 

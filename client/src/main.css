@@ -1120,6 +1120,31 @@ align-self: center;
 }
 /* Styling for feedback window */
 
+.add-feedback-button {
+  background-color: #75B9BE;
+  border: none;
+  width: 10vw;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  color: white;
+  white-space: nowrap;
+}
+
+.add-feedback-button:hover {
+  background-color: #7ecdd3;
+}
+
+.feedback-dialog{
+  border-color: rgb(200, 200, 200);
+  border-radius: 25px;
+}
+
+.feedback-dialog::backdrop{
+    backdrop-filter: blur(3px) grayscale(60%);
+}
+
 #feedbackWindow {
   .rating {
     display: flex;

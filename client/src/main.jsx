@@ -85,7 +85,6 @@ const App = () => {
                         <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
 
                         {/* Temporary for testing */}
-                        <Route path="/givefeedback" element={<Feedback caseId={10}/>} />
                         <Route path="/ticketform/:caseNr" element={<TicketForm />} />
                     </Routes>
                 </div>
