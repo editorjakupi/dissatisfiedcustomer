@@ -14,6 +14,7 @@ public static class TicketRoutes
 
     GetTickets(string? view, NpgsqlDataSource db, HttpContext context)
     {
+        // Gets tickets based on view and company_id
         List<Ticket> result = new();
         NpgsqlCommand query;
         if (context.Session.GetInt32("company") is int company_id)
@@ -61,9 +62,9 @@ public static class TicketRoutes
 
         return Results.BadRequest();
     }
-
+        
         public static async Task<Ticket?> GetTicket(int id, NpgsqlDataSource db)
-        {
+        {   // Initializes a new ticket object
             Ticket? result = null;
             using var cmd = db.CreateCommand(@"
                 SELECT id, date, title, email, status_name, case_number, description, company_id
@@ -88,7 +89,7 @@ public static class TicketRoutes
                     reader.GetString(reader.GetOrdinal("description")),
                     companyId
                 );
-            }
+            }   // Returns the ticket object
             return result;
         }
 
