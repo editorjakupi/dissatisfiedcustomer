@@ -85,8 +85,10 @@ const App = () => {
                         <Route path="/message/:id" element={<Message />} />
                         <Route path="/demopage/:id" element={<DemoPage />} />
                         <Route path="/session-test" element={<SessionTest />} />
-                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user} />} />
-                        <Route path="/companies" element={user ? <NewCompany user={user} /> : <Login setUser={user} />} />
+
+                        <Route path="/admins" element={user ? <AdminList user={user} /> : <Login setUser={user}/>}/>
+                        <Route path="/companies" element={<NewCompany/>} />
+                        <Route path="/companies/admins" element={<NewCompany />} />
 
                         {/* Temporary for testing */}
                         <Route path="/ticketform/:caseNr" element={<TicketForm />} />

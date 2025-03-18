@@ -81,6 +81,13 @@ app.MapPost("/api/login", LoginRoute.LoginUser); // Hanterar inloggning.
 app.MapGet("/api/session", LoginRoute.GetSessionUser); // Hämtar sessionens användarinformation.
 app.MapPost("/api/logout", LoginRoute.LogoutUser); // Hanterar utloggning.
 
+//Company Endpoints
+app.MapPost("/api/company", CompanyRoutes.PostCompany);
+app.MapDelete("/api/company/{id}", CompanyRoutes.DeleteCompany);
+app.MapGet("/api/company/{id}", CompanyRoutes.GetCompany);
+app.MapGet("/api/company/", CompanyRoutes.GetCompanies);
+app.MapPut("/api/company/", CompanyRoutes.PutCompany);
+app.MapGet("/api/company/admins",CompanyRoutes.GetAdmins);
 
 /* Ticket Form endpoints */
 app.MapPost("/api/ticketform", TicketFormRoutes.PostTicketForm); // Skapar nytt ärende från formulär.
