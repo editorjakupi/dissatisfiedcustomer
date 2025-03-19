@@ -59,6 +59,43 @@ to install this you need to set up the server and client parts of the applicatio
 - `userId` (int, required) - Användarens unika ID.  
 **Response:** Bekräftelsemeddelande.  
 
+## Products
+
+### Get All Products connected to a Company
+**Endpoint:** `GET api/products/{company_id}`
+**Description:** Hämtar alla produkter kopplade till ett företag.
+**Parameters:**
+- `company_id` (int ,required) - företagets unika ID.
+  **Response:** Lista med alla företags produkter i JSON-format.
+
+## Get Products By Product ID
+**Endpoint:** `GET /api/product/{product_id}`
+**Description:** Hämtar alla produkter kopplade till ett product-ID.
+**Parameters:**
+- `product_id` (int, required) - produktens unika ID.
+  **Response:** Lista av produkter i JSON-format.
+
+## Create Product
+**Endpoint:** `POST /api/products/`
+**Description:** skapar en ny produkt.
+**Request Body:** JSON med product data.
+**Response:** Bekräftelsemeddelande.
+
+## Delete Product
+**Endpoint:** `DELETE /api/products/{id}`
+**Description:** Raderar en produkt.
+**Parameters:**
+- `id` (int, required) - Produktens unika ID.
+  **Response:** Bekräftelsemeddelande.
+
+### Update Product
+**Endpoint:** `PUT /api/products/`
+**Description:** Uppdaterar information för en produkt.
+**Parameters:**
+- `id` (int, required) - Produktens unika ID.
+  **Request Body:** JSON med uppdaterad produkt data.
+  **Response:** Bekräftelsemeddelande.
+
 ## Employees
 
 ### Get Employees by User ID
@@ -142,6 +179,42 @@ to install this you need to set up the server and client parts of the applicatio
 - `userId` (int, required) - Användarens unika ID.  
 **Request Body:** JSON med uppdaterad användardata.  
 **Response:** Bekräftelsemeddelande.  
+
+### Create Company
+**Endpoint:** `POST /api/company`
+**Description:** Skapar ett nytt företag.
+**Request Body:** JSON med företags data.
+**Response:** Bekräftelsemeddelande.
+
+### Delete Company
+**Endpoint:** `DELETE /api/company/{id}`
+**Description:** Raderar ett företag.
+**Parameters:**
+-`id` (int, required) - Företagets unika ID.
+**Response:** Bekräftelsemeddelande.
+
+### Get Company By ID
+**Endpoint:** `GET /api/company/{id}`
+**Description:** Hämtar information för ett företag baserat på företags-ID.
+**Parameters:**
+-`id` (int, required) - Företagets unika ID.
+**Response:** Bekräftelsemeddelande.
+
+### Get All Companies
+**Endpoint:** `GET /api/company/`
+**Description:** Hämtar alla företag.
+**Response:** Lista av företag i JSON-format.
+
+## Update Company
+**Endpoint:** `PUT /api/company/`
+**Description:** Uppdaterar information för ett företag.
+**Request Body:** JSON med  uppdaterad företags data.
+**Response:** Bekräftelsemeddelande.
+
+## Get Unassigned Users
+**Endpoint:** `GET api/company/admins/`
+**Description:** Hämtar alla amvändare som inte är kopplade till ett företag.
+**Response:** Lista av användarnamn och användar-ID i JSON-format.
 
 ## Tickets & Feedback
 
