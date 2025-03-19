@@ -1,13 +1,48 @@
 # Dissatisfied Customer
 CRM-system (Customer Relationship Management) är en mjukvara som hjälper företag att hantera kundrelationer, organisera försäljningsprocesser och förbättra kundservice. Det fungerar som en central databas där all kundrelaterad information lagras och görs tillgänglig för olika avdelningar såsom försäljning, marknadsföring och support.
 
-## Usage
+## Usage:
+### 1. Log in
+	Gå till hemsidan och ange ditt **e-post** och **lösenord.**
+Klicka på **Logga in. **
+### 2. Navigation
+**Dashboard** - Översikt över användare, ärenden och företag.
+**Account** - Hantera användarkonton.
+**Employee** - Se och redigera anställda kopplade till företaget.
+**Ticket** - Skapa och hantera supportärenden.
+**Admin-panel** - Endast tillgänglig för administratörer.
+**Super-Admin-panel**- Endast tillgänglig för super-administratörer
+### 3. Functions
+**Add User** - Skapa en ny användare via `Users`-sidan.
+**Handle Ticket** - Uppdatera och radera supportärenden via `Tickets`-sidan.
+**Give feedback** - Lämna betyg och kommentarer för hanterade ärenden.
+**Handle Users** - Uppdatera och radera användare via `Users`-sidan.
+**Add Company** - Skapa ett nytt företag via `Companies`-sidan
+**Handle company** - Uppdatera och radera företag via `Companies`-sidan.
+**Handle Account** - Uppdatera kontouppgifter via `Account`-sidan.
+**Handle Employees** - Skapa, uppdatera och radera anställda via `Employees`-sidan.
+**Handle Products** - Skapa, uppdatera och radera produkter via `Products`-sidan.
+**Add Ticket** - Skapa ärenden och kommunicera med kundtjänst.
 
-in order to use ...
+## Installation:
+### Hur man får hemsidan o starta på en ny dator
+$ git clone https://github.com/editorjakupi/dissatisfiedcustomer.git
+( alternative ) **ssh key:** git@github.com:editorjakupi/dissatisfiedcustomer.git
 
-### Installation
+Konfigurera **miljövariabler*
+2.1 **Kontrollpanelen** -> Redigera Systemets Miljövariabler ->  **Miljövariabler** -> Ny… -> **PGUser** och **PGPassword** -> Spara -> Ok
 
-to install this you need to set up the server and client parts of the application...
+Installera och starta backend (.NET Web API)
+3.1 cd /dissatisfiedcustomer/server
+3.2 **dotnet run --project server**
+
+Installera **PostgreSQL** och konfigurera databasanslutning.
+4.1 Lägg till **Dumpen** från 
+dissatisfiedcustomer/server/Database/DatabaseDump/dissatisfiedcustomer-dump.sql
+
+Installera och starta frontend (React)
+5.1 cd /dissatisfiedcustomer/client
+5.2 **npm run dev**
 
 
 
