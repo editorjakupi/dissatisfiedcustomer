@@ -1,5 +1,17 @@
-# API Documentation
+# Dissatisfied Customer
+CRM-system (Customer Relationship Management) är en mjukvara som hjälper företag att hantera kundrelationer, organisera försäljningsprocesser och förbättra kundservice. Det fungerar som en central databas där all kundrelaterad information lagras och görs tillgänglig för olika avdelningar såsom försäljning, marknadsföring och support.
 
+## Usage
+
+in order to use ...
+
+### Installation
+
+to install this you need to set up the server and client parts of the application...
+
+
+
+# API Documentation
 ## Users
 
 ### Get User by ID
@@ -47,22 +59,21 @@
 - `userId` (int, required) - Användarens unika ID.  
 **Response:** Bekräftelsemeddelande.  
 
-
 ## Products
 
 ### Get All Products connected to a Company
 **Endpoint:** `GET api/products/{company_id}`
 **Description:** Hämtar alla produkter kopplade till ett företag.
-**Parameters:** 
+**Parameters:**
 - `company_id` (int ,required) - företagets unika ID.
-**Response:** Lista med alla företags produkter i JSON-format.
+  **Response:** Lista med alla företags produkter i JSON-format.
 
 ## Get Products By Product ID
 **Endpoint:** `GET /api/product/{product_id}`
 **Description:** Hämtar alla produkter kopplade till ett product-ID.
-**Parameters:** 
+**Parameters:**
 - `product_id` (int, required) - produktens unika ID.
-**Response:** Lista av produkter i JSON-format.
+  **Response:** Lista av produkter i JSON-format.
 
 ## Create Product
 **Endpoint:** `POST /api/products/`
@@ -75,15 +86,15 @@
 **Description:** Raderar en produkt.
 **Parameters:**
 - `id` (int, required) - Produktens unika ID.
-**Response:** Bekräftelsemeddelande.
+  **Response:** Bekräftelsemeddelande.
 
 ### Update Product
 **Endpoint:** `PUT /api/products/`
 **Description:** Uppdaterar information för en produkt.
-**Parameters:** 
+**Parameters:**
 - `id` (int, required) - Produktens unika ID.
-**Request Body:** JSON med uppdaterad produkt data.
-**Response:** Bekräftelsemeddelande.
+  **Request Body:** JSON med uppdaterad produkt data.
+  **Response:** Bekräftelsemeddelande.
 
 ## Employees
 
@@ -178,14 +189,14 @@
 ### Delete Company
 **Endpoint:** `DELETE /api/company/{id}`
 **Description:** Raderar ett företag.
-**Parameters:** 
+**Parameters:**
 -`id` (int, required) - Företagets unika ID.
 **Response:** Bekräftelsemeddelande.
 
 ### Get Company By ID
 **Endpoint:** `GET /api/company/{id}`
 **Description:** Hämtar information för ett företag baserat på företags-ID.
-**Parameters:** 
+**Parameters:**
 -`id` (int, required) - Företagets unika ID.
 **Response:** Bekräftelsemeddelande.
 
@@ -203,9 +214,53 @@
 ## Get Unassigned Users
 **Endpoint:** `GET api/company/admins/`
 **Description:** Hämtar alla amvändare som inte är kopplade till ett företag.
-**Response:** Lista av användarnamn och användar-ID i JSON-format. 
+**Response:** Lista av användarnamn och användar-ID i JSON-format.
 
 ## Tickets & Feedback
+
+### Get Ticket by ID
+**Endpoint:** `GET /api/tickets/{id}`
+**Description:** Gets a ticket based on ticket ID.
+**Parameters:**
+- `id` (int, required) - Unique ID for a ticket.
+**Response:** JSON containing ticket information
+
+### Update Category for a Ticket
+**Endpoint:** `PUT /api/ticketscategory`
+**Description:** Updates the category of a ticket.
+**Parameters:**
+- `ticketId` (int, required) - Unique ID for a ticket.
+- `categoryName` (string, required) - String containing category name.
+**Request Body:** JSON with updated category data.
+**Response:** Confirmaiton message.
+
+### Update Ticket status
+**Endpoint:** `Put /api/ticketstatus`
+**Description:** Updates ticket status based on ticket ID and status ID.
+**Parameters:**
+- `ticketID` (int, required) - Unique ID for a ticket.
+- `status` (int, required) - ID for status.
+**Response:** Confirmation message.
+
+### Update Product for Ticket
+**Endpoint:** `Put /api/ticketsproduct`
+**Description:** Updates product for ticket based on ticket ID and product ID.
+**Parameters:**
+- `ticketID` (int, required) - Unique ID for a ticket.
+- `productID` (int, requred) - Unique ID for a product.
+**Response:** Confirmation message.
+
+### Get Ticket status
+**Endpoint:** `Put /api/ticketstatus`
+**Description:** Get's all ticket statuses.
+**Response:** List with all ticket statuses in JSON-format.
+
+### Reset Ticket status
+**Endpoint:** `Put /api/tickets/{id}` 
+**Description:** Updates and resets ticket status.
+**Parameters:**
+- `ticketID` (int, required) - Unique ID for a ticket.
+**Response:** Confirmation message.
 
 ### Get Ticket Feedback
 **Endpoint:** `GET /api/tickets/feedback`  
@@ -218,5 +273,95 @@
 **Endpoint:** `POST /api/password/hash`  
 **Description:** Genererar en hash för lösenord.  
 **Request Body:** JSON med lösenord.  
+
 **Response:** Hashed lösenord.  
 
+
+
+
+## Case Endpoints
+
+### Add Message to Ticket (Employee Dashboard)
+**Endpoint:** `POST /api/tickets/handle/{ticketId}/messages`  
+**Description:** Lägger till ett nytt meddelande i ett ärende via anställdas dashboard.  
+**Parameters:**  
+- `ticketId` (int, required) - ID för ärendet där meddelandet ska läggas till.  
+
+**Request Body:**  
+json
+{
+  "content": "This is a message from the employee."
+}
+
+**Response:
+200 OK:Returnerar ett meddelande som bekräftar att operationen lyckades.
+eller
+404 Not Found: Returnerar ett felmeddelande som anger att ärendet inte hittades.
+
+
+
+## Message Endpoints
+
+### Add a New Message
+**Endpoint:** `POST /api/messages`  
+**Description:** Lägger till ett nytt meddelande anonymt.  
+**Request Body:**  
+json
+{
+  "email": "example@domain.com",
+  "content": "This is a test message."
+}
+
+**Response:
+200 OK: Returnerar en bekräftelse på att meddelandet har lagts till framgångsrikt.
+eller
+400 Bad Request: Returneras om något fel inträffar, till exempel ogiltiga inmatningar eller valideringsfel.
+
+
+
+
+### Send Customer Message Using Token
+**Endpoint:** `POST /api/tickets/view/{token}/messages`  
+**Description:** Lägger till ett nytt meddelande i ett ärende från kunden med hjälp av en token.  
+**Parameters:**  
+- `token` (string, required) - Unik token som identifierar ärendet.  
+
+**Request Body:**  
+json
+{
+  "content": "Hej, jag behöver hjälp med en produkt."
+}
+
+**Response:
+200 OK: Returnerar en bekräftelse på att meddelandet har lagts till framgångsrikt.
+eller
+404 Not Found: Returneras om det inte finns något ärende som matchar den angivna token.
+
+
+
+
+### Get Messages by Ticket ID
+**Endpoint:** `GET /api/tickets/{ticketId}/messages`  
+**Description:** Hämtar alla meddelanden kopplade till ett specifikt ärende.  
+**Parameters:**  
+- `ticketId` (int, required) - ID för ärendet.  
+
+**Response:**  
+**200 OK:** Returnerar en lista över alla meddelanden kopplade till det angivna ärendet.
+eller
+404 Not Found: Returneras om det angivna ticketId inte hittas i systemet.
+
+
+
+
+### Get Ticket by Token
+**Endpoint:** `GET /api/tickets/view/{token}`  
+**Description:** Hämtar information om ett specifikt ärende med hjälp av en token.  
+**Parameters:**  
+- `token` (string, required) - Unik token som identifierar ärendet.  
+
+**Response:**  
+- **200 OK:**  
+  Returnerar information om det angivna ärendet.  
+eller
+404 Not Found: Returneras om inget ärende hittas som matchar den angivna token
