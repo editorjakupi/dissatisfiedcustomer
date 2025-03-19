@@ -365,3 +365,19 @@ eller
   Returnerar information om det angivna ärendet.  
 eller
 404 Not Found: Returneras om inget ärende hittas som matchar den angivna token
+
+
+
+
+### Get Tickets by View
+**Endpoint:** `GET /api/tickets?view={view}`
+**Descripiton:** Hämtar ticket baserat på view (måste ha ett company_id för att fungera)
+**Parameters:**
+- `view` (string) - view som identifierar (all, open, closed, pending)
+
+- **Response:**  
+- **200 OK:**  
+  Returnerar information om det angivna ärendet.  
+eller
+404 Not Found: Returneras om inget ärende hittas som matchar den angivna token
+400 Bad Request: Returneras om du inte skickar med company_id i requesten
