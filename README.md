@@ -170,7 +170,7 @@ to install this you need to set up the server and client parts of the applicatio
 - `ticketId` (int, required) - ID för ärendet där meddelandet ska läggas till.  
 
 **Request Body:**  
-```json
+json
 {
   "content": "This is a message from the employee."
 }
@@ -187,7 +187,7 @@ eller
 **Endpoint:** `POST /api/messages`  
 **Description:** Lägger till ett nytt meddelande anonymt.  
 **Request Body:**  
-```json
+json
 {
   "email": "example@domain.com",
   "content": "This is a test message."
@@ -208,7 +208,7 @@ eller
 - `token` (string, required) - Unik token som identifierar ärendet.  
 
 **Request Body:**  
-```json
+json
 {
   "content": "Hej, jag behöver hjälp med en produkt."
 }
