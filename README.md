@@ -26,21 +26,27 @@ CRM-system (Customer Relationship Management) är en mjukvara som hjälper före
 
 ## Installation:
 ### Hur man får hemsidan o starta på en ny dator
+1 Git Clone/SSH Nyckel
+
 	$ git clone https://github.com/editorjakupi/dissatisfiedcustomer.git
 	( alternative ) **ssh key:** git@github.com:editorjakupi/dissatisfiedcustomer.git
 
-Konfigurera **miljövariabler*
-	2.1 **Kontrollpanelen** -> Redigera Systemets Miljövariabler ->  **Miljövariabler** -> Ny… -> **PGUser** och **PGPassword** -> Spara -> Ok
+2 Konfigurera miljövariabler
 
-Installera och starta backend (.NET Web API)
+ 	**Kontrollpanelen** -> Redigera Systemets Miljövariabler ->  **Miljövariabler** -> Ny… -> **PGUser** och **PGPassword** -> Spara -> Ok
+
+3 Installera och starta backend (.NET Web API)
+
 	3.1 cd /dissatisfiedcustomer/server
 	3.2 **dotnet run --project server**
 
-Installera **PostgreSQL** och konfigurera databasanslutning.
+4 Installera **PostgreSQL** och konfigurera databasanslutning.
+
 	4.1 Lägg till **Dumpen** från 
 	dissatisfiedcustomer/server/Database/DatabaseDump/dissatisfiedcustomer-dump.sql
 
-Installera och starta frontend (React)
+5 Installera och starta frontend (React)
+
 	5.1 cd /dissatisfiedcustomer/client
 	5.2 **npm run dev**
 
