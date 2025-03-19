@@ -145,23 +145,6 @@ to install this you need to set up the server and client parts of the applicatio
 
 ## Tickets & Feedback
 
-### Get Ticket Feedback
-**Endpoint:** `GET /api/tickets/feedback`  
-**Description:** Hämtar feedback kopplat till biljetter.  
-**Response:** Lista av feedback i JSON-format.  
-
-## Security
-
-### Hash Password
-**Endpoint:** `POST /api/password/hash`  
-**Description:** Genererar en hash för lösenord.  
-**Request Body:** JSON med lösenord.  
-**Response:** Hashed lösenord.  
-
-# API Documentation
-
-## Tickets
-
 ### Get Ticket by ID
 **Endpoint:** `GET /api/tickets/{id}`
 **Description:** Gets a ticket based on ticket ID.
@@ -205,3 +188,16 @@ to install this you need to set up the server and client parts of the applicatio
 **Parameters:**
 - `ticketID` (int, required) - Unique ID for a ticket.
 **Response:** Confirmation message.
+
+### Get Ticket Feedback
+**Endpoint:** `GET /api/tickets/feedback`  
+**Description:** Hämtar feedback kopplat till biljetter.  
+**Response:** Lista av feedback i JSON-format.  
+
+## Security
+
+### Hash Password
+**Endpoint:** `POST /api/password/hash`  
+**Description:** Genererar en hash för lösenord.  
+**Request Body:** JSON med lösenord.  
+**Response:** Hashed lösenord.  
