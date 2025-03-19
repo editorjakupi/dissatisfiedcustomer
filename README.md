@@ -96,6 +96,13 @@ to install this you need to set up the server and client parts of the applicatio
   **Request Body:** JSON med uppdaterad produkt data.
   **Response:** Bekräftelsemeddelande.
 
+## Categories
+
+### Get Categories
+**Endpoint:** `GET /api/categories`  
+**Description:** Hämtar kategorier  
+**Response:** Lista av kategorier i JSON-format.  
+
 ## Employees
 
 ### Get Employees by User ID
